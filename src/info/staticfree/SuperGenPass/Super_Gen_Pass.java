@@ -79,13 +79,13 @@ public class Super_Gen_Pass extends Activity {
     /**
      * Generates a domain password based on the PasswordComposer algorithm.
      * 
-     * @param masterPass
-     * @param domain
-     * @return
+     * @param masterPass master password
+     * @param domain pre-filtered domain (eg. example.org)
+     * @return generated password
      * @throws PasswordGenerationException 
      * @see http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/
      */
-    String passwordComposerGen(String masterPass, String domain) throws PasswordGenerationException{
+    public String passwordComposerGen(String masterPass, String domain) throws PasswordGenerationException{
     	if (domain.equals("")){
     		throw new PasswordGenerationException("Missing domain");
     	}
@@ -96,13 +96,13 @@ public class Super_Gen_Pass extends Activity {
      * Generates a domain password based on the SuperGenPass algorithm.
      * 
      * @param masterPass
-     * @param domain this should be a pre-filtered domain
-     * @param length an integer between 4 and 24, inclusive.
-     * @return
+     * @param domain pre-filtered domain (eg. example.org)
+     * @param length generated password length; an integer between 4 and 24, inclusive.
+     * @return generated password
      * @throws PasswordGenerationException 
      * @see http://supergenpass.com/
      */
-    String superGenPassGen(String masterPass, String domain, int length) throws PasswordGenerationException{
+    public String superGenPassGen(String masterPass, String domain, int length) throws PasswordGenerationException{
     	if (length < 4 || length > 24){
     		throw new PasswordGenerationException("Requested length out of range. Expecting value between 4 and 24 inclusive.");
     	}
@@ -146,7 +146,7 @@ public class Super_Gen_Pass extends Activity {
      * @param data
      * @return hex-encoded string of the md5sum of the data
      */
-    String md5hex(byte[] data){
+    public String md5hex(byte[] data){
     	byte[] md5data = md5.digest(data);
     	String md5hex = new String();
     	for( int i = 0; i < md5data.length; i++){
@@ -158,11 +158,14 @@ public class Super_Gen_Pass extends Activity {
     /**
      * Returns a base64-encoded string of the md5sum of the data.
      * Caution: SuperGenPass-specific!
+     * Includes substitutions to ensure that valid base64 characters
+     * '=', '/', and '+' get mapped to
+     * 'A', '8', and '9' respectively, so as to ensure alpha/num passwords.
      *  
      * @param data
      * @return  base64-encoded string of the md5sum of the data
      */
-    String md5base64(byte[] data){
+    public String md5base64(byte[] data){
     	
     	String b64 = new String(Base64.encodeBase64(md5.digest(data)));
     	// SuperGenPass-specific quirk so that these don't end up in the password.
