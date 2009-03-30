@@ -1,65 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-    <Spinner 
-        android:prompt="@string/pwgen_type_prompt"
-    	android:id="@+id/pwgen_spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-        android:entries="@array/pwgen_types"
-    
-     />
-    
-    <TextView android:text="@string/domain_description"
-            android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-    
-     />
-    
-<EditText android:lines="1"
- 	android:id="@+id/domain_edit"
- 	android:autoText="false"
-    android:capitalize="none"
- 	        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
- 	
- 	  />
- 	     <TextView android:text="@string/password_description"
- 	          android:layout_height="wrap_content"
-       		 android:layout_width="wrap_content"
- 	     
- 	      />
-    
- 	 <EditText android:lines="1"
- 	android:id="@+id/password_edit"
- 	android:autoText="false"
-    android:capitalize="none"
- 	android:password="true"
- 	        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
- 	
- 	  />
- 	 <Button android:id="@+id/go"
- 	  	        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
- 	 android:text="@string/go" />
- 	 
- 	 <TextView 
- 	android:text="@string/password_output"
- 	         android:layout_height="wrap_content"
- 	                  android:layout_width="wrap_content"
- 	  />
- 	   <EditText android:id="@+id/password_output"
- 	            android:layout_height="wrap_content"
- 	            android:layout_width="fill_parent"
- 	            android:selectAllOnFocus="true"
- 	          android:focusable="true"
- 	          android:text="password"
- 	          android:editable="false"
- 	  />
- 	  
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<TextView
+		android:text="@string/domain_description"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content" />
+
+	<EditText
+		android:lines="1"
+		android:id="@+id/domain_edit"
+		android:autoText="false"
+		android:capitalize="none"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent" />
+	<TextView android:text="@string/password_description"
+		android:layout_height="wrap_content" android:layout_width="wrap_content" />
+
+	<EditText android:lines="1"
+		android:id="@+id/password_edit"
+		android:autoText="false"
+		android:capitalize="none"
+		android:password="true"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent" />
+	
+	
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<Spinner 
+			android:prompt="@string/pwgen_type_prompt"
+			android:id="@+id/pwgen_spinner"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:drawSelectorOnTop="true"
+			android:entries="@array/pwgen_types" />
+		<Button
+			android:id="@+id/go"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:text="@string/go" />
+	</LinearLayout>
+
+	<TextView
+		android:text="@string/password_output_label"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content" />
+	<EditText android:id="@+id/password_output"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:selectAllOnFocus="true"
+		android:focusable="true"
+		android:editable="false" />
+
 </LinearLayout>
