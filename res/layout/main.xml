@@ -10,16 +10,18 @@
 		android:layout_width="wrap_content" />
 
 	<EditText
-		android:lines="1"
+		android:singleLine="true"
 		android:id="@+id/domain_edit"
 		android:autoText="false"
 		android:capitalize="none"
 		android:layout_height="wrap_content"
-		android:layout_width="fill_parent" />
+		android:layout_width="fill_parent"
+		android:hint="@string/domain_hint" />
+		
 	<TextView android:text="@string/password_description"
-		android:layout_height="wrap_content" android:layout_width="wrap_content" />
-
-	<EditText android:lines="1"
+		android:layout_height="wrap_content" 
+		android:layout_width="wrap_content" />
+	<EditText android:singleLine="true"
 		android:id="@+id/password_edit"
 		android:autoText="false"
 		android:capitalize="none"
