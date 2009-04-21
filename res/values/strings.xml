@@ -6,8 +6,10 @@
 	<string name="domain_hint">example.org</string>
 	<string name="password_description">Master password:</string>
 	<string name="go">Go!</string>
+	<string name="copy">Copy</string>
 	<string name="password_output_label">Generated password: </string>
 	<string name="pwgen_type_prompt">Password Generator Type</string>
 	<string name="app_description">Password generating tool.</string>
 	<string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
+	<string name="toast_copied">Password for %1$s copied to clipboard.</string>
 </resources>

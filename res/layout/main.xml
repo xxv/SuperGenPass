@@ -48,15 +48,32 @@
 			android:text="@string/go" />
 	</LinearLayout>
 
+
 	<TextView
 		android:text="@string/password_output_label"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content" />
+		<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		>
+	
+		<!--  160sp below is about the right size for the 10char-sized password. 
+		Hardcoded because there doesn't seem to be a way to have the copy
+		button wrap_content, and have the password_output fill up the remaining
+		linear layout
+		 -->
 	<EditText android:id="@+id/password_output"
 		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
+		android:layout_width="160sp"
 		android:selectAllOnFocus="true"
 		android:focusable="true"
 		android:editable="false" />
-
+		
+		<Button android:id="@+id/copy"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:text="@string/copy" />
+	</LinearLayout>
 </LinearLayout>

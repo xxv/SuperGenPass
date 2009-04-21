@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.ClipboardManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -58,6 +59,17 @@ public class Super_Gen_Pass extends Activity {
 		bGo.setOnClickListener(new OnClickListener(){
 			public void onClick(View v) {
 				go();
+			}
+		});
+		
+		Button bCopy = (Button)findViewById(R.id.copy);
+		final Super_Gen_Pass act = this;
+		bCopy.setOnClickListener(new OnClickListener(){
+			public void onClick(View v) {
+				EditText t = (EditText)findViewById(R.id.password_output);
+				ClipboardManager clipMan = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+				clipMan.setText(t.getText());
+				Toast.makeText(act, String.format(act.getString(R.string.toast_copied), act.getDomain()), Toast.LENGTH_SHORT).show();
 			}
 		});
 		
