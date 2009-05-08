@@ -22,7 +22,7 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".Preferences" android:label="@string/user_preferences">
+		<activity android:name=".Preferences" android:label="@string/preferences">
 			<intent-filter>
 				<action android:name="android.intent.action.EDIT" />
 			</intent-filter>

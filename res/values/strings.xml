@@ -17,6 +17,7 @@
 	<string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
 	<string name="toast_copied">Password for %1$s copied to clipboard.</string>
 	
+	<string name="preferences">SuperGenPass Preferences</string>
 	<string name="user_preferences">User Preferences</string>
 	<string name="advanced_preferences">Advanced Preferences</string>
 	
