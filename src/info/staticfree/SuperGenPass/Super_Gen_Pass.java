@@ -89,13 +89,13 @@ public class Super_Gen_Pass extends Activity {
 			Uri data = intent.getData();
 			if (data == null){
 				EditText t = (EditText)findViewById(R.id.domain_edit);
-				EditText passText = (EditText)findViewById(R.id.password_edit);
 				String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
 				if (maybeUrl != null){
 				try{
+					// populate the URL and give the password entry focus
 					Uri uri = Uri.parse(maybeUrl);
 					t.setText(getDomain(uri.getHost()));
-					passText.requestFocus();
+					((EditText)findViewById(R.id.password_edit)).requestFocus();
 				}catch(Exception e){
 					// nothing much to be done here. 
 					// Let the user figure it out.
