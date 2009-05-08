@@ -35,13 +35,6 @@
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
-		<Spinner 
-			android:prompt="@string/pwgen_type_prompt"
-			android:id="@+id/pwgen_spinner"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:drawSelectorOnTop="true"
-			android:entries="@array/pwgen_types" />
 		<Button
 			android:id="@+id/go"
 			android:layout_height="wrap_content"
@@ -67,14 +60,10 @@
 		 -->
 	<EditText android:id="@+id/password_output"
 		android:layout_height="wrap_content"
-		android:layout_width="160sp"
+		android:layout_width="fill_parent"
 		android:selectAllOnFocus="true"
 		android:focusable="true"
 		android:editable="false" />
 		
-		<Button android:id="@+id/copy"
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:text="@string/copy" />
 	</LinearLayout>
 </LinearLayout>

@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceCategory android:title="@string/user_preferences">
+<CheckBoxPreference android:title="@string/pref_copy_password"
+			android:summary="@string/pref_copy_password_summary"
+			android:defaultValue="true"
+			android:key="clipboard" />
+</PreferenceCategory>
+	<PreferenceCategory android:title="@string/advanced_preferences">
+		<ListPreference android:title="@string/pwgen_type_prompt"
+		android:entries="@array/pwgen_types_label"
+		android:entryValues="@array/pwgen_types"
+		android:summary="@string/pwgen_type_summary"
+		android:defaultValue="sgp"
+			android:key="pw_type" />
+			<!-- XXX why doesn't this work‽ android:dialogMessage="@string/pwgen_type_description"-->
+		
+		<EditTextPreference android:title="@string/pref_pw_length"
+			android:numeric="integer"
+			android:dialogMessage="@string/pref_pw_length_description"
+			android:defaultValue="10"
+			android:key="pw_length" />
+			
+			<!--  android:inputType="number" for 1.5 -->
+	</PreferenceCategory>
+</PreferenceScreen>
