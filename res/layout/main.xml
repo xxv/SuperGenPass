@@ -26,6 +26,7 @@
 		android:autoText="false"
 		android:capitalize="none"
 		android:password="true"
+		android:hint="@string/password_hint"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent" />
 	
