@@ -78,6 +78,9 @@ public class Super_Gen_Pass extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+		dbHelper = new RememberedDBHelper(getApplicationContext());
+		db = dbHelper.getWritableDatabase();
+        
         updatePreferences();
         
         try {
@@ -97,8 +100,7 @@ public class Super_Gen_Pass extends Activity {
 			}
 		});
 		
-		dbHelper = new RememberedDBHelper(getApplicationContext());
-		db = dbHelper.getWritableDatabase();
+
 		
 		// initialize the autocompletion
 		((AutoCompleteTextView)findViewById(R.id.domain_edit))
@@ -127,6 +129,13 @@ public class Super_Gen_Pass extends Activity {
 			
 		}
     }
+    
+    @Override
+    protected void onDestroy() {
+    	db.close();
+    	super.onDestroy();
+    }
+    
     
     /**
      * Go!
