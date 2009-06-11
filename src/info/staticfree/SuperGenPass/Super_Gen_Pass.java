@@ -28,8 +28,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.AlertDialog.Builder;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -38,8 +43,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FilterQueryProvider;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class Super_Gen_Pass extends Activity {
@@ -53,6 +61,14 @@ public class Super_Gen_Pass extends Activity {
 	private int pwLength;
 	private String pwType;
 	private boolean copyToClipboard;
+	private boolean rememberDomains;
+	
+	private RememberedDBHelper dbHelper;
+	private SQLiteDatabase db;
+	
+	private final static String DB_NAME = "autocomplete_domains";
+	private final static String DB_DOMAINS_TABLE = "domains";
+	private final static int DB_VERSION = 2;
 	
     /** Called when the activity is first created. */
     @Override
@@ -79,6 +95,13 @@ public class Super_Gen_Pass extends Activity {
 			}
 		});
 		
+		dbHelper = new RememberedDBHelper(getApplicationContext());
+		db = dbHelper.getWritableDatabase();
+		
+		// initialize the autocompletion
+		((AutoCompleteTextView)findViewById(R.id.domain_edit))
+			.setAdapter(getDomainPrefixAdapter(db));
+		
 		// check for the "share page" intent. If present, pre-fill.
 		Intent intent = getIntent();
 		if (intent != null){
@@ -103,14 +126,18 @@ public class Super_Gen_Pass extends Activity {
 		}
     }
     
+    /**
+     * Go!
+     */
     void go(){
     	String genPw = "";
+    	final String domain = getDomain(); 
     	try {
         	if (pwType.equals("sgp")){
-        		genPw = superGenPassGen(getMasterPassword(), getDomain(), pwLength);	
+        		genPw = superGenPassGen(getMasterPassword(), domain, pwLength);	
         		
         	}else if (pwType.equals("pwc")){
-        		genPw = passwordComposerGen(getMasterPassword(), getDomain(), pwLength);
+        		genPw = passwordComposerGen(getMasterPassword(), domain, pwLength);
         	}
 			
 		} catch (PasswordGenerationException e) {
@@ -121,17 +148,25 @@ public class Super_Gen_Pass extends Activity {
 		EditText txt = (EditText)findViewById(R.id.password_output);
 		txt.setText(genPw);
 		
+		if (rememberDomains){
+			addRememberedDomain(domain);
+		}
+		
 		if (copyToClipboard){
 			ClipboardManager clipMan = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 			clipMan.setText(genPw);
 			if (genPw.length() > 0){
-				Toast.makeText(this, String.format(this.getString(R.string.toast_copied), this.getDomain()), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, String.format(this.getString(R.string.toast_copied), 
+						domain), Toast.LENGTH_SHORT).show();
 			}
 		}
     }
     
+    /**
+     * @return the domain entered into the text box
+     */
     String getDomain(){
-    	EditText txt = (EditText)findViewById(R.id.domain_edit);
+    	AutoCompleteTextView txt = (AutoCompleteTextView)findViewById(R.id.domain_edit);
     	return txt.getText().toString();
     }
     
@@ -139,6 +174,83 @@ public class Super_Gen_Pass extends Activity {
     	EditText txt = (EditText)findViewById(R.id.password_edit);
     	return txt.getText().toString();
     } 
+    
+    /**
+     * Adds the given domain to the list of remembered domains. 
+     * 
+     * @param domain the filtered domain name
+     */
+    void addRememberedDomain(String domain){
+    	Cursor existingEntries = db.query(DB_DOMAINS_TABLE, null, 
+    			"domain=?", new String[] {domain}, 
+    			null, null, null);
+    	
+    	if (existingEntries.getCount() == 0) {
+	    	ContentValues cv = new ContentValues();
+	    	cv.put("domain", domain);
+	    	db.insert(DB_DOMAINS_TABLE, null, cv);
+    	}
+    }
+    
+    void clearRememberedDomains(){
+    	db.delete(DB_DOMAINS_TABLE, null, null);
+    }
+    
+    private static class RememberedDBHelper extends SQLiteOpenHelper {
+		public RememberedDBHelper(Context context) {
+			super(context, DB_NAME, null, DB_VERSION);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			db.execSQL("CREATE TABLE '"+DB_DOMAINS_TABLE+
+					"' ('_id' INTEGER PRIMARY KEY, 'domain' VARCHAR(255))");
+			
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			db.execSQL("DROP TABLE IF EXISTS "+ DB_DOMAINS_TABLE);
+			onCreate(db);
+		}
+    }
+    
+    /**
+     * Creates an Adapter that looks for the start of a domain string from the database.
+     * For use with the AutoCompleteTextView
+     * 
+     * @param db the domain database
+     * @return an Adapter that uses the Simple Dropdown Item view
+     */
+    private SimpleCursorAdapter getDomainPrefixAdapter(SQLiteDatabase db){
+		Cursor dbCursor = db.query(DB_DOMAINS_TABLE, null, null, null, null, null, "domain ASC");
+		
+		// Simple it says - ha!
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getApplicationContext(), 
+				android.R.layout.simple_dropdown_item_1line, 
+				dbCursor, 
+				new String[] {"domain"}, 
+				// Not sure if the below line is correct, but it seems to work.
+				new int[] {android.R.id.text1} );
+		
+		adapter.setStringConversionColumn(dbCursor.getColumnIndex("domain"));
+		
+		final SQLiteDatabase dbInner = db;
+		// a filter that searches for domains starting with the given constraint
+		adapter.setFilterQueryProvider(new FilterQueryProvider(){
+			public Cursor runQuery(CharSequence constraint) {
+				if (constraint == null || constraint.length() == 0){
+					return dbInner.query(DB_DOMAINS_TABLE, null, null, null, null, null, "domain ASC");
+				}else{
+					return dbInner.query(DB_DOMAINS_TABLE, 
+							null, 
+							"domain GLOB ?", 
+							new String[] {constraint.toString()+"*"}, null, null, "domain ASC");
+				}
+			}
+		});
+		return adapter;
+    }
     
     /**
      * Generates a domain password based on the PasswordComposer algorithm.
@@ -320,9 +432,18 @@ public class Super_Gen_Pass extends Activity {
     
     protected void  updatePreferences(){
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	
+    	// when adding items here, make sure default values are in sync with the xml file
     	this.pwType = prefs.getString("pw_type", "sgp");
     	this.pwLength = Integer.parseInt(prefs.getString("pw_length", "10"));
     	this.copyToClipboard = prefs.getBoolean("clipboard", true);
+    	this.rememberDomains = prefs.getBoolean("domain_autocomplete", true);
+    	
+    	// While it doesn't really make sense to clear this every time this is saved,
+    	// there isn't much of a better option beyond remembering more state.
+    	if (! rememberDomains){
+    		clearRememberedDomains();
+    	}
     }
 }
 

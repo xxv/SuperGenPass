@@ -31,6 +31,9 @@
 	<string name="pref_pw_length">Generated password length</string>
 	<string name="pref_pw_length_description">This should be value between 4 and 24. A value of 10 for SGP and 8 for PWC is highly recommended for compatibility with the other implementations.</string>
 	
+	<string name="pref_autocomplete">Autocomplete domains</string>
+	<string name="pref_autocomplete_summary">Remember any domains you\'ve used. Uncheck to forget.</string>
+	
 	<string name="about_title">About SuperGenPass</string>
 	<string name="about_text">
 SuperGenPass is a different kind of password manager: instead of randomly generating and storing passwords, it combines a Web site's domain and your master password to generate a unique password for each Web site you visit using a strong cryptographic hash.

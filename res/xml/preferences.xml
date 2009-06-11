@@ -1,9 +1,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-<PreferenceCategory android:title="@string/user_preferences">
-<CheckBoxPreference android:title="@string/pref_copy_password"
+	<PreferenceCategory android:title="@string/user_preferences">
+		<CheckBoxPreference android:title="@string/pref_copy_password"
 			android:summary="@string/pref_copy_password_summary"
 			android:defaultValue="true"
 			android:key="clipboard" />
+			
+		<CheckBoxPreference android:title="@string/pref_autocomplete"
+			android:summary="@string/pref_autocomplete_summary"
+			android:defaultValue="true"
+			android:key="domain_autocomplete" />
+			
 </PreferenceCategory>
 	<PreferenceCategory android:title="@string/advanced_preferences">
 		<ListPreference android:title="@string/pwgen_type_prompt"
