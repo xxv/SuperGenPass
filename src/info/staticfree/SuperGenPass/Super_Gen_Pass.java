@@ -30,6 +30,7 @@ import android.app.Dialog;
 import android.app.AlertDialog.Builder;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -39,6 +40,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -423,8 +425,16 @@ public class Super_Gen_Pass extends Activity {
         	
         	builder.setTitle(R.string.about_title);
         	builder.setIcon(R.drawable.icon);
-        	builder.setMessage(R.string.about_text);
         	
+        	// using this instead of setMessage lets us have clickable links.
+        	LayoutInflater factory = LayoutInflater.from(this);
+        	builder.setView(factory.inflate(R.layout.about, null));
+        	
+        	builder.setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+        		public void onClick(DialogInterface dialog, int which) {
+        			setResult(RESULT_OK);
+        		}
+        	});
         	return builder.create();
     	}
         return null;
