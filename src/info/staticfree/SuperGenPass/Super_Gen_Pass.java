@@ -62,6 +62,7 @@ public class Super_Gen_Pass extends Activity {
 	
 	private int pwLength;
 	private String pwType;
+	private String pwSalt;
 	private boolean copyToClipboard;
 	private boolean rememberDomains;
 	
@@ -145,10 +146,10 @@ public class Super_Gen_Pass extends Activity {
     	final String domain = getDomain(); 
     	try {
         	if (pwType.equals("sgp")){
-        		genPw = superGenPassGen(getMasterPassword(), domain, pwLength);	
+        		genPw = superGenPassGen(getMasterPassword() + pwSalt, domain, pwLength);	
         		
         	}else if (pwType.equals("pwc")){
-        		genPw = passwordComposerGen(getMasterPassword(), domain, pwLength);
+        		genPw = passwordComposerGen(getMasterPassword() + pwSalt, domain, pwLength);
         	}
 			
 		} catch (PasswordGenerationException e) {
@@ -455,6 +456,7 @@ public class Super_Gen_Pass extends Activity {
     	// when adding items here, make sure default values are in sync with the xml file
     	this.pwType = prefs.getString("pw_type", "sgp");
     	this.pwLength = Integer.parseInt(prefs.getString("pw_length", "10"));
+    	this.pwSalt = prefs.getString("pw_salt", "");
     	this.copyToClipboard = prefs.getBoolean("clipboard", true);
     	this.rememberDomains = prefs.getBoolean("domain_autocomplete", true);
     	

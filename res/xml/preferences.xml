@@ -27,5 +27,11 @@
 			android:key="pw_length" />
 			
 			<!--  android:inputType="number" for 1.5 -->
+			
+		<EditTextPreference android:title="@string/pref_pw_salt"
+			android:password="true"
+			android:dialogMessage="@string/pref_pw_salt_description"
+			android:summary="@string/pref_pw_salt_summary"
+			android:key="pw_salt" />
 	</PreferenceCategory>
 </PreferenceScreen>

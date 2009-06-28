@@ -33,6 +33,10 @@
 	
 	<string name="pref_autocomplete">Autocomplete domains</string>
 	<string name="pref_autocomplete_summary">Remember any domains you\'ve used. Uncheck to forget them all.</string>
+
+    <string name="pref_pw_salt">Stealth Password</string>
+    <string name="pref_pw_salt_summary">Add a salt to your master password for extra security.</string>
+    <string name="pref_pw_salt_description">This password salt is added to the end of your master password upon generation. This is saved to your device and you will not be prompted for it again, so make sure you remember it somewhere else too. You can use any symbols/characters here.</string>
 	
 	<string name="about_title">About SuperGenPass</string>
 	<string name="about_text">
