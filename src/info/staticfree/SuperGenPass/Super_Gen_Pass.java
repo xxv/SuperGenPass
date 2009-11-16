@@ -86,7 +86,7 @@ public class Super_Gen_Pass extends Activity {
         
         try {
 			md5 = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
+		} catch (final NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			Toast.makeText(getApplicationContext(), 
 					String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()), 
@@ -94,7 +94,7 @@ public class Super_Gen_Pass extends Activity {
 		}
 		
 		// set up go button
-		Button bGo = (Button)findViewById(R.id.go);
+		final Button bGo = (Button)findViewById(R.id.go);
 		bGo.setOnClickListener(new OnClickListener(){
 			public void onClick(View v) {
 				go();
@@ -108,19 +108,19 @@ public class Super_Gen_Pass extends Activity {
 			.setAdapter(getDomainPrefixAdapter(db));
 		
 		// check for the "share page" intent. If present, pre-fill.
-		Intent intent = getIntent();
+		final Intent intent = getIntent();
 		if (intent != null){
-			Uri data = intent.getData();
+			final Uri data = intent.getData();
 			if (data == null){
-				EditText t = (EditText)findViewById(R.id.domain_edit);
-				String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
+				final EditText t = (EditText)findViewById(R.id.domain_edit);
+				final String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
 				if (maybeUrl != null){
 				try{
 					// populate the URL and give the password entry focus
-					Uri uri = Uri.parse(maybeUrl);
+					final Uri uri = Uri.parse(maybeUrl);
 					t.setText(getDomain(uri.getHost()));
 					((EditText)findViewById(R.id.password_edit)).requestFocus();
-				}catch(Exception e){
+				}catch(final Exception e){
 					// nothing much to be done here. 
 					// Let the user figure it out.
 					e.printStackTrace();
@@ -152,12 +152,12 @@ public class Super_Gen_Pass extends Activity {
         		genPw = passwordComposerGen(getMasterPassword() + pwSalt, domain, pwLength);
         	}
 			
-		} catch (PasswordGenerationException e) {
+		} catch (final PasswordGenerationException e) {
 			genPw = "";
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
 
-		EditText txt = (EditText)findViewById(R.id.password_output);
+		final EditText txt = (EditText)findViewById(R.id.password_output);
 		txt.setText(genPw);
 		
 		if (rememberDomains){
@@ -165,7 +165,7 @@ public class Super_Gen_Pass extends Activity {
 		}
 		
 		if (copyToClipboard){
-			ClipboardManager clipMan = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+			final ClipboardManager clipMan = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 			clipMan.setText(genPw);
 			if (genPw.length() > 0){
 				Toast.makeText(this, String.format(this.getString(R.string.toast_copied), 
@@ -178,12 +178,12 @@ public class Super_Gen_Pass extends Activity {
      * @return the domain entered into the text box
      */
     String getDomain(){
-    	AutoCompleteTextView txt = (AutoCompleteTextView)findViewById(R.id.domain_edit);
+    	final AutoCompleteTextView txt = (AutoCompleteTextView)findViewById(R.id.domain_edit);
     	return txt.getText().toString();
     }
     
     String getMasterPassword(){
-    	EditText txt = (EditText)findViewById(R.id.password_edit);
+    	final EditText txt = (EditText)findViewById(R.id.password_edit);
     	return txt.getText().toString();
     } 
     
@@ -193,12 +193,12 @@ public class Super_Gen_Pass extends Activity {
      * @param domain the filtered domain name
      */
     void addRememberedDomain(String domain){
-    	Cursor existingEntries = db.query(DB_DOMAINS_TABLE, null, 
+    	final Cursor existingEntries = db.query(DB_DOMAINS_TABLE, null, 
     			"domain=?", new String[] {domain}, 
     			null, null, null);
     	
     	if (existingEntries.getCount() == 0) {
-	    	ContentValues cv = new ContentValues();
+	    	final ContentValues cv = new ContentValues();
 	    	cv.put("domain", domain);
 	    	db.insert(DB_DOMAINS_TABLE, null, cv);
     	}
@@ -235,10 +235,10 @@ public class Super_Gen_Pass extends Activity {
      * @return an Adapter that uses the Simple Dropdown Item view
      */
     private SimpleCursorAdapter getDomainPrefixAdapter(SQLiteDatabase db){
-		Cursor dbCursor = db.query(DB_DOMAINS_TABLE, null, null, null, null, null, "domain ASC");
+		final Cursor dbCursor = db.query(DB_DOMAINS_TABLE, null, null, null, null, null, "domain ASC");
 		
 		// Simple it says - ha!
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getApplicationContext(), 
+		final SimpleCursorAdapter adapter = new SimpleCursorAdapter(getApplicationContext(), 
 				android.R.layout.simple_dropdown_item_1line, 
 				dbCursor, 
 				new String[] {"domain"}, 
@@ -335,7 +335,7 @@ public class Super_Gen_Pass extends Activity {
      * @return hex-encoded string of the md5sum of the data
      */
     public String md5hex(byte[] data){
-    	byte[] md5data = md5.digest(data);
+    	final byte[] md5data = md5.digest(data);
     	String md5hex = new String();
     	for( int i = 0; i < md5data.length; i++){
     		md5hex += String.format("%02x", md5data[i]); 
@@ -374,8 +374,13 @@ public class Super_Gen_Pass extends Activity {
     public String getDomain(String hostname) throws PasswordGenerationException{
     	hostname = hostname.toLowerCase();
     	
+    	// IP addresses should be composed based on the full address.
+    	if (hostname.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")){
+    		return hostname;
+    	}
+    	
     	// for single-level TLDs, we only want the TLD and the 2nd level domain
-    	String[] hostParts = hostname.split("\\.");
+    	final String[] hostParts = hostname.split("\\.");
     	if (hostParts.length < 2){
     		throw new PasswordGenerationException("Invalid domain: '"+hostname+"'");
     	}
@@ -406,7 +411,7 @@ public class Super_Gen_Pass extends Activity {
     	switch (item.getItemId()){
     	case R.id.settings:
 
-            Intent preferencesIntent = new Intent().setClass(this, Preferences.class);
+            final Intent preferencesIntent = new Intent().setClass(this, Preferences.class);
             startActivityForResult(preferencesIntent, REQUEST_CODE_PREFERENCES);
 
     		return true;
@@ -431,13 +436,13 @@ public class Super_Gen_Pass extends Activity {
     protected Dialog onCreateDialog(int id) {
     	switch (id){
     	case ABOUT_DIALOG:
-        	Builder builder = new AlertDialog.Builder(this);
+        	final Builder builder = new AlertDialog.Builder(this);
         	
         	builder.setTitle(R.string.about_title);
         	builder.setIcon(R.drawable.icon);
         	
         	// using this instead of setMessage lets us have clickable links.
-        	LayoutInflater factory = LayoutInflater.from(this);
+        	final LayoutInflater factory = LayoutInflater.from(this);
         	builder.setView(factory.inflate(R.layout.about, null));
         	
         	builder.setPositiveButton("Ok", new DialogInterface.OnClickListener(){
@@ -451,7 +456,7 @@ public class Super_Gen_Pass extends Activity {
     }
     
     protected void  updatePreferences(){
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     	
     	// when adding items here, make sure default values are in sync with the xml file
     	this.pwType = prefs.getString("pw_type", "sgp");
