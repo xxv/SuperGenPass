@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+	android:layout_height="fill_parent"
+	android:padding="5dp">
 
 	<TextView
 		android:text="@string/domain_description"
@@ -13,7 +14,9 @@
 		android:singleLine="true"
 		android:id="@+id/domain_edit"
 		android:autoText="false"
+		android:inputType="textUri"
 		android:capitalize="none"
+		android:imeOptions="actionNext"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
 		android:hint="@string/domain_hint" />
@@ -21,11 +24,13 @@
 	<TextView android:text="@string/password_description"
 		android:layout_height="wrap_content" 
 		android:layout_width="wrap_content" />
+		
 	<EditText android:singleLine="true"
 		android:id="@+id/password_edit"
 		android:autoText="false"
 		android:capitalize="none"
 		android:password="true"
+		android:imeOptions="actionDone"
 		android:hint="@string/password_hint"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent" />
@@ -58,12 +63,17 @@
 		button wrap_content, and have the password_output fill up the remaining
 		linear layout
 		 -->
-	<EditText android:id="@+id/password_output"
+		 <TextView android:id="@+id/password_output"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
 		android:selectAllOnFocus="true"
-		android:focusable="true"
-		android:editable="false" />
+		android:textStyle="bold"
+		android:textColor="@android:color/primary_text_light"
+		android:textSize="30sp"
+		android:gravity="center_horizontal"
+		android:background="@drawable/sgp_output"
+		android:focusable="true" 
+		android:focusableInTouchMode="true" />
 		
 	</LinearLayout>
 </LinearLayout>
