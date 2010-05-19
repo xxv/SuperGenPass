@@ -2,20 +2,21 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     
     <string name="app_name">SuperGenPass</string>
-	<string name="domain_description">Site\'s domain:</string>
-	<string name="domain_hint">example.org</string>
-	<string name="password_description">Master password:</string>
+	<string name="domain_hint">site\'s domain</string>
 	<string name="go">Go!</string>
-	<string name="copy">Copy</string>
-	<string name="password_output_label">Generated password: </string>
 	<string name="password_hint">master password</string>
+	<string name="password_output_label">Generated password:</string>
 	
 	<string name="sgp_type">SuperGenPass</string>
 	<string name="pwc_type">Password Composer</string>
 	
 	<string name="app_description">Password hashing tool.</string>
 	<string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
-	<string name="toast_copied">Password for %1$s copied to clipboard.</string>
+	
+	<!-- GeneratedPasswordView widget -->
+	<string name="generated_password">Generated password</string>
+	<string name="toast_copied">Password for %s copied to clipboard.</string>
+	<string name="toast_copied_no_domain">Password copied to clipboard.</string>
 	
 	<string name="preferences">SuperGenPass Preferences</string>
 	<string name="user_preferences">User Preferences</string>

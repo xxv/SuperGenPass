@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:padding="5dp">
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:padding="5dp">
 
-	<TextView
-		android:text="@string/domain_description"
+	<LinearLayout android:layout_height="wrap_content" android:layout_width="fill_parent">
+	<LinearLayout 
 		android:layout_height="wrap_content"
-		android:layout_width="wrap_content" />
-
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_weight="1">
+		
 	<AutoCompleteTextView
 		android:singleLine="true"
 		android:id="@+id/domain_edit"
@@ -21,10 +21,6 @@
 		android:layout_width="fill_parent"
 		android:hint="@string/domain_hint" />
 		
-	<TextView android:text="@string/password_description"
-		android:layout_height="wrap_content" 
-		android:layout_width="wrap_content" />
-		
 	<EditText android:singleLine="true"
 		android:id="@+id/password_edit"
 		android:autoText="false"
@@ -34,46 +30,32 @@
 		android:hint="@string/password_hint"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent" />
-	
-	
-	<LinearLayout
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
-		<Button
-			android:id="@+id/go"
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:text="@string/go" />
+		</LinearLayout>
+	<Button
+		android:id="@+id/go"
+		android:text="@string/go"
+		android:layout_height="fill_parent"
+		android:layout_width="wrap_content"/>
 	</LinearLayout>
-
 
 	<TextView
 		android:text="@string/password_output_label"
 		android:layout_height="wrap_content"
-		android:layout_width="wrap_content" />
-		<LinearLayout
+		android:layout_width="wrap_content" android:visibility="gone"/>
+		
+	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		>
-	
-		<!--  160sp below is about the right size for the 10char-sized password. 
-		Hardcoded because there doesn't seem to be a way to have the copy
-		button wrap_content, and have the password_output fill up the remaining
-		linear layout
-		 -->
-		 <TextView android:id="@+id/password_output"
+	<!-- 250sp below is based on 10 character password default. -->
+	<info.staticfree.SuperGenPass.GeneratedPasswordView android:id="@+id/password_output"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:selectAllOnFocus="true"
-		android:textStyle="bold"
-		android:textColor="@android:color/primary_text_light"
-		android:textSize="30sp"
-		android:gravity="center_horizontal"
-		android:background="@drawable/sgp_output"
-		android:focusable="true" 
-		android:focusableInTouchMode="true" />
+		android:minWidth="250sp"
+		android:textSize="30sp" />
 		
 	</LinearLayout>
+
+
 </LinearLayout>

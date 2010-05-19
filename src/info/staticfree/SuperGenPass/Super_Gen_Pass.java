@@ -2,7 +2,7 @@ package info.staticfree.SuperGenPass;
 
 /*
  	Android SuperGenPass
-    Copyright (C) 2009  Steve Pomeroy <steve@staticfree.info>
+    Copyright (C) 2009-2010  Steve Pomeroy <steve@staticfree.info>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,33 +28,28 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.AlertDialog.Builder;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.ClipboardManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FilterQueryProvider;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
-// TODO Add preference to remove domain requirement. Reflect in UI prompts by changing text.
-public class Super_Gen_Pass extends Activity {
+// TODO Add preference to remove domain requirement. Reflect in UI prompts by changing text. Default: off
+// TODO Add password verification button. Perhaps a button that either toggles a verification edit box or pops up a dialog.
+// TODO Wipe master password when switching away from application.
+public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener {
 	MessageDigest md5;
 	// this list should remain the same and in sync with the canonical SGP,
 	// so that passwords generated in one place are the same as others. 
@@ -69,19 +64,32 @@ public class Super_Gen_Pass extends Activity {
 	private boolean copyToClipboard;
 	private boolean rememberDomains;
 	
+	private GeneratedPasswordView genPwView;
+	
 	private RememberedDBHelper dbHelper;
 	private SQLiteDatabase db;
-	
-	private final static String DB_NAME = "autocomplete_domains";
-	private final static String DB_DOMAINS_TABLE = "domains";
-	private final static int DB_VERSION = 2;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+		final Intent intent = getIntent();
+		final Uri data = intent.getData();
+		
+		// Make window transient-looking if coming from a share intent 
+		if (Intent.ACTION_SEND.equals(intent.getAction())){
+			setTheme(android.R.style.Theme_Dialog);
+		}else{
+			// this is necessary as the default theme is translucent to make the dimming work
+			setTheme(android.R.style.Theme);
+		}
+			
+		super.onCreate(savedInstanceState);
+		
         setContentView(R.layout.main);
         
+        genPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
+        genPwView.setOnLongClickListener(this);
+                
 		dbHelper = new RememberedDBHelper(getApplicationContext());
 		db = dbHelper.getWritableDatabase();
         
@@ -97,40 +105,31 @@ public class Super_Gen_Pass extends Activity {
 		}
 		
 		// set up go button
-		final Button bGo = (Button)findViewById(R.id.go);
-		bGo.setOnClickListener(new OnClickListener(){
-			public void onClick(View v) {
-				go();
-			}
-		});
-		
-
+		((Button)findViewById(R.id.go)).setOnClickListener(this);
 		
 		// initialize the autocompletion
 		((AutoCompleteTextView)findViewById(R.id.domain_edit))
-			.setAdapter(getDomainPrefixAdapter(db));
+			.setAdapter(dbHelper.getDomainPrefixAdapter(db));
 		
 		// check for the "share page" intent. If present, pre-fill.
-		final Intent intent = getIntent();
-		if (intent != null){
-			final Uri data = intent.getData();
-			if (data == null){
-				final EditText t = (EditText)findViewById(R.id.domain_edit);
-				final String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
-				if (maybeUrl != null){
+
+		if (data == null){
+			final EditText t = (EditText)findViewById(R.id.domain_edit);
+			final String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
+			if (maybeUrl != null){
 				try{
 					// populate the URL and give the password entry focus
 					final Uri uri = Uri.parse(maybeUrl);
 					t.setText(getDomain(uri.getHost()));
 					((EditText)findViewById(R.id.password_edit)).requestFocus();
+					
 				}catch(final Exception e){
 					// nothing much to be done here. 
 					// Let the user figure it out.
 					e.printStackTrace();
 					Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-				}}
+				}
 			}
-			
 		}
     }
     
@@ -139,7 +138,6 @@ public class Super_Gen_Pass extends Activity {
     	db.close();
     	super.onDestroy();
     }
-    
     
     /**
      * Go!
@@ -160,19 +158,18 @@ public class Super_Gen_Pass extends Activity {
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
 
-		final TextView txt = (TextView)findViewById(R.id.password_output);
-		txt.setText(genPw);
+		genPwView.setDomainName(domain);
+		genPwView.setText(genPw);
 		
 		if (rememberDomains){
-			addRememberedDomain(domain);
+			RememberedDBHelper.addRememberedDomain(db, domain);
 		}
 		
 		if (copyToClipboard){
-			final ClipboardManager clipMan = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
-			clipMan.setText(genPw);
-			if (genPw.length() > 0){
-				Toast.makeText(this, String.format(this.getString(R.string.toast_copied), 
-						domain), Toast.LENGTH_SHORT).show();
+			genPwView.copyToClipboard();
+			
+			if (Intent.ACTION_SEND.equals(getIntent().getAction())){
+				finish();
 			}
 		}
     }
@@ -189,83 +186,7 @@ public class Super_Gen_Pass extends Activity {
     	final EditText txt = (EditText)findViewById(R.id.password_edit);
     	return txt.getText().toString();
     } 
-    
-    /**
-     * Adds the given domain to the list of remembered domains. 
-     * 
-     * @param domain the filtered domain name
-     */
-    void addRememberedDomain(String domain){
-    	final Cursor existingEntries = db.query(DB_DOMAINS_TABLE, null, 
-    			"domain=?", new String[] {domain}, 
-    			null, null, null);
-    	
-    	if (existingEntries.getCount() == 0) {
-	    	final ContentValues cv = new ContentValues();
-	    	cv.put("domain", domain);
-	    	db.insert(DB_DOMAINS_TABLE, null, cv);
-    	}
-    }
-    
-    void clearRememberedDomains(){
-    	db.delete(DB_DOMAINS_TABLE, null, null);
-    }
-    
-    private static class RememberedDBHelper extends SQLiteOpenHelper {
-		public RememberedDBHelper(Context context) {
-			super(context, DB_NAME, null, DB_VERSION);
-		}
 
-		@Override
-		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("CREATE TABLE '"+DB_DOMAINS_TABLE+
-					"' ('_id' INTEGER PRIMARY KEY, 'domain' VARCHAR(255))");
-			
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			db.execSQL("DROP TABLE IF EXISTS "+ DB_DOMAINS_TABLE);
-			onCreate(db);
-		}
-    }
-    
-    /**
-     * Creates an Adapter that looks for the start of a domain string from the database.
-     * For use with the AutoCompleteTextView
-     * 
-     * @param db the domain database
-     * @return an Adapter that uses the Simple Dropdown Item view
-     */
-    private SimpleCursorAdapter getDomainPrefixAdapter(SQLiteDatabase db){
-		final Cursor dbCursor = db.query(DB_DOMAINS_TABLE, null, null, null, null, null, "domain ASC");
-		
-		// Simple it says - ha!
-		final SimpleCursorAdapter adapter = new SimpleCursorAdapter(getApplicationContext(), 
-				android.R.layout.simple_dropdown_item_1line, 
-				dbCursor, 
-				new String[] {"domain"}, 
-				// Not sure if the below line is correct, but it seems to work.
-				new int[] {android.R.id.text1} );
-		
-		adapter.setStringConversionColumn(dbCursor.getColumnIndex("domain"));
-		
-		final SQLiteDatabase dbInner = db;
-		// a filter that searches for domains starting with the given constraint
-		adapter.setFilterQueryProvider(new FilterQueryProvider(){
-			public Cursor runQuery(CharSequence constraint) {
-				if (constraint == null || constraint.length() == 0){
-					return dbInner.query(DB_DOMAINS_TABLE, null, null, null, null, null, "domain ASC");
-				}else{
-					return dbInner.query(DB_DOMAINS_TABLE, 
-							null, 
-							"domain GLOB ?", 
-							new String[] {constraint.toString()+"*"}, null, null, "domain ASC");
-				}
-			}
-		});
-		return adapter;
-    }
     
     /**
      * Generates a domain password based on the PasswordComposer algorithm.
@@ -403,6 +324,23 @@ public class Super_Gen_Pass extends Activity {
     	return domain;
     }
     
+	public void onClick(View v) {
+		switch (v.getId()){
+		case R.id.go:
+			go();
+			break;
+		case R.id.password_output:
+			break;
+		}
+		
+	}
+
+	public boolean onLongClick(View v) {
+		switch (v.getId()){
+		}
+		return false;
+	}
+	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	getMenuInflater().inflate(R.menu.options, menu);
@@ -471,7 +409,7 @@ public class Super_Gen_Pass extends Activity {
     	// While it doesn't really make sense to clear this every time this is saved,
     	// there isn't much of a better option beyond remembering more state.
     	if (! rememberDomains){
-    		clearRememberedDomains();
+    		RememberedDBHelper.clearRememberedDomains(db);
     	}
     }
 }
