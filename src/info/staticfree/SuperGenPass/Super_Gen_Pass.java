@@ -35,6 +35,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +45,9 @@ import android.view.View.OnLongClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView.OnEditorActionListener;
 
 // TODO Add preference to remove domain requirement. Reflect in UI prompts by changing text. Default: off
 // TODO Add password verification button. Perhaps a button that either toggles a verification edit box or pops up a dialog.
@@ -89,6 +92,14 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         
         genPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
         genPwView.setOnLongClickListener(this);
+        final EditText masterPwEdit = ((EditText)findViewById(R.id.password_edit));
+
+        masterPwEdit.setOnEditorActionListener(new OnEditorActionListener() {
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				go();
+				return false;
+			}
+		});
                 
 		dbHelper = new RememberedDBHelper(getApplicationContext());
 		db = dbHelper.getWritableDatabase();

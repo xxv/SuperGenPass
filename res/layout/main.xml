@@ -27,6 +27,8 @@
 		android:capitalize="none"
 		android:password="true"
 		android:imeOptions="actionDone"
+		android:imeActionLabel="@string/go"
+		android:imeActionId="@+id/go"
 		android:hint="@string/password_hint"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent" />
@@ -37,22 +39,16 @@
 		android:layout_height="fill_parent"
 		android:layout_width="wrap_content"/>
 	</LinearLayout>
-
-	<TextView
-		android:text="@string/password_output_label"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content" android:visibility="gone"/>
 		
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		>
-	<!-- 250sp below is based on 10 character password default. -->
 	<info.staticfree.SuperGenPass.GeneratedPasswordView android:id="@+id/password_output"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:minWidth="250sp"
+		android:minEms="10"
 		android:textSize="30sp" />
 		
 	</LinearLayout>
