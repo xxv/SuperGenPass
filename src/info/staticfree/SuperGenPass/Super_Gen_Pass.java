@@ -49,7 +49,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO Add preference to remove domain requirement. Reflect in UI prompts by changing text. Default: off
 // TODO Add password verification button. Perhaps a button that either toggles a verification edit box or pops up a dialog.
 // TODO Wipe master password when switching away from application.
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener {
@@ -66,8 +65,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	private String pwSalt;
 	private boolean copyToClipboard;
 	private boolean rememberDomains;
+	private boolean noDomainCheck;
 	
 	private GeneratedPasswordView genPwView;
+	private EditText domainEdit;
 	
 	private RememberedDBHelper dbHelper;
 	private SQLiteDatabase db;
@@ -90,6 +91,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		
         setContentView(R.layout.main);
         
+        
+        domainEdit = (EditText)findViewById(R.id.domain_edit);
+        
         genPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
         genPwView.setOnLongClickListener(this);
         final EditText masterPwEdit = ((EditText)findViewById(R.id.password_edit));
@@ -101,10 +105,12 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			}
 		});
                 
+        updatePreferences();
+        
 		dbHelper = new RememberedDBHelper(getApplicationContext());
 		db = dbHelper.getWritableDatabase();
         
-        updatePreferences();
+
         
         try {
 			md5 = MessageDigest.getInstance("MD5");
@@ -125,13 +131,13 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		// check for the "share page" intent. If present, pre-fill.
 
 		if (data == null){
-			final EditText t = (EditText)findViewById(R.id.domain_edit);
+			
 			final String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
 			if (maybeUrl != null){
 				try{
 					// populate the URL and give the password entry focus
 					final Uri uri = Uri.parse(maybeUrl);
-					t.setText(getDomain(uri.getHost()));
+					domainEdit.setText(getDomain(uri.getHost()));
 					((EditText)findViewById(R.id.password_edit)).requestFocus();
 					
 				}catch(final Exception e){
@@ -307,8 +313,13 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
      * @throws PasswordGenerationException 
      */
     public String getDomain(String hostname) throws PasswordGenerationException{
-    	hostname = hostname.toLowerCase();
     	
+    	hostname = hostname.toLowerCase();
+
+    	if (noDomainCheck){
+    		return hostname;
+    	}
+    	    	
     	// IP addresses should be composed based on the full address.
     	if (hostname.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")){
     		return hostname;
@@ -416,12 +427,20 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	this.pwSalt = prefs.getString("pw_salt", "");
     	this.copyToClipboard = prefs.getBoolean("clipboard", true);
     	this.rememberDomains = prefs.getBoolean("domain_autocomplete", true);
+    	this.noDomainCheck = prefs.getBoolean("domain_nocheck", false);
+
     	
     	// While it doesn't really make sense to clear this every time this is saved,
     	// there isn't much of a better option beyond remembering more state.
     	if (! rememberDomains){
     		RememberedDBHelper.clearRememberedDomains(db);
     	}
+    	
+    	if (noDomainCheck){
+    		domainEdit.setHint(R.string.domain_hint_no_checking);
+        }else{
+        	domainEdit.setHint(R.string.domain_hint);
+        }
     }
 }
 

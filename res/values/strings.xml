@@ -39,6 +39,10 @@
     <string name="pref_pw_salt_summary">Add a salt to your master password for extra security.</string>
     <string name="pref_pw_salt_description">This password salt is added to the end of your master password upon generation. This is saved to your device and you will not be prompted for it again, so make sure you remember it somewhere else too. You can use any symbols/characters here.</string>
 	
+	<string name="pref_no_domain">Disable Domain Checking</string>
+	<string name="pref_no_domain_summary">Use any lowercase keywords instead of a domain name.</string>
+	<string name="domain_hint_no_checking">site\'s domain or keyword</string>
+	
 	<string name="about_title">About SuperGenPass</string>
 	<string name="about_text">
 SuperGenPass is a different kind of password manager: instead of randomly generating and storing passwords, it combines a Web site\'s domain and your master password to generate a unique password for each Web site you visit using a strong cryptographic hash.\n\n
