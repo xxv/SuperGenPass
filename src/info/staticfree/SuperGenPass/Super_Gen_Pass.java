@@ -42,13 +42,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.AutoCompleteTextView;
@@ -61,7 +64,6 @@ import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO Add password verification button. Perhaps a button that either toggles a verification edit box or pops up a dialog.
 // TODO Wipe generated password from clipboard after delay.
 // TODO Wipe master password after 5 minute timeout or screen lock.
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
@@ -69,7 +71,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	private final static String TAG = Super_Gen_Pass.class.getSimpleName();
 	MessageDigest md5;
 	private ArrayList<String> domains;
-	private static final int ABOUT_DIALOG = 0;
+	private static final int
+		DIALOG_ABOUT = 0,
+		DIALOG_CONFIRM_MASTER = 1;
 	private static final int REQUEST_CODE_PREFERENCES = 0;
 
 	private int pwLength;
@@ -436,6 +440,13 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	final MenuItem verify = menu.findItem(R.id.verify);
+    	verify.setEnabled(getMasterPassword().length() != 0);
+    	return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()){
     	case R.id.settings:
@@ -446,10 +457,16 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     		return true;
 
     	case R.id.about:
-    		showDialog(ABOUT_DIALOG);
+    		showDialog(DIALOG_ABOUT);
     		return true;
+
+    	case R.id.verify:
+    		showDialog(DIALOG_CONFIRM_MASTER);
+    		return true;
+
+    		default:
+    			return false;
     	}
-    	return false;
     }
 
     @Override
@@ -464,7 +481,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     @Override
     protected Dialog onCreateDialog(int id) {
     	switch (id){
-    	case ABOUT_DIALOG:
+    	case DIALOG_ABOUT:{
         	final Builder builder = new AlertDialog.Builder(this);
 
         	builder.setTitle(R.string.about_title);
@@ -474,14 +491,70 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         	final LayoutInflater factory = LayoutInflater.from(this);
         	builder.setView(factory.inflate(R.layout.about, null));
 
-        	builder.setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+        	builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
         		public void onClick(DialogInterface dialog, int which) {
         			setResult(RESULT_OK);
         		}
         	});
         	return builder.create();
     	}
-        return null;
+
+    	case DIALOG_CONFIRM_MASTER:{
+    		final Builder builder = new AlertDialog.Builder(this);
+    		builder.setTitle(R.string.dialog_verify_title);
+    		builder.setCancelable(true);
+        	final LayoutInflater factory = LayoutInflater.from(this);
+        	final EditText pwVerify = (EditText) factory.inflate(R.layout.master_pw_verify, null);
+
+        	builder.setNegativeButton(android.R.string.cancel, new Dialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+
+        	pwVerify.addTextChangedListener(new TextWatcher() {
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					if (((String)pwVerify.getTag()).equals(s.toString())){
+						dismissDialog(DIALOG_CONFIRM_MASTER);
+						Toast.makeText(getApplicationContext(), R.string.toast_verify_success, Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
+        	builder.setView(pwVerify);
+        	final Dialog d = builder.create();
+        	// This is added below to ensure that the soft input doesn't get hidden if it's showing,
+        	// which seems to be the default for dialogs.
+        	d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
+        	return d;
+    	}
+    	default:
+    		throw new IllegalArgumentException("Unknown dialog ID: "+id);
+    	}
+    }
+
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+    	switch (id) {
+		case DIALOG_CONFIRM_MASTER:
+			final EditText verify = (EditText)dialog.findViewById(R.id.verify);
+			verify.setTag(getMasterPassword());
+			verify.setText(null);
+			verify.requestFocus();
+			break;
+
+		default:
+			super.onPrepareDialog(id, dialog);
+		}
     }
 
     protected void  updatePreferences(){
