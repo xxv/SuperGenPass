@@ -42,6 +42,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -52,16 +53,19 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView.OnEditorActionListener;
 
 // TODO Add password verification button. Perhaps a button that either toggles a verification edit box or pops up a dialog.
-// TODO Hide generated password until exposed using a button.
 // TODO Wipe generated password from clipboard after delay.
 // TODO Wipe master password after 5 minute timeout or screen lock.
-public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener {
+public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
+			OnCheckedChangeListener, OnEditorActionListener {
 	private final static String TAG = Super_Gen_Pass.class.getSimpleName();
 	MessageDigest md5;
 	private ArrayList<String> domains;
@@ -106,12 +110,11 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         genPwView.setOnLongClickListener(this);
         final EditText masterPwEdit = ((EditText)findViewById(R.id.password_edit));
 
-        masterPwEdit.setOnEditorActionListener(new OnEditorActionListener() {
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				go();
-				return false;
-			}
-		});
+        masterPwEdit.setOnEditorActionListener(this);
+
+		// hook in our buttons
+		((Button)findViewById(R.id.go)).setOnClickListener(this);
+		((ToggleButton)findViewById(R.id.show_gen_password)).setOnCheckedChangeListener(this);
 
         updatePreferences();
 
@@ -129,8 +132,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 					Toast.LENGTH_LONG).show();
 		}
 
-		// set up go button
-		((Button)findViewById(R.id.go)).setOnClickListener(this);
 
 		// initialize the autocompletion
 		((AutoCompleteTextView)findViewById(R.id.domain_edit))
@@ -390,15 +391,41 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		case R.id.go:
 			go();
 			break;
-		case R.id.password_output:
-			break;
 		}
-
 	}
 
 	public boolean onLongClick(View v) {
 		switch (v.getId()){
 		}
+		return false;
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+		switch (buttonView.getId()){
+			case R.id.show_gen_password:{
+				if (isChecked){
+					genPwView.setInputType(InputType.TYPE_CLASS_TEXT
+							| InputType.TYPE_TEXT_VARIATION_NORMAL);
+				}else{
+					genPwView.setInputType(InputType.TYPE_CLASS_TEXT
+							| InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				}
+
+				// run on a thread as commit() can take a while.
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Super_Gen_Pass.this);
+						prefs.edit().putBoolean(Preferences.PREF_SHOW_GEN_PW, isChecked).commit();
+					}
+				}).start();
+			}
+		}
+	}
+
+	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		go();
 		return false;
 	}
 
@@ -480,6 +507,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         }else{
         	domainEdit.setHint(R.string.domain_hint);
         }
+
+    	((ToggleButton)findViewById(R.id.show_gen_password)).setChecked(prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false));
     }
 }
 

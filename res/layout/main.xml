@@ -48,9 +48,18 @@
 	<info.staticfree.SuperGenPass.GeneratedPasswordView android:id="@+id/password_output"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
+		android:inputType="textPassword"
 		android:minEms="10"
-		android:textSize="30sp" />
-		
+		android:textSize="30sp"
+		android:layout_weight="1"
+		 />
+		<ToggleButton android:id="@+id/show_gen_password"
+		android:textOn="@string/genpw_shown"
+		android:textOff="@string/genpw_hidden"
+		android:layout_gravity="center_vertical"
+		android:layout_height="fill_parent"
+		android:layout_width="wrap_content"
+		/>
 	</LinearLayout>
 
 
