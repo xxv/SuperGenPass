@@ -15,6 +15,13 @@
 			android:defaultValue="false"
 			android:key="domain_nocheck" />
 			
+		<EditTextPreference android:key="pw_clear_timeout"
+			android:defaultValue="2"
+			android:numeric="integer"
+			android:title="@string/pref_pw_clear_timeout"
+			android:summary="@string/pref_pw_clear_timeout_summary"
+			android:dialogMessage="@string/pref_pw_clear_timeout_description" />
+			
 </PreferenceCategory>
 	<PreferenceCategory android:title="@string/advanced_preferences">
 		<ListPreference android:title="@string/pwgen_type_prompt"

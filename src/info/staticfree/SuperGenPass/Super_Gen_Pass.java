@@ -41,6 +41,7 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
@@ -65,7 +66,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView.OnEditorActionListener;
 
 // TODO Wipe generated password from clipboard after delay.
-// TODO Wipe master password after 5 minute timeout or screen lock.
+// TODO Wipe passwords on screen lock event.
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
 			OnCheckedChangeListener, OnEditorActionListener {
 	private final static String TAG = Super_Gen_Pass.class.getSimpleName();
@@ -75,6 +76,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		DIALOG_ABOUT = 0,
 		DIALOG_CONFIRM_MASTER = 1;
 	private static final int REQUEST_CODE_PREFERENCES = 0;
+	private static final String
+		STATE_LAST_STOPPED_TIME = "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
 
 	private int pwLength;
 	private String pwType;
@@ -88,6 +91,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	private RememberedDBHelper dbHelper;
 	private SQLiteDatabase db;
+
+	private long lastStoppedTime;
+	private int pwClearTimeout;
 
     /** Called when the activity is first created. */
     @Override
@@ -107,6 +113,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
         setContentView(R.layout.main);
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_LAST_STOPPED_TIME)){
+        	lastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME);
+        }
 
         domainEdit = (EditText)findViewById(R.id.domain_edit);
 
@@ -167,6 +176,30 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     protected void onDestroy() {
     	db.close();
     	super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+
+    	super.onPause();
+    	lastStoppedTime = SystemClock.elapsedRealtime();
+    }
+
+    @Override
+    protected void onResume() {
+    	super.onResume();
+    	// when the user has left the app for more than pwClearTimeout minutes,
+    	// wipe master password and generated password.
+    	if (SystemClock.elapsedRealtime() - lastStoppedTime > pwClearTimeout * 60 * 1000){
+    		((EditText)findViewById(R.id.password_edit)).getText().clear();
+    		genPwView.setText("");
+    	}
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	super.onSaveInstanceState(outState);
+    	outState.putLong(STATE_LAST_STOPPED_TIME, lastStoppedTime);
     }
 
     /**
@@ -567,7 +600,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	this.copyToClipboard = prefs.getBoolean("clipboard", true);
     	this.rememberDomains = prefs.getBoolean("domain_autocomplete", true);
     	this.noDomainCheck = prefs.getBoolean("domain_nocheck", false);
-
+    	this.pwClearTimeout = Integer.parseInt(prefs.getString(Preferences.PREF_PW_CLEAR_TIMEOUT, "2"));
 
     	// While it doesn't really make sense to clear this every time this is saved,
     	// there isn't much of a better option beyond remembering more state.

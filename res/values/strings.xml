@@ -31,6 +31,10 @@
 	<string name="pref_copy_password">Copy gen\'d password</string>
 	<string name="pref_copy_password_summary">When the Go button is pressed, copy the generated password.</string>
 	
+	<string name="pref_pw_clear_timeout">Clear password timeout</string>
+	<string name="pref_pw_clear_timeout_summary">Clear generated and master passwords after this many minutes of inactivity. Does not clear the clipboard.</string>
+	<string name="pref_pw_clear_timeout_description">Timeout in minutes. Enter 0 to clear immediately.</string>
+	
 	<string name="pref_pw_length">Generated password length</string>
 	<string name="pref_pw_length_description">This should be value between 4 and 24. A value of 10 for SGP and 8 for PWC is highly recommended for compatibility with the other implementations.</string>
 	
