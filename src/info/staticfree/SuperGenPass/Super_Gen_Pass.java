@@ -19,17 +19,12 @@ package info.staticfree.SuperGenPass;
 
  */
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.MessageDigest;
+import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
+import info.staticfree.SuperGenPass.hashes.PasswordComposer;
+import info.staticfree.SuperGenPass.hashes.SuperGenPass;
+
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-
-import junit.framework.Assert;
-
-import org.apache.commons.codec.binary.Base64;
-import org.json.JSONArray;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -70,8 +65,9 @@ import android.widget.TextView.OnEditorActionListener;
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
 			OnCheckedChangeListener, OnEditorActionListener {
 	private final static String TAG = Super_Gen_Pass.class.getSimpleName();
-	MessageDigest md5;
-	private ArrayList<String> domains;
+
+	DomainBasedHash hasher;
+
 	private static final int
 		DIALOG_ABOUT = 0,
 		DIALOG_CONFIRM_MASTER = 1;
@@ -134,19 +130,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
         updatePreferences();
 
-		loadDomains();
-
-        try {
-			md5 = MessageDigest.getInstance("MD5");
-		} catch (final NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			Toast.makeText(getApplicationContext(),
-					String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()),
-					Toast.LENGTH_LONG).show();
-			finish();
-		}
-
-
 		// initialize the autocompletion
 		((AutoCompleteTextView)findViewById(R.id.domain_edit))
 			.setAdapter(dbHelper.getDomainPrefixAdapter(this, db));
@@ -160,7 +143,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 				try{
 					// populate the URL and give the password entry focus
 					final Uri uri = Uri.parse(maybeUrl);
-					domainEdit.setText(getDomain(uri.getHost()));
+					domainEdit.setText(hasher.getDomain(uri.getHost()));
 					((EditText)findViewById(R.id.password_edit)).requestFocus();
 
 				}catch(final Exception e){
@@ -204,49 +187,13 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     }
 
     /**
-     * This list should remain the same and in sync with the canonical SGP,
-	 * so that passwords generated in one place are the same as others.
-     */
-    private void loadDomains(){
-    	final InputStream is = getResources().openRawResource(R.raw.domains);
-
-    	final StringBuilder jsonString = new StringBuilder();
-    	try{
-
-    		for (final BufferedReader isReader = new BufferedReader(new InputStreamReader(is), 16000);
-    		isReader.ready();){
-    			jsonString.append(isReader.readLine());
-    		}
-
-    		final JSONArray domainJson = new JSONArray(jsonString.toString());
-    		domains = new ArrayList<String>(domainJson.length());
-    		for (int i = 0; i < domainJson.length(); i++){
-    			domains.add(domainJson.getString(i));
-    		}
-    	}catch (final Exception e){
-    		Toast.makeText(this, getString(R.string.err_json_load, e.getLocalizedMessage()),
-    				Toast.LENGTH_LONG).show();
-    		Log.d(TAG, getString(R.string.err_json_load), e);
-    		finish();
-    	}
-
-    	Assert.assertTrue("Domains did not seem to load", domains.size() > 100);
-    }
-
-
-    /**
      * Go!
      */
     void go(){
     	String genPw = "";
     	final String domain = getDomain();
     	try {
-        	if (pwType.equals("sgp")){
-        		genPw = superGenPassGen(getMasterPassword() + pwSalt, domain, pwLength);
-
-        	}else if (pwType.equals("pwc")){
-        		genPw = passwordComposerGen(getMasterPassword() + pwSalt, domain, pwLength);
-        	}
+    		genPw = hasher.generate(getMasterPassword() + pwSalt, domain, pwLength);
 
     	} catch (final IllegalDomainException e){
     		genPwView.setText("");
@@ -286,147 +233,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     String getMasterPassword(){
     	final EditText txt = (EditText)findViewById(R.id.password_edit);
     	return txt.getText().toString();
-    }
-
-    /**
-     * Generates a domain password based on the PasswordComposer algorithm.
-     *
-     * @param masterPass master password
-     * @param domain pre-filtered domain (eg. example.org)
-     * @return generated password
-     * @throws PasswordGenerationException
-     * @see http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/
-     */
-    public String passwordComposerGen(String masterPass, String domain, int length) throws PasswordGenerationException{
-    	if (domain.equals("")){
-    		throw new IllegalDomainException("Missing domain");
-    	}
-    	return md5hex(new String(masterPass + ":" + getDomain(domain)).getBytes()).substring(0, length);
-    }
-
-    /**
-     * Generates a domain password based on the SuperGenPass algorithm.
-     *
-     * @param masterPass
-     * @param domain pre-filtered domain (eg. example.org)
-     * @param length generated password length; an integer between 4 and 24, inclusive.
-     * @return generated password
-     * @throws PasswordGenerationException
-     * @see http://supergenpass.com/
-     */
-    public String superGenPassGen(String masterPass, String domain, int length) throws PasswordGenerationException{
-    	if (length < 4 || length > 24){
-    		throw new PasswordGenerationException("Requested length out of range. Expecting value between 4 and 24 inclusive.");
-    	}
-    	if (domain.equals("")){
-    		throw new IllegalDomainException("Missing domain");
-    	}
-
-    	 String pwSeed = masterPass + ":" + getDomain(domain);
-
-    	// wash ten times
-    	for (int i = 0; i < 10; i++){
-    		pwSeed = md5base64(pwSeed.getBytes());
-    	}
-
-    	/*   from http://supergenpass.com/about/#PasswordComplexity :
-    	        *  Consist of alphanumerics (A-Z, a-z, 0-9)
-			    * Always start with a lowercase letter of the alphabet
-			    * Always contain at least one uppercase letter of the alphabet
-			    * Always contain at least one numeral
-			    * Can be any length from 4 to 24 characters (default: 10)
-    	 */
-
-    	// regex looks for:
-    	// "lcletter stuff Uppercase stuff Number stuff" or
-    	// "lcletter stuff Number stuff Uppercase stuff"
-    	// which should satisfy the above requirements.
-    	while (! pwSeed.substring(0,length).
-    			matches("^[a-z][a-zA-Z0-9]*(?:(?:[A-Z][a-zA-Z0-9]*[0-9])|(?:[0-9][a-zA-Z0-9]*[A-Z]))[a-zA-Z0-9]*$")){
-    		pwSeed = md5base64(pwSeed.getBytes());
-    	}
-
-    	// when the right pwSeed is found to have a
-    	// password-appropriate substring, return it
-    	return pwSeed.substring(0, length);
-    }
-
-
-    /**
-     * Returns the standard hex-encoded string md5sum of the data.
-     *
-     * @param data
-     * @return hex-encoded string of the md5sum of the data
-     */
-    public String md5hex(byte[] data){
-    	final byte[] md5data = md5.digest(data);
-    	String md5hex = new String();
-    	for( int i = 0; i < md5data.length; i++){
-    		md5hex += String.format("%02x", md5data[i]);
-    	}
-    	return md5hex;
-    }
-
-    /**
-     * Returns a base64-encoded string of the md5sum of the data.
-     * Caution: SuperGenPass-specific!
-     * Includes substitutions to ensure that valid base64 characters
-     * '=', '/', and '+' get mapped to
-     * 'A', '8', and '9' respectively, so as to ensure alpha/num passwords.
-     *
-     * @param data
-     * @return  base64-encoded string of the md5sum of the data
-     */
-    public String md5base64(byte[] data){
-
-    	String b64 = new String(Base64.encodeBase64(md5.digest(data)));
-    	// SuperGenPass-specific quirk so that these don't end up in the password.
-    	b64 = b64.replace('=', 'A').replace('/', '8').replace('+', '9');
-    	b64.trim();
-
-    	return b64;
-    }
-
-    /**
-     * Computes the site's domain, based on the provided hostname. This takes into account
-     * things like "co.uk" and other such multi-level TLDs.
-     *
-     * @param hostname the full hostname
-     * @return the domain of the URI
-     * @throws PasswordGenerationException
-     */
-    public String getDomain(String hostname) throws PasswordGenerationException{
-
-    	hostname = hostname.toLowerCase();
-
-    	if (noDomainCheck){
-    		return hostname;
-    	}
-
-    	// IP addresses should be composed based on the full address.
-    	if (hostname.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")){
-    		return hostname;
-    	}
-
-    	// for single-level TLDs, we only want the TLD and the 2nd level domain
-    	final String[] hostParts = hostname.split("\\.");
-    	if (hostParts.length < 2){
-    		throw new IllegalDomainException("Invalid domain: '"+hostname+"'");
-    	}
-    	String domain = hostParts[hostParts.length-2] + '.' + hostParts[hostParts.length-1];
-
-    	// do a slow search of all the possible multi-level TLDs and
-    	// see if we need to pull in one level deeper.
-    	for (final String tld: domains){
-    		if (domain.equals(tld)){
-    			if (hostParts.length < 3){
-    				throw new IllegalDomainException("Invalid domain. '"+domain+"' seems to be a TLD.");
-    			}
-    			domain = hostParts[hostParts.length - 3] + '.' + domain;
-    			break;
-    		}
-    	}
-    	return domain;
     }
 
 	public void onClick(View v) {
@@ -603,7 +409,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
     	// when adding items here, make sure default values are in sync with the xml file
-    	this.pwType = prefs.getString("pw_type", "sgp");
+    	this.pwType = prefs.getString("pw_type", SuperGenPass.TYPE);
     	this.pwLength = Integer.parseInt(prefs.getString("pw_length", "10"));
     	this.pwSalt = prefs.getString("pw_salt", "");
     	this.copyToClipboard = prefs.getBoolean("clipboard", true);
@@ -616,6 +422,31 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	if (! rememberDomains){
     		RememberedDBHelper.clearRememberedDomains(db);
     	}
+
+        try {
+        	if (pwType.equals(SuperGenPass.TYPE)){
+        		hasher = new SuperGenPass(this);
+        	}else if (pwType.equals(PasswordComposer.TYPE)){
+        		hasher = new PasswordComposer(this);
+        	}else{
+        		hasher = new SuperGenPass(this);
+        		Log.e(TAG, "password type was set to unknown algorithm: "+pwType);
+        	}
+
+		} catch (final NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			Toast.makeText(getApplicationContext(),
+					String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()),
+					Toast.LENGTH_LONG).show();
+			finish();
+		} catch (final IOException e){
+    		Toast.makeText(this, getString(R.string.err_json_load, e.getLocalizedMessage()),
+    				Toast.LENGTH_LONG).show();
+    		Log.d(TAG, getString(R.string.err_json_load), e);
+    		finish();
+		}
+
+		hasher.setCheckDomain(! noDomainCheck);
 
     	if (noDomainCheck){
     		domainEdit.setHint(R.string.domain_hint_no_checking);
