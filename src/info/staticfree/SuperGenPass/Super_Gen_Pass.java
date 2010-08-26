@@ -129,10 +129,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		((Button)findViewById(R.id.go)).setOnClickListener(this);
 		((ToggleButton)findViewById(R.id.show_gen_password)).setOnCheckedChangeListener(this);
 
-        updatePreferences();
-
 		dbHelper = new RememberedDBHelper(getApplicationContext());
 		db = dbHelper.getWritableDatabase();
+
+        updatePreferences();
 
 		loadDomains();
 
@@ -143,6 +143,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			Toast.makeText(getApplicationContext(),
 					String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()),
 					Toast.LENGTH_LONG).show();
+			finish();
 		}
 
 
@@ -247,9 +248,15 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         		genPw = passwordComposerGen(getMasterPassword() + pwSalt, domain, pwLength);
         	}
 
+    	} catch (final IllegalDomainException e){
+    		genPwView.setText("");
+    		domainEdit.setError(e.getLocalizedMessage());
+    		domainEdit.requestFocus();
+    		return;
 		} catch (final PasswordGenerationException e) {
-			genPw = "";
+			genPwView.setText("");
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			return;
 		}
 
 		genPwView.setDomainName(domain);
@@ -273,14 +280,13 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
      */
     String getDomain(){
     	final AutoCompleteTextView txt = (AutoCompleteTextView)findViewById(R.id.domain_edit);
-    	return txt.getText().toString();
+    	return txt.getText().toString().trim();
     }
 
     String getMasterPassword(){
     	final EditText txt = (EditText)findViewById(R.id.password_edit);
     	return txt.getText().toString();
     }
-
 
     /**
      * Generates a domain password based on the PasswordComposer algorithm.
@@ -293,7 +299,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
      */
     public String passwordComposerGen(String masterPass, String domain, int length) throws PasswordGenerationException{
     	if (domain.equals("")){
-    		throw new PasswordGenerationException("Missing domain");
+    		throw new IllegalDomainException("Missing domain");
     	}
     	return md5hex(new String(masterPass + ":" + getDomain(domain)).getBytes()).substring(0, length);
     }
@@ -313,7 +319,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     		throw new PasswordGenerationException("Requested length out of range. Expecting value between 4 and 24 inclusive.");
     	}
     	if (domain.equals("")){
-    		throw new PasswordGenerationException("Missing domain");
+    		throw new IllegalDomainException("Missing domain");
     	}
 
     	 String pwSeed = masterPass + ":" + getDomain(domain);
@@ -405,7 +411,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	// for single-level TLDs, we only want the TLD and the 2nd level domain
     	final String[] hostParts = hostname.split("\\.");
     	if (hostParts.length < 2){
-    		throw new PasswordGenerationException("Invalid domain: '"+hostname+"'");
+    		throw new IllegalDomainException("Invalid domain: '"+hostname+"'");
     	}
     	String domain = hostParts[hostParts.length-2] + '.' + hostParts[hostParts.length-1];
 
@@ -414,7 +420,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	for (final String tld: domains){
     		if (domain.equals(tld)){
     			if (hostParts.length < 3){
-    				throw new PasswordGenerationException("Invalid domain. '"+domain+"' seems to be a TLD.");
+    				throw new IllegalDomainException("Invalid domain. '"+domain+"' seems to be a TLD.");
     			}
     			domain = hostParts[hostParts.length - 3] + '.' + domain;
     			break;
@@ -557,12 +563,15 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 				@Override
 				public void afterTextChanged(Editable s) {
-					if (((String)pwVerify.getTag()).equals(s.toString())){
-						dismissDialog(DIALOG_CONFIRM_MASTER);
-						Toast.makeText(getApplicationContext(), R.string.toast_verify_success, Toast.LENGTH_SHORT).show();
+					if (pwVerify.getTag() instanceof String){
+						final String masterPw =(String)pwVerify.getTag();
+						if (masterPw.length() > 0 && masterPw.equals(s.toString())){
+							dismissDialog(DIALOG_CONFIRM_MASTER);
+							Toast.makeText(getApplicationContext(), R.string.toast_verify_success, Toast.LENGTH_SHORT).show();
+						}
 					}
 				}
-			});
+        	});
         	builder.setView(pwVerify);
         	final Dialog d = builder.create();
         	// This is added below to ensure that the soft input doesn't get hidden if it's showing,
