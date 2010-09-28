@@ -60,6 +60,7 @@ import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView.OnEditorActionListener;
 
+// TODO Add visual master password hash.
 // TODO Wipe generated password from clipboard after delay.
 // TODO Wipe passwords on screen lock event.
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
@@ -405,17 +406,17 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		}
     }
 
-    protected void  updatePreferences(){
+    protected void updatePreferences(){
     	final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
     	// when adding items here, make sure default values are in sync with the xml file
-    	this.pwType = prefs.getString("pw_type", SuperGenPass.TYPE);
-    	this.pwLength = Integer.parseInt(prefs.getString("pw_length", "10"));
-    	this.pwSalt = prefs.getString("pw_salt", "");
-    	this.copyToClipboard = prefs.getBoolean("clipboard", true);
-    	this.rememberDomains = prefs.getBoolean("domain_autocomplete", true);
-    	this.noDomainCheck = prefs.getBoolean("domain_nocheck", false);
-    	this.pwClearTimeout = Integer.parseInt(prefs.getString(Preferences.PREF_PW_CLEAR_TIMEOUT, "2"));
+    	this.pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE);
+		this.pwLength = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10);
+    	this.pwSalt = prefs.getString(Preferences.PREF_PW_SALT, "");
+    	this.copyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
+    	this.rememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true);
+    	this.noDomainCheck = prefs.getBoolean(Preferences.PREF_DOMAIN_NOCHECK, false);
+    	this.pwClearTimeout = Preferences.getStringAsInteger(prefs,Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
 
     	// While it doesn't really make sense to clear this every time this is saved,
     	// there isn't much of a better option beyond remembering more state.

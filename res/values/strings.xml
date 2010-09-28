@@ -49,6 +49,8 @@
 	<string name="pref_no_domain_summary">Use any lowercase keywords instead of a domain name.</string>
 	<string name="domain_hint_no_checking">site\'s domain or keyword</string>
 	
+	<string name="pref_err_not_number">Not updating preference: new value isn\'t a number.</string>
+	
 	<string name="dialog_verify_title">Verify master password</string>
 	<string name="dialog_verify_hint">retype master password</string>
 	<string name="toast_verify_success">Master password matches!</string>
