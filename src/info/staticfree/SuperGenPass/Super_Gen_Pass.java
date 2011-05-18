@@ -28,12 +28,12 @@ import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -47,24 +47,26 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.FilterQueryProvider;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView.OnEditorActionListener;
 
 // TODO Add visual master password hash.
 // TODO Wipe generated password from clipboard after delay.
 // TODO Wipe passwords on screen lock event.
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
-			OnCheckedChangeListener, OnEditorActionListener {
+			OnCheckedChangeListener, OnEditorActionListener, FilterQueryProvider {
 	private final static String TAG = Super_Gen_Pass.class.getSimpleName();
 
 	DomainBasedHash hasher;
@@ -85,9 +87,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	private GeneratedPasswordView genPwView;
 	private EditText domainEdit;
-
-	private RememberedDBHelper dbHelper;
-	private SQLiteDatabase db;
 
 	private long lastStoppedTime;
 	private int pwClearTimeout;
@@ -126,14 +125,20 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		((Button)findViewById(R.id.go)).setOnClickListener(this);
 		((ToggleButton)findViewById(R.id.show_gen_password)).setOnCheckedChangeListener(this);
 
-		dbHelper = new RememberedDBHelper(getApplicationContext());
-		db = dbHelper.getWritableDatabase();
-
         updatePreferences();
 
+		final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+				android.R.layout.simple_dropdown_item_1line,
+				null,
+				new String[] {"domain"},
+				new int[] {android.R.id.text1} );
+
+		adapter.setFilterQueryProvider(this);
+		adapter.setStringConversionColumn(DOMAIN_COLUMN);
+
 		// initialize the autocompletion
-		((AutoCompleteTextView)findViewById(R.id.domain_edit))
-			.setAdapter(dbHelper.getDomainPrefixAdapter(this, db));
+		final AutoCompleteTextView domainEdit = (AutoCompleteTextView) findViewById(R.id.domain_edit);
+		domainEdit.setAdapter(adapter);
 
 		// check for the "share page" intent. If present, pre-fill.
 
@@ -155,12 +160,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 				}
 			}
 		}
-    }
-
-    @Override
-    protected void onDestroy() {
-    	db.close();
-    	super.onDestroy();
     }
 
     @Override
@@ -211,7 +210,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		genPwView.setText(genPw);
 
 		if (rememberDomains){
-			RememberedDBHelper.addRememberedDomain(db, domain);
+			RememberedDomainProvider.addRememberedDomain(getContentResolver(), domain);
 		}
 
 		if (copyToClipboard){
@@ -421,7 +420,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	// While it doesn't really make sense to clear this every time this is saved,
     	// there isn't much of a better option beyond remembering more state.
     	if (! rememberDomains){
-    		RememberedDBHelper.clearRememberedDomains(db);
+    		getContentResolver().delete(Domain.CONTENT_URI, null, null);
     	}
 
         try {
@@ -457,5 +456,23 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
     	((ToggleButton)findViewById(R.id.show_gen_password)).setChecked(prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false));
     }
+
+    private static final String[] PROJECTION = {Domain.DOMAIN, Domain._ID};
+    private static final int DOMAIN_COLUMN = 0;
+    //a filter that searches for domains starting with the given constraint
+	@Override
+	public Cursor runQuery(CharSequence constraint) {
+		Cursor c;
+		if (constraint == null || constraint.length() == 0){
+			c = managedQuery(Domain.CONTENT_URI, PROJECTION, null, null, Domain.SORT_ORDER);
+		}else{
+			c = managedQuery(Domain.CONTENT_URI,
+					PROJECTION,
+					Domain.DOMAIN + " GLOB ?",
+					new String[] {constraint.toString()+"*"}, Domain.SORT_ORDER);
+		}
+
+		return c;
+	}
 }
 
