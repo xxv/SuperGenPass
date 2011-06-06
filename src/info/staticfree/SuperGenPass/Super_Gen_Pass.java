@@ -56,6 +56,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -121,6 +122,29 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
         masterPwEdit.setOnEditorActionListener(this);
 
+
+        final ImageView vhView = (ImageView)findViewById(R.id.visualhash);
+        final VisualHash vh = new VisualHash();
+        vh.updateData(new byte[]{(byte) System.currentTimeMillis()});
+        vhView.setImageDrawable(vh);
+
+        masterPwEdit.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				vh.setData(s.toString().getBytes());
+
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {}
+		});
+
+
 		// hook in our buttons
 		((Button)findViewById(R.id.go)).setOnClickListener(this);
 		((ToggleButton)findViewById(R.id.show_gen_password)).setOnCheckedChangeListener(this);
@@ -142,6 +166,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 		// check for the "share page" intent. If present, pre-fill.
 
+
 		if (data == null){
 
 			final String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
@@ -150,7 +175,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 					// populate the URL and give the password entry focus
 					final Uri uri = Uri.parse(maybeUrl);
 					domainEdit.setText(hasher.getDomain(uri.getHost()));
-					((EditText)findViewById(R.id.password_edit)).requestFocus();
+					masterPwEdit.requestFocus();
 
 				}catch(final Exception e){
 					// nothing much to be done here.

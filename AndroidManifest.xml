@@ -11,11 +11,11 @@
  		android:name="info.staticfree.android.sgp.permission.ACCESS_DOMAINS" />
  
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
+	android:debuggable="false"
 		android:description="@string/app_description">
 
 		<activity android:name="Super_Gen_Pass"
 				  android:theme="@android:style/Theme.Translucent"
-				  android:screenOrientation="user"
 				  android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
