@@ -3,8 +3,8 @@ package info.staticfree.SuperGenPass;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
 public class Preferences extends PreferenceActivity {
@@ -16,7 +16,8 @@ public class Preferences extends PreferenceActivity {
 		PREF_REMEMBER_DOMAINS = "domain_autocomplete",
 		PREF_DOMAIN_NOCHECK   = "domain_nocheck",
 		PREF_SHOW_GEN_PW      = "show_gen_pw",
-		PREF_PW_CLEAR_TIMEOUT = "pw_clear_timeout";
+		PREF_PW_CLEAR_TIMEOUT = "pw_clear_timeout",
+		PREF_VISUAL_HASH      = "visual_hash";
 
 	// idea borrowed from
 	// http://stackoverflow.com/questions/3206765/number-preferences-in-preference-activity-in-android

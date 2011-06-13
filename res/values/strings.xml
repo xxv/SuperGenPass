@@ -35,6 +35,9 @@
 	<string name="pref_pw_clear_timeout_summary">Clear generated and master passwords after this many minutes of inactivity. Does not clear the clipboard.</string>
 	<string name="pref_pw_clear_timeout_description">Timeout in minutes. Enter 0 to clear immediately.</string>
 	
+	<string name="pref_visual_hash_summary">Shows a graphical SHA1 hash of the master password to aid entry.</string>
+	<string name="pref_visual_hash">Show visual hash</string>
+	
 	<string name="pref_pw_length">Generated password length</string>
 	<string name="pref_pw_length_description">This should be value between 4 and 24. A value of 10 for SGP and 8 for PWC is highly recommended for compatibility with the other implementations.</string>
 	
@@ -71,4 +74,5 @@ This project is Free Software/Open Source and is licensed under the GNU GPL Vers
 
 Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\". 
 </string>
+
 </resources>

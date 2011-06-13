@@ -22,6 +22,11 @@
 			android:summary="@string/pref_pw_clear_timeout_summary"
 			android:dialogMessage="@string/pref_pw_clear_timeout_description" />
 			
+			<CheckBoxPreference android:title="@string/pref_visual_hash"
+				android:summary="@string/pref_visual_hash_summary"
+				android:defaultValue="true"
+				android:key="visual_hash" />
+			
 </PreferenceCategory>
 	<PreferenceCategory android:title="@string/advanced_preferences">
 		<ListPreference android:title="@string/pwgen_type_prompt"

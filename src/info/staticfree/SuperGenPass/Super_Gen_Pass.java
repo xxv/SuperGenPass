@@ -2,7 +2,7 @@ package info.staticfree.SuperGenPass;
 
 /*
  	Android SuperGenPass
-    Copyright (C) 2009-2010  Steve Pomeroy <steve@staticfree.info>
+    Copyright (C) 2009-2011  Steve Pomeroy <steve@staticfree.info>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,14 +56,12 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
-import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-// TODO Add visual master password hash.
 // TODO Wipe generated password from clipboard after delay.
 // TODO Wipe passwords on screen lock event.
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
@@ -88,6 +86,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	private GeneratedPasswordView genPwView;
 	private EditText domainEdit;
+	private EditText mMasterPwEdit;
 
 	private long lastStoppedTime;
 	private int pwClearTimeout;
@@ -118,31 +117,12 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
         genPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
         genPwView.setOnLongClickListener(this);
-        final EditText masterPwEdit = ((EditText)findViewById(R.id.password_edit));
 
-        masterPwEdit.setOnEditorActionListener(this);
+        mMasterPwEdit = ((EditText)findViewById(R.id.password_edit));
+
+        mMasterPwEdit.setOnEditorActionListener(this);
 
 
-        final ImageView vhView = (ImageView)findViewById(R.id.visualhash);
-        final VisualHash vh = new VisualHash();
-        vh.updateData(new byte[]{(byte) System.currentTimeMillis()});
-        vhView.setImageDrawable(vh);
-
-        masterPwEdit.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				vh.setData(s.toString().getBytes());
-
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {}
-
-			@Override
-			public void afterTextChanged(Editable s) {}
-		});
 
 
 		// hook in our buttons
@@ -175,7 +155,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 					// populate the URL and give the password entry focus
 					final Uri uri = Uri.parse(maybeUrl);
 					domainEdit.setText(hasher.getDomain(uri.getHost()));
-					masterPwEdit.requestFocus();
+					mMasterPwEdit.requestFocus();
 
 				}catch(final Exception e){
 					// nothing much to be done here.
@@ -479,6 +459,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         	domainEdit.setHint(R.string.domain_hint);
         }
 
+    	showVisualHash(prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true));
+
     	((ToggleButton)findViewById(R.id.show_gen_password)).setChecked(prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false));
     }
 
@@ -499,5 +481,46 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 		return c;
 	}
-}
 
+	private VisualHashWatcher mVisualHashWatcher;
+
+	private void showVisualHash(boolean showVisualHash){
+		if (mVisualHashWatcher == null && showVisualHash){
+	        final VisualHash vh = new VisualHash();
+
+	        final float scale = getResources().getDisplayMetrics().scaledDensity;
+
+	        // this number is based on what looks good with standard edit boxes.
+	        vh.setBounds(0, 0, (int)(45 * scale), (int)(45 * scale));
+	        mMasterPwEdit.setCompoundDrawables(null, null, vh, null);
+
+	        mVisualHashWatcher = new VisualHashWatcher(vh);
+	        mMasterPwEdit.addTextChangedListener(mVisualHashWatcher);
+
+		}else if (mVisualHashWatcher != null && ! showVisualHash){
+			mMasterPwEdit.setCompoundDrawables(null, null, null, null);
+			mMasterPwEdit.removeTextChangedListener(mVisualHashWatcher);
+			mVisualHashWatcher = null;
+		}
+	}
+
+	private class VisualHashWatcher implements TextWatcher {
+
+		private final VisualHash mVisualHash;
+		public VisualHashWatcher(VisualHash visualHash) {
+			mVisualHash = visualHash;
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			mVisualHash.setData(s.toString().getBytes());
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {}
+
+		@Override
+		public void afterTextChanged(Editable s) {}
+	};
+}
