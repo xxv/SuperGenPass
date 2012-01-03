@@ -48,7 +48,7 @@ import android.graphics.drawable.Drawable;
 public class VisualHash extends Drawable {
 
 	private MessageDigest mHasher;
-	byte[] mHash;
+	private byte[] mHash;
 
 	private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
 

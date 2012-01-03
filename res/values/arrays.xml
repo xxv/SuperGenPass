@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <string-array name="pwgen_types_label">
-    <!-- The order of these is significant. -->
-        <item>SuperGenPass</item>
-        <item>Password Composer</item>
+
+        <!-- The order of these is significant. -->
+        <item>@string/sgp_type</item>
+        <item>@string/pwc_type</item>
     </string-array>
     <string-array name="pwgen_types">
-    <!-- The order of these is significant. -->
+
+        <!-- The order of these is significant. -->
         <item>sgp</item>
         <item>pwc</item>
     </string-array>
+
 </resources>

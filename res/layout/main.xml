@@ -1,64 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:padding="5dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="5dip" >
 
-	<LinearLayout android:layout_height="wrap_content" android:layout_width="fill_parent">
-	<LinearLayout 
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_weight="1">
-		
-	<AutoCompleteTextView
-		android:singleLine="true"
-		android:id="@+id/domain_edit"
-		android:autoText="false"
-		android:inputType="textUri"
-		android:capitalize="none"
-		android:imeOptions="actionNext"
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:hint="@string/domain_hint" />
-		
-	<EditText android:singleLine="true"
-		android:id="@+id/password_edit"
-		android:autoText="false"
-		android:capitalize="none"
-		android:password="true"
-		android:imeOptions="actionDone"
-		android:imeActionLabel="@string/go"
-		android:imeActionId="@+id/go"
-		android:hint="@string/password_hint"
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent" />
-		</LinearLayout>
-	<Button
-		android:id="@+id/go"
-		android:text="@string/go"
-		android:layout_height="fill_parent"
-		android:layout_width="wrap_content"/>
-	</LinearLayout>
-		
-	<LinearLayout
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		>
-	<info.staticfree.SuperGenPass.GeneratedPasswordView android:id="@+id/password_output"
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:inputType="textPassword"
-		android:minEms="10"
-		android:textSize="30sp"
-		android:layout_weight="1"
-		 />
-		<ToggleButton android:id="@+id/show_gen_password"
-		android:textOn="@string/genpw_shown"
-		android:textOff="@string/genpw_hidden"
-		android:layout_gravity="center_vertical"
-		android:layout_height="fill_parent"
-		android:layout_width="wrap_content"
-		/>
-	</LinearLayout>
-</LinearLayout>
+    <AutoCompleteTextView
+        android:id="@+id/domain_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/go"
+        android:layout_marginTop="5dip"
+        android:autoText="false"
+        android:capitalize="none"
+        android:hint="@string/domain_hint"
+        android:imeOptions="actionNext"
+        android:inputType="textUri"
+        android:singleLine="true" />
+
+    <ToggleButton
+        android:id="@+id/show_gen_password"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/password_output"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/password_edit"
+        android:textOff="@string/genpw_hidden"
+        android:textOn="@string/genpw_shown" />
+
+    <EditText
+        android:id="@+id/password_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/domain_edit"
+        android:layout_toLeftOf="@+id/go"
+        android:autoText="false"
+        android:capitalize="none"
+        android:hint="@string/password_hint"
+        android:imeActionId="@+id/go"
+        android:imeActionLabel="@string/go"
+        android:imeOptions="actionDone"
+        android:password="true"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/go"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/password_edit"
+        android:layout_alignLeft="@+id/show_gen_password"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/domain_edit"
+        android:text="@string/go" />
+
+    <info.staticfree.SuperGenPass.GeneratedPasswordView
+        android:id="@+id/password_output"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/password_edit"
+        android:layout_below="@+id/password_edit"
+        android:layout_toLeftOf="@+id/show_gen_password"
+        android:inputType="textPassword"
+        android:minEms="10"
+        android:textSize="30sp" />
+
+</RelativeLayout>

@@ -3,7 +3,7 @@
 	package="info.staticfree.SuperGenPass"
 	android:versionName="1.3" android:versionCode="13"
 	>
-	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="10" />
+	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="10" />
  	<supports-screens android:anyDensity="true" android:smallScreens="true" android:largeScreens="true" />
 
  	<permission android:protectionLevel="normal" 
