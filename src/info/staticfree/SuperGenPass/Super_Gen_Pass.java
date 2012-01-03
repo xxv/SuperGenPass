@@ -221,7 +221,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		if (copyToClipboard){
 			genPwView.copyToClipboard();
 
-			if (Intent.ACTION_SEND.equals(getIntent().getAction())){
+			if (Intent.ACTION_SEND.equals(getIntent().getAction())
+					&& (genPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
 				finish();
 			}
 		}
