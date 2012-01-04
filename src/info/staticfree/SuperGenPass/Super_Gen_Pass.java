@@ -35,6 +35,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -98,11 +99,13 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		final Uri data = intent.getData();
 
 		// Make window transient-looking if coming from a share intent
-		if (Intent.ACTION_SEND.equals(intent.getAction())){
-			setTheme(android.R.style.Theme_Dialog);
+		if (Intent.ACTION_SEND.equals(intent.getAction())) {
+			setTheme(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.style.Theme_DeviceDefault_Dialog
+					: android.R.style.Theme_Dialog);
 		}else{
 			// this is necessary as the default theme is translucent to make the dimming work
-			setTheme(android.R.style.Theme);
+			setTheme(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.style.Theme_DeviceDefault
+					: android.R.style.Theme);
 		}
 
 		super.onCreate(savedInstanceState);
