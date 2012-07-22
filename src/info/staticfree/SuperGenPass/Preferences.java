@@ -25,23 +25,25 @@ public class Preferences extends PreferenceActivity {
 
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			if (!isInteger(newValue)){
-				Toast.makeText(getApplicationContext(), R.string.pref_err_not_number, Toast.LENGTH_LONG).show();
+			if (!isInteger(newValue)) {
+				Toast.makeText(getApplicationContext(), R.string.pref_err_not_number,
+						Toast.LENGTH_LONG).show();
 				return false;
 			}
 			return true;
 		}
 	};
 
-	public boolean isInteger(Object newValue){
+	public boolean isInteger(Object newValue) {
 		try {
 			Integer.parseInt((String) newValue);
-		}catch (final NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return false;
 		}
 		return true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,17 +53,17 @@ public class Preferences extends PreferenceActivity {
 		findPreference(PREF_PW_LENGTH).setOnPreferenceChangeListener(integerConformCheck);
 	}
 
-	public static int getStringAsInteger(SharedPreferences prefs, String key, int def){
+	public static int getStringAsInteger(SharedPreferences prefs, String key, int def) {
 		final String defString = Integer.toString(def);
 		int retval;
-		try{
-    		retval = Integer.parseInt(prefs.getString(key, defString));
+		try {
+			retval = Integer.parseInt(prefs.getString(key, defString));
 
-		// in case the value ever gets corrupt, reset it to the default instead of freaking out
-    	}catch(final NumberFormatException e){
-    		prefs.edit().putString(key, defString).commit();
-    		retval = def;
-    	}
-    	return retval;
+			// in case the value ever gets corrupt, reset it to the default instead of freaking out
+		} catch (final NumberFormatException e) {
+			prefs.edit().putString(key, defString).commit();
+			retval = def;
+		}
+		return retval;
 	}
 }

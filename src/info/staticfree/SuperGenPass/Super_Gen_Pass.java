@@ -1,21 +1,21 @@
 package info.staticfree.SuperGenPass;
 
 /*
- 	Android SuperGenPass
-    Copyright (C) 2009-2011  Steve Pomeroy <steve@staticfree.info>
+ Android SuperGenPass
+ Copyright (C) 2009-2012  Steve Pomeroy <steve@staticfree.info>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -30,12 +30,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -71,12 +71,14 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	DomainBasedHash hasher;
 
+	// @formatter:off
 	private static final int
 		DIALOG_ABOUT = 0,
 		DIALOG_CONFIRM_MASTER = 1;
 	private static final int REQUEST_CODE_PREFERENCES = 0;
 	private static final String
 		STATE_LAST_STOPPED_TIME = "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
+	// @formatter:on
 
 	private int pwLength;
 	private String pwType;
@@ -92,25 +94,17 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	private long lastStoppedTime;
 	private int pwClearTimeout;
 
+	private ContentResolver mContentResolver;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-		final Intent intent = getIntent();
-		final Uri data = intent.getData();
-
-		// Make window transient-looking if coming from a share intent
-		if (Intent.ACTION_SEND.equals(intent.getAction())) {
-			setTheme(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.style.Theme_DeviceDefault_Dialog
-					: android.R.style.Theme_Dialog);
-		}else{
-			// this is necessary as the default theme is translucent to make the dimming work
-			setTheme(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.style.Theme_DeviceDefault
-					: android.R.style.Theme);
-		}
-
 		super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
+
+		final Intent intent = getIntent();
+		final Uri data = intent.getData();
 
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_LAST_STOPPED_TIME)){
         	lastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME);
@@ -126,14 +120,15 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         mMasterPwEdit.setOnEditorActionListener(this);
 
 
-
-
 		// hook in our buttons
 		((Button)findViewById(R.id.go)).setOnClickListener(this);
 		((ToggleButton)findViewById(R.id.show_gen_password)).setOnCheckedChangeListener(this);
 
-        updatePreferences();
+		loadFromPreferences();
 
+		mContentResolver = getContentResolver();
+
+		@SuppressWarnings("deprecation")
 		final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
 				android.R.layout.simple_dropdown_item_1line,
 				null,
@@ -195,8 +190,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     }
 
     /**
-     * Go!
-     */
+	 * Go! Validates the forms, computes the password, displays it, remembers the domain, and copies
+	 * to clipboard.
+	 */
     void go(){
     	String genPw = "";
     	final String domain = getDomain();
@@ -218,7 +214,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		genPwView.setText(genPw);
 
 		if (rememberDomains){
-			RememberedDomainProvider.addRememberedDomain(getContentResolver(), domain);
+			RememberedDomainProvider.addRememberedDomain(mContentResolver, domain);
 		}
 
 		if (copyToClipboard){
@@ -328,7 +324,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	super.onActivityResult(requestCode, resultCode, data);
 
     	if (requestCode == REQUEST_CODE_PREFERENCES){
-    		updatePreferences();
+			loadFromPreferences();
     	}
     }
 
@@ -414,7 +410,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		}
     }
 
-    protected void updatePreferences(){
+	/**
+	 * Loads the preferences and updates the program state based on them.
+	 */
+	protected void loadFromPreferences() {
     	final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
     	// when adding items here, make sure default values are in sync with the xml file
@@ -429,7 +428,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     	// While it doesn't really make sense to clear this every time this is saved,
     	// there isn't much of a better option beyond remembering more state.
     	if (! rememberDomains){
-    		getContentResolver().delete(Domain.CONTENT_URI, null, null);
+			mContentResolver.delete(Domain.CONTENT_URI, null, null);
     	}
 
         try {
@@ -475,9 +474,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	public Cursor runQuery(CharSequence constraint) {
 		Cursor c;
 		if (constraint == null || constraint.length() == 0){
-			c = managedQuery(Domain.CONTENT_URI, PROJECTION, null, null, Domain.SORT_ORDER);
+			c = mContentResolver.query(Domain.CONTENT_URI, PROJECTION, null, null,
+					Domain.SORT_ORDER);
 		}else{
-			c = managedQuery(Domain.CONTENT_URI,
+			c = mContentResolver.query(Domain.CONTENT_URI,
 					PROJECTION,
 					Domain.DOMAIN + " GLOB ?",
 					new String[] {constraint.toString()+"*"}, Domain.SORT_ORDER);
