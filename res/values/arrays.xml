@@ -14,4 +14,16 @@
         <item>pwc</item>
     </string-array>
 
+    <!-- The order of these is significant. -->
+    <string-array name="hash_algorithms_label">
+        <item>@string/md5_label</item>
+        <item>@string/sha512_label</item>
+    </string-array>
+
+    <!-- The order of these is significant. -->
+    <string-array name="hash_algorithms">
+        <item>@string/md5</item>
+        <item>@string/sha512</item>
+    </string-array>
+
 </resources>

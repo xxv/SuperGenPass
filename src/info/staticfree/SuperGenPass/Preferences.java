@@ -8,16 +8,21 @@ import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
 public class Preferences extends PreferenceActivity {
+	// @formatter:off
 	public static final String
-		PREF_PW_TYPE          = "pw_type",
-		PREF_PW_LENGTH        = "pw_length",
-		PREF_PW_SALT          = "pw_salt",
-		PREF_CLIPBOARD        = "clipboard",
-		PREF_REMEMBER_DOMAINS = "domain_autocomplete",
-		PREF_DOMAIN_NOCHECK   = "domain_nocheck",
-		PREF_SHOW_GEN_PW      = "show_gen_pw",
-		PREF_PW_CLEAR_TIMEOUT = "pw_clear_timeout",
-		PREF_VISUAL_HASH      = "visual_hash";
+		PREF_PW_TYPE            = "pw_type",
+		PREF_PW_LENGTH          = "pw_length",
+		PREF_PW_SALT            = "pw_salt",
+		PREF_CLIPBOARD          = "clipboard",
+		PREF_REMEMBER_DOMAINS   = "domain_autocomplete",
+		PREF_DOMAIN_HAS_CONTENT = "domain_has_content",
+		PREF_DOMAIN_NOCHECK     = "domain_nocheck",
+		PREF_SHOW_GEN_PW        = "show_gen_pw",
+		PREF_HASH_ALGORITHM		= "hash_algorithm",
+		PREF_PW_CLEAR_TIMEOUT   = "pw_clear_timeout",
+		PREF_VISUAL_HASH        = "visual_hash";
+
+	// @formatter:on
 
 	// idea borrowed from
 	// http://stackoverflow.com/questions/3206765/number-preferences-in-preference-activity-in-android

@@ -11,10 +11,16 @@
 	<string name="sgp_type">SuperGenPass</string>
 	<string name="pwc_type">Password Composer</string>
 	
+	<string name="md5">MD5</string>
+	<string name="sha512">SHA-512</string>
+
+	<string name="md5_label">MD5 (deprecated; SGP v.≤2 default)</string>
+	<string name="sha512_label">SHA-512 (recommended)</string>
+
 	<string name="app_description">Password hashing tool.</string>
 	<string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
 	<string name="err_json_load">Error loading domain names from JSON file: %s</string>
-	
+
 	<!-- GeneratedPasswordView widget -->
 	<string name="generated_password">Generated password</string>
 	<string name="toast_copied">Password for %s copied to clipboard.</string>
@@ -45,6 +51,9 @@
 	<string name="pref_autocomplete">Autocomplete domains</string>
 	<string name="pref_autocomplete_summary">Remember any domains you\'ve used. Uncheck to forget them all.</string>
 
+	<string name="pref_hash_algorithm">Hash Algorithm</string>
+	<string name="pref_hash_algorithm_summary">Choose which hash algorithm is used for SuperGenPass.</string>
+
     <string name="pref_pw_salt">Stealth Password</string>
     <string name="pref_pw_salt_summary">Add a salt to your master password for extra security.</string>
     <string name="pref_pw_salt_description">This password salt is added to the end of your master password upon generation. This is saved to your device and you will not be prompted for it again, so make sure you remember it somewhere else too. You can use any symbols/characters here.</string>
@@ -67,13 +76,13 @@
 	<string name="about_text">
 SuperGenPass is a different kind of password manager: instead of randomly generating and storing passwords, it combines a Web site\'s domain and your master password to generate a unique password for each Web site you visit using a strong cryptographic hash.\n\n
  
-In addition to launching it directly, in the Browser activity, go to: Menu → More → Share Page.\n\n 
+In addition to launching it directly, in the Browser activity, go to: Menu → More → Share Page or just Menu → Share Page depending on your Android version.\n\n
 
-To use on your computer, please see the parent project: SuperGenPass.com. This has both a handy bookmarklet as well as a stand-alone Javascript page.\n\n
+To use on your computer, please see the parent project: SuperGenPass.com. This has both a handy bookmarklet as well as a stand-alone Javascript page. The author of Android SuperGenPass highly recommends finding a plugin for your browser instead of the bookmarklet as it\'s more secure.\n\n
 
 This project is Free Software/Open Source and is licensed under the GNU GPL Version 3. You can get the source for this application from http://staticfree.info/projects/sgp/\n\n
 
-Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\". 
+Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\".
 </string>
 
 </resources>

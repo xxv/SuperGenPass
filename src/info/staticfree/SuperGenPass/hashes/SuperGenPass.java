@@ -33,26 +33,28 @@ import android.content.Context;
 public class SuperGenPass extends DomainBasedHash {
 	public static final String TYPE = "sgp";
 
-	private final MessageDigest md5;
+	public static final String HASH_ALGORITHM_MD5 = "MD5";
+	public static final String HASH_ALGORITHM_SHA512 = "SHA-512";
 
-	public SuperGenPass(Context context) throws NoSuchAlgorithmException, IOException {
+	private final MessageDigest mHasher;
+
+	public SuperGenPass(Context context, String hashAlgorithm) throws NoSuchAlgorithmException,
+			IOException {
 		super(context);
-		md5 = MessageDigest.getInstance("MD5");
+		mHasher = MessageDigest.getInstance(hashAlgorithm);
 	}
 
     /**
-     * Returns a base64-encoded string of the md5sum of the data.
-     * Caution: SuperGenPass-specific!
-     * Includes substitutions to ensure that valid base64 characters
-     * '=', '/', and '+' get mapped to
-     * 'A', '8', and '9' respectively, so as to ensure alpha/num passwords.
-     *
-     * @param data
-     * @return  base64-encoded string of the md5sum of the data
-     */
-    private String md5base64(byte[] data){
+	 * Returns a base64-encoded string of the digest of the data. Caution: SuperGenPass-specific!
+	 * Includes substitutions to ensure that valid base64 characters '=', '/', and '+' get mapped to
+	 * 'A', '8', and '9' respectively, so as to ensure alpha/num passwords.
+	 * 
+	 * @param data
+	 * @return base64-encoded string of the hash of the data
+	 */
+	private String hashBase64(byte[] data) {
 
-    	String b64 = new String(Base64.encodeBase64(md5.digest(data)));
+		String b64 = new String(Base64.encodeBase64(mHasher.digest(data)));
     	// SuperGenPass-specific quirk so that these don't end up in the password.
     	b64 = b64.replace('=', 'A').replace('/', '8').replace('+', '9');
     	b64.trim();
@@ -99,12 +101,12 @@ public class SuperGenPass extends DomainBasedHash {
 
     	// wash ten times
     	for (int i = 0; i < 10; i++){
-    		pwSeed = md5base64(pwSeed.getBytes());
+			pwSeed = hashBase64(pwSeed.getBytes());
     	}
 
     	Matcher matcher = validPassword.matcher(pwSeed.substring(0,length));
     	while (!matcher.matches()){
-    		pwSeed = md5base64(pwSeed.getBytes());
+			pwSeed = hashBase64(pwSeed.getBytes());
     		matcher = validPassword.matcher(pwSeed.substring(0,length));
     	}
 

@@ -53,6 +53,15 @@ XXX Due to a bug in Android, this doesn't work:
             android:key="pw_length"
             android:numeric="integer"
             android:title="@string/pref_pw_length" />
+
+        <ListPreference
+            android:defaultValue="@string/md5"
+            android:entries="@array/hash_algorithms_label"
+            android:entryValues="@array/hash_algorithms"
+            android:key="hash_algorithm"
+            android:summary="@string/pref_hash_algorithm_summary"
+            android:title="@string/pref_hash_algorithm" />
+
         <EditTextPreference
             android:dialogMessage="@string/pref_pw_salt_description"
             android:key="pw_salt"

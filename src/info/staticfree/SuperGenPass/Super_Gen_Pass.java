@@ -435,13 +435,17 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			mContentResolver.delete(Domain.CONTENT_URI, null, null);
 		}
 
+		final String sgpHashAlgorithm = prefs.getString(Preferences.PREF_HASH_ALGORITHM,
+				getString(R.string.md5));
+
 		try {
 			if (pwType.equals(SuperGenPass.TYPE)) {
-				hasher = new SuperGenPass(this);
+
+				hasher = new SuperGenPass(this, sgpHashAlgorithm);
 			} else if (pwType.equals(PasswordComposer.TYPE)) {
 				hasher = new PasswordComposer(this);
 			} else {
-				hasher = new SuperGenPass(this);
+				hasher = new SuperGenPass(this, sgpHashAlgorithm);
 				Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
 			}
 
