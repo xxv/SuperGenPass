@@ -133,25 +133,22 @@ public class VisualHash extends Drawable {
 			BYTES_PER_SHAPE = 2,
 
 			// the shape type
-			TYPE_OFFSET = 0, TYPE_MAX = 0x7, TYPE_MASK = TYPE_MAX << TYPE_OFFSET, TYPE_BYTE = 0,
+			TYPE_OFFSET = 0, TYPE_MAX = 0x7, TYPE_MASK = TYPE_MAX << TYPE_OFFSET,
 
 			// this creates a grid of 4x4 potential shapes.
-			X_OFFSET = 3, X_MAX = 0x3, X_MASK = X_MAX << X_OFFSET, X_BYTE = 0,
+			X_OFFSET = 3, X_MAX = 0x7, X_MASK = X_MAX << X_OFFSET,
 
-			Y_OFFSET = 5, Y_MAX = 0x3, Y_MASK = Y_MAX << Y_OFFSET, Y_BYTE = 0,
-
-			// one extra bit remains in the first byte
-			Q_OFFSET = 6, Q_MAX = 0x1, Q_MASK = Q_MAX << Q_OFFSET, Q_BYTE = 0,
+			Y_OFFSET = 6, Y_MAX = 0x7, Y_MASK = Y_MAX << Y_OFFSET,
 
 			// There are 64 possible colors
-			R_OFFSET = 0, R_MAX = 0x3, R_MASK = R_MAX << R_OFFSET, R_BYTE = 1,
+			R_OFFSET = 9, R_MAX = 0x3, R_MASK = R_MAX << R_OFFSET,
 
-			G_OFFSET = 2, G_MAX = 0x3, G_MASK = G_MAX << G_OFFSET, G_BYTE = 1,
+			G_OFFSET = 11, G_MAX = 0x3, G_MASK = G_MAX << G_OFFSET,
 
-			B_OFFSET = 4, B_MAX = 0x3, B_MASK = B_MAX << B_OFFSET, B_BYTE = 1,
+			B_OFFSET = 13, B_MAX = 0x3, B_MASK = B_MAX << B_OFFSET,
 
-			// two extra bits remain
-			A_OFFSET = 6, A_MAX = 0x3, A_MASK = A_MAX << A_OFFSET, A_BYTE = 1;
+			// one extra bit remain
+			A_OFFSET = 15, A_MAX = 0x1, A_MASK = A_MAX << A_OFFSET;
 
 	/**
 	 * The spacing between the shapes. Units are pre-scale pixels.
@@ -264,18 +261,18 @@ public class VisualHash extends Drawable {
 
 		// go through all the bytes in the hash and draw them as shapes.
 		for (int offset = 0; offset < (mHash.length); offset += BYTES_PER_SHAPE) {
-			final int type = (mHash[TYPE_BYTE + offset] & TYPE_MASK) >> TYPE_OFFSET;
-			final int x = (mHash[X_BYTE + offset] & X_MASK) >> X_OFFSET;
-			final int y = (mHash[Y_BYTE + offset] & Y_MASK) >> Y_OFFSET;
+			final int dat = (0xff & mHash[offset]) | (0xff00 & (mHash[offset + 1] << 8));
+
+			final int type = (dat & TYPE_MASK) >> TYPE_OFFSET;
+			final int x = (dat & X_MASK) >> X_OFFSET;
+			final int y = (dat & Y_MASK) >> Y_OFFSET;
 
 			// TODO use these for something
-			final int q = (mHash[Q_BYTE + offset] & Q_MASK) >> Q_OFFSET;
-			final int a = (mHash[A_BYTE + offset] & A_MASK) >> A_OFFSET;
+			final int a = (dat & A_MASK) >> A_OFFSET;
 
-			p.setARGB(SHAPE_ALPHA,
-					scaleInt(R_MAX, (mHash[R_BYTE + offset] & R_MASK) >> R_OFFSET, 255),
-					scaleInt(G_MAX, (mHash[G_BYTE + offset] & G_MASK) >> G_OFFSET, 255),
-					scaleInt(B_MAX, (mHash[B_BYTE + offset] & B_MASK) >> B_OFFSET, 255));
+			p.setARGB(SHAPE_ALPHA, scaleInt(R_MAX, (dat & R_MASK) >> R_OFFSET, 255),
+					scaleInt(G_MAX, (dat & G_MASK) >> G_OFFSET, 255),
+					scaleInt(B_MAX, (dat & B_MASK) >> B_OFFSET, 255));
 
 			final float xCenterScaled = ORIGIN_OFFSET + scale(X_MAX, x, PRESCALE_CENTER_WIDTH);
 			final float yCenterScaled = ORIGIN_OFFSET + scale(Y_MAX, y, PRESCALE_CENTER_WIDTH);
