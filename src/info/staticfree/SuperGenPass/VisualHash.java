@@ -122,24 +122,36 @@ public class VisualHash extends Drawable {
 	// formatter:off
 	private static final int
 
-	TYPE_CIRCLE = 0x00, TYPE_SQUARE = 0x01, TYPE_STAR = 0x02, TYPE_TRIANGLE = 0x03;
+	TYPE_CIRCLE = 0x00, TYPE_SQUARE = 0x01, TYPE_STAR = 0x02, TYPE_TRIANGLE = 0x03,
+			TYPE_PLUS = 0x04, TYPE_X = 0x05, TYPE_DIAMOND = 0x06, TYPE_SMALL_CIRCLE = 0x07;
 
 	// the below defines the offsets to pull the bits of the hash out into
 	// visual characteristics.
-	private static final int BYTES_PER_SHAPE = 2,
+	private static final int
 
-	TYPEMASK = 0x3, TYPEBYTE = 0,
+	// how many bytes per shape. The mapping below would need to be adjusted if this is changed.
+			BYTES_PER_SHAPE = 2,
 
-	// this creates a grid of 4x4 potential shapes.
+			// the shape type
+			TYPE_OFFSET = 0, TYPE_MAX = 0x7, TYPE_MASK = TYPE_MAX << TYPE_OFFSET, TYPE_BYTE = 0,
+
+			// this creates a grid of 4x4 potential shapes.
 			X_OFFSET = 3, X_MAX = 0x3, X_MASK = X_MAX << X_OFFSET, X_BYTE = 0,
 
-			Y_OFFSET = 6, Y_MAX = 0x3, Y_MASK = Y_MAX << Y_OFFSET, Y_BYTE = 0,
+			Y_OFFSET = 5, Y_MAX = 0x3, Y_MASK = Y_MAX << Y_OFFSET, Y_BYTE = 0,
 
+			// one extra bit remains in the first byte
+			Q_OFFSET = 6, Q_MAX = 0x1, Q_MASK = Q_MAX << Q_OFFSET, Q_BYTE = 0,
+
+			// There are 64 possible colors
 			R_OFFSET = 0, R_MAX = 0x3, R_MASK = R_MAX << R_OFFSET, R_BYTE = 1,
 
-			G_OFFSET = 3, G_MAX = 0x3, G_MASK = G_MAX << G_OFFSET, G_BYTE = 1,
+			G_OFFSET = 2, G_MAX = 0x3, G_MASK = G_MAX << G_OFFSET, G_BYTE = 1,
 
-			B_OFFSET = 6, B_MAX = 0x2, B_MASK = B_MAX << B_OFFSET, B_BYTE = 1;
+			B_OFFSET = 4, B_MAX = 0x3, B_MASK = B_MAX << B_OFFSET, B_BYTE = 1,
+
+			// two extra bits remain
+			A_OFFSET = 6, A_MAX = 0x3, A_MASK = A_MAX << A_OFFSET, A_BYTE = 1;
 
 	/**
 	 * The spacing between the shapes. Units are pre-scale pixels.
@@ -173,6 +185,9 @@ public class VisualHash extends Drawable {
 
 	private final static Path TRIANGLE = new Path();
 	private final static Path STAR = new Path();
+	private static final Path PLUS = new Path();
+	private final static Path X = new Path();
+	private final static Path DIAMOND = new Path();
 
 	static {
 		TRIANGLE.moveTo(-RADIUS, RADIUS);
@@ -184,7 +199,7 @@ public class VisualHash extends Drawable {
 		//
 		// this was drawn in Inkscape and converted to this using
 		// the python script svg2java.py included in /extras
-		STAR.lineTo(0.000000f, -8.475681f);
+		STAR.moveTo(0.000000f, -8.475681f);
 		STAR.lineTo(1.893601f, -2.597389f);
 		STAR.lineTo(8.069343f, -2.612960f);
 		STAR.lineTo(3.063910f, 1.004453f);
@@ -195,6 +210,41 @@ public class VisualHash extends Drawable {
 		STAR.rLineTo(-5.005433f, -3.617414f);
 		STAR.rLineTo(6.175743f, 0.015571f);
 		STAR.lineTo(0.000000f, -8.475681f);
+
+		PLUS.rMoveTo(2.084458f, -2.117061f);
+		PLUS.rLineTo(5.865234f, 0.000000f);
+		PLUS.rLineTo(0.000000f, 4.296875f);
+		PLUS.rLineTo(-5.865234f, 0.000000f);
+		PLUS.rLineTo(0.000000f, 5.865234f);
+		PLUS.rLineTo(-4.296875f, 0.000000f);
+		PLUS.rLineTo(0.000000f, -5.865234f);
+		PLUS.rLineTo(-5.865234f, 0.000000f);
+		PLUS.rLineTo(0.000000f, -4.296875f);
+		PLUS.rLineTo(5.865234f, 0.000000f);
+		PLUS.rLineTo(0.000000f, -5.875977f);
+		PLUS.rLineTo(4.296875f, 0.000000f);
+		PLUS.rLineTo(0.000000f, 5.875977f);
+
+		X.moveTo(3.723963f, 0.060475f);
+		X.lineTo(8.083338f, 4.419850f);
+		X.lineTo(4.438807f, 8.064382f);
+		X.lineTo(0.079432f, 3.705007f);
+		X.lineTo(-4.279943f, 8.064382f);
+		X.lineTo(-7.924475f, 4.419850f);
+		X.rLineTo(4.359375f, -4.359375f);
+		X.rLineTo(-4.359375f, -4.359375f);
+		X.rLineTo(3.644531f, -3.644531f);
+		X.rLineTo(4.359375f, 4.359375f);
+		X.rLineTo(4.359375f, -4.371094f);
+		X.rLineTo(3.644531f, 3.644531f);
+		X.rLineTo(-4.359375f, 4.371094f);
+
+		DIAMOND.moveTo(0, -RADIUS);
+		DIAMOND.lineTo(RADIUS, 0);
+		DIAMOND.lineTo(0, RADIUS);
+		DIAMOND.lineTo(-RADIUS, 0);
+		DIAMOND.lineTo(0, -RADIUS);
+
 	}
 
 	@Override
@@ -214,9 +264,13 @@ public class VisualHash extends Drawable {
 
 		// go through all the bytes in the hash and draw them as shapes.
 		for (int offset = 0; offset < (mHash.length); offset += BYTES_PER_SHAPE) {
-			final int type = mHash[TYPEBYTE + offset] & TYPEMASK;
+			final int type = (mHash[TYPE_BYTE + offset] & TYPE_MASK) >> TYPE_OFFSET;
 			final int x = (mHash[X_BYTE + offset] & X_MASK) >> X_OFFSET;
 			final int y = (mHash[Y_BYTE + offset] & Y_MASK) >> Y_OFFSET;
+
+			// TODO use these for something
+			final int q = (mHash[Q_BYTE + offset] & Q_MASK) >> Q_OFFSET;
+			final int a = (mHash[A_BYTE + offset] & A_MASK) >> A_OFFSET;
 
 			p.setARGB(SHAPE_ALPHA,
 					scaleInt(R_MAX, (mHash[R_BYTE + offset] & R_MASK) >> R_OFFSET, 255),
@@ -235,17 +289,31 @@ public class VisualHash extends Drawable {
 					break;
 
 				case TYPE_CIRCLE:
-
 					canvas.drawCircle(0, 0, RADIUS, p);
 					break;
 
 				case TYPE_TRIANGLE:
-
 					canvas.drawPath(TRIANGLE, p);
 					break;
-				case TYPE_SQUARE:
 
+				case TYPE_SQUARE:
 					canvas.drawRect(-RADIUS, -RADIUS, RADIUS, RADIUS, p);
+					break;
+
+				case TYPE_PLUS:
+					canvas.drawPath(PLUS, p);
+					break;
+
+				case TYPE_X:
+					canvas.drawPath(X, p);
+					break;
+
+				case TYPE_DIAMOND:
+					canvas.drawPath(DIAMOND, p);
+					break;
+
+				case TYPE_SMALL_CIRCLE:
+					canvas.drawCircle(0, 0, RADIUS / 2, p);
 					break;
 			}
 			canvas.restore();
