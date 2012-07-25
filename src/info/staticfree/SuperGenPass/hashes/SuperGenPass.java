@@ -32,6 +32,7 @@ import android.content.Context;
 
 public class SuperGenPass extends DomainBasedHash {
 	public static final String TYPE = "sgp";
+	public static final String TYPE_SHA_512 = "sgp-sha-512";
 
 	public static final String HASH_ALGORITHM_MD5 = "MD5";
 	public static final String HASH_ALGORITHM_SHA512 = "SHA-512";
@@ -48,7 +49,7 @@ public class SuperGenPass extends DomainBasedHash {
 	 * Returns a base64-encoded string of the digest of the data. Caution: SuperGenPass-specific!
 	 * Includes substitutions to ensure that valid base64 characters '=', '/', and '+' get mapped to
 	 * 'A', '8', and '9' respectively, so as to ensure alpha/num passwords.
-	 * 
+	 *
 	 * @param data
 	 * @return base64-encoded string of the hash of the data
 	 */

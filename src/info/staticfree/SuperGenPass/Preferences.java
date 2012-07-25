@@ -18,7 +18,6 @@ public class Preferences extends PreferenceActivity {
 		PREF_DOMAIN_HAS_CONTENT = "domain_has_content",
 		PREF_DOMAIN_NOCHECK     = "domain_nocheck",
 		PREF_SHOW_GEN_PW        = "show_gen_pw",
-		PREF_HASH_ALGORITHM		= "hash_algorithm",
 		PREF_PW_CLEAR_TIMEOUT   = "pw_clear_timeout",
 		PREF_VISUAL_HASH        = "visual_hash";
 

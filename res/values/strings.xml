@@ -8,14 +8,9 @@
 	<string name="genpw_shown">shown</string>
 	<string name="genpw_hidden">hidden</string>
 	
-	<string name="sgp_type">SuperGenPass</string>
+	<string name="sgp_type">SuperGenPass (MD5)</string>
+	<string name="sgp_type_sha_512">SuperGenPass (SHA-512)</string>
 	<string name="pwc_type">Password Composer</string>
-	
-	<string name="md5">MD5</string>
-	<string name="sha512">SHA-512</string>
-
-	<string name="md5_label">MD5 (deprecated; SGP v.≤2 default)</string>
-	<string name="sha512_label">SHA-512 (recommended)</string>
 
 	<string name="app_description">Password hashing tool.</string>
 	<string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
@@ -50,9 +45,6 @@
 	
 	<string name="pref_autocomplete">Autocomplete domains</string>
 	<string name="pref_autocomplete_summary">Remember any domains you\'ve used. Uncheck to forget them all.</string>
-
-	<string name="pref_hash_algorithm">Hash Algorithm</string>
-	<string name="pref_hash_algorithm_summary">Choose which hash algorithm is used for SuperGenPass.</string>
 
     <string name="pref_pw_salt">Stealth Password</string>
     <string name="pref_pw_salt_summary">Add a salt to your master password for extra security.</string>
