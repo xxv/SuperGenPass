@@ -155,7 +155,7 @@ public class VisualHash extends Drawable {
 	 */
 	private final static int SPACING = 2;
 
-	private final static int SHAPE_ALPHA = 200;
+	private final static int SHAPE_ALPHA = 255;
 
 	/**
 	 * This constant is based on the static shape definitions.
