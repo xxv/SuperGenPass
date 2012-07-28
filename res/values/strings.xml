@@ -15,6 +15,7 @@
 	<string name="app_description">Password hashing tool.</string>
 	<string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
 	<string name="err_json_load">Error loading domain names from JSON file: %s</string>
+	<string name="err_empty_master_password">Please enter your master password.</string>
 
 	<!-- GeneratedPasswordView widget -->
 	<string name="generated_password">Generated password</string>

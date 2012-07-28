@@ -19,21 +19,22 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@SuppressWarnings("deprecation")
 public class GeneratedPasswordView extends TextView implements OnClickListener, OnMenuItemClickListener {
-	public final static int 
+	public final static int
 		MENU_ID_COPY = android.R.id.copy;
-	
+
 	private OnClickListener onClickListener;
 	private CharSequence domain;
 
 	public GeneratedPasswordView(Context context) {
 		this(context, null);
 	}
-	
+
 	public GeneratedPasswordView(Context context, AttributeSet attrs){
 		this(context, attrs, 0);
 	}
-	
+
 	public GeneratedPasswordView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
@@ -46,7 +47,7 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
 		setFocusableInTouchMode(true);
 		super.setOnClickListener(this);
 	}
-	
+
 	@Override
 	public void setOnClickListener(OnClickListener l) {
 		this.onClickListener = l;
@@ -55,51 +56,56 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
 	public void onClick(View v) {
 		requestFocus();
 		Log.d("gpwv", "click!");
-		
+
 		// propagate the click
 		if (onClickListener != null){
 			onClickListener.onClick(v);
 		}
 	}
-	
+
 	@Override
 	protected void onCreateContextMenu(ContextMenu menu) {
 		menu.add(Menu.NONE, MENU_ID_COPY, Menu.NONE, android.R.string.copy).setOnMenuItemClickListener(this);
 		menu.setHeaderTitle(R.string.generated_password);
 	}
-	
+
 	@Override
 	public boolean onTextContextMenuItem(int id) {
 		switch (id){
 		case MENU_ID_COPY:
 			copyToClipboard();
 			return true;
-			
+
 			default:
 				return super.onTextContextMenuItem(id);
 		}
 	}
-	
+
+	/**
+	 * Sets the domain name that will be displayed when copying to clipboard.
+	 *
+	 * @param domainName
+	 */
 	public void setDomainName(CharSequence domainName){
 		this.domain = domainName;
 	}
-	
+
 	@Override
 	public void setText(CharSequence text, BufferType type) {
 		super.setText(text, type);
-		setEnabled(text.length() > 0);
+		setEnabled(text != null ? text.length() > 0 : false);
 	}
-	
+
 	public void copyToClipboard(){
 		final CharSequence genPw = getText();
 		final ClipboardManager clipMan = (ClipboardManager)getContext().getSystemService(Application.CLIPBOARD_SERVICE);
 		clipMan.setText(genPw);
 		if (genPw.length() > 0){
 			if (domain != null){
-				Toast.makeText(getContext(), getResources().getString(R.string.toast_copied, domain), 
+				Toast.makeText(getContext(), getResources().getString(R.string.toast_copied, domain),
 						Toast.LENGTH_SHORT).show();
 			}else{
-				Toast.makeText(getContext(), getResources().getString(R.string.toast_copied_no_domain), 
+				Toast.makeText(getContext(), getResources().getString(R.string.toast_copied_no_domain),
 						Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -108,10 +114,10 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
 	public boolean onMenuItemClick(MenuItem item) {
 		return onTextContextMenuItem(item.getItemId());
 	}
-	
-	
+
+
 	/* (for all the state-related code below)
-	 * 
+	 *
 	 * Copyright (C) 2006 The Android Open Source Project
 	 *
 	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,7 +147,7 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
             setText(ss.text);
         }
 	}
-	
+
 	@Override
 	public Parcelable onSaveInstanceState() {
 		final Parcelable superState = super.onSaveInstanceState();
@@ -151,7 +157,7 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
 
 		return ss;
 	}
-	
+
 	public static class SavedState extends BaseSavedState {
 
         CharSequence text;

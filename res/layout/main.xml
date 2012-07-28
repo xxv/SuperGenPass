@@ -3,16 +3,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="5dip" >
+    android:padding="5dip" xmlns:app="http://schemas.android.com/apk/res/info.staticfree.SuperGenPass">
 
     <AutoCompleteTextView
         android:id="@+id/domain_edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/go"
         android:layout_marginTop="5dip"
-        android:autoText="false"
-        android:capitalize="none"
+        android:layout_toLeftOf="@+id/go"
         android:hint="@string/domain_hint"
         android:imeOptions="actionNext"
         android:inputType="textUri"
@@ -28,20 +26,21 @@
         android:textOff="@string/genpw_hidden"
         android:textOn="@string/genpw_shown" />
 
-    <EditText
+    <info.staticfree.SuperGenPass.VisualHashEditText
         android:id="@+id/password_edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/domain_edit"
         android:layout_toLeftOf="@+id/go"
-        android:autoText="false"
-        android:capitalize="none"
         android:hint="@string/password_hint"
         android:imeActionId="@+id/go"
         android:imeActionLabel="@string/go"
         android:imeOptions="actionDone"
-        android:password="true"
+        app:showVisualHash="true"
+        app:visualHashWidth="45dip"
+        app:visualHashHeight="45dip"
+        android:inputType="textPassword"
         android:singleLine="true" />
 
     <Button

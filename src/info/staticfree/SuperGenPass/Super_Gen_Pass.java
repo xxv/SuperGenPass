@@ -37,6 +37,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -87,14 +89,35 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	private boolean rememberDomains;
 	private boolean noDomainCheck;
 
-	private GeneratedPasswordView genPwView;
-	private EditText domainEdit;
-	private EditText mMasterPwEdit;
+	private GeneratedPasswordView mGenPwView;
+	private EditText mDomainEdit;
+	private VisualHashEditText mMasterPwEdit;
 
 	private long lastStoppedTime;
 	private int pwClearTimeout;
 
 	private ContentResolver mContentResolver;
+
+	private static final int MSG_UPDATE_PW_VIEW = 100;
+	private final Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case MSG_UPDATE_PW_VIEW:
+					try {
+						if (mMasterPwEdit.length() > 0 && mDomainEdit.length() > 0) {
+							generateAndDisplay();
+						}
+					} catch (final PasswordGenerationException e) {
+						// okay!
+					}
+					break;
+			}
+
+		};
+	};
+
+	private ToggleButton mShowGenPassword;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -110,20 +133,23 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			lastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME);
 		}
 
-		domainEdit = (EditText) findViewById(R.id.domain_edit);
+		mDomainEdit = (EditText) findViewById(R.id.domain_edit);
 
-		genPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
-		genPwView.setOnLongClickListener(this);
+		mGenPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
+		mGenPwView.setOnLongClickListener(this);
 
-		mMasterPwEdit = ((EditText) findViewById(R.id.password_edit));
+		mMasterPwEdit = ((VisualHashEditText) findViewById(R.id.password_edit));
 
 		mMasterPwEdit.setOnEditorActionListener(this);
 
 		// hook in our buttons
 		((Button) findViewById(R.id.go)).setOnClickListener(this);
-		((ToggleButton) findViewById(R.id.show_gen_password)).setOnCheckedChangeListener(this);
+		mShowGenPassword = ((ToggleButton) findViewById(R.id.show_gen_password));
+		mShowGenPassword.setOnCheckedChangeListener(this);
 
 		loadFromPreferences();
+
+		bindTextWatchers();
 
 		mContentResolver = getContentResolver();
 
@@ -175,7 +201,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		// wipe master password and generated password.
 		if (SystemClock.elapsedRealtime() - lastStoppedTime > pwClearTimeout * 60 * 1000) {
 			((EditText) findViewById(R.id.password_edit)).getText().clear();
-			genPwView.setText("");
+			mGenPwView.setText("");
 		}
 	}
 
@@ -185,39 +211,50 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		outState.putLong(STATE_LAST_STOPPED_TIME, lastStoppedTime);
 	}
 
+	String generateAndDisplay() throws PasswordGenerationException {
+		final String domain = getDomain();
+
+		final String genPw = hasher.generate(getMasterPassword() + pwSalt, domain, pwLength);
+
+		mGenPwView.setDomainName(domain);
+		mGenPwView.setText(genPw);
+
+		return genPw;
+	}
+
 	/**
 	 * Go! Validates the forms, computes the password, displays it, remembers the domain, and copies
 	 * to clipboard.
 	 */
 	void go() {
-		String genPw = "";
-		final String domain = getDomain();
 		try {
-			genPw = hasher.generate(getMasterPassword() + pwSalt, domain, pwLength);
+			if (mMasterPwEdit.length() == 0) {
+				mGenPwView.setText(null);
+				mMasterPwEdit.setError(getText(R.string.err_empty_master_password));
+				mMasterPwEdit.requestFocus();
+			}
+			generateAndDisplay();
 
 		} catch (final IllegalDomainException e) {
-			genPwView.setText("");
-			domainEdit.setError(e.getLocalizedMessage());
-			domainEdit.requestFocus();
+			mGenPwView.setText(null);
+			mDomainEdit.setError(e.getLocalizedMessage());
+			mDomainEdit.requestFocus();
 			return;
 		} catch (final PasswordGenerationException e) {
-			genPwView.setText("");
+			mGenPwView.setText(null);
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 			return;
 		}
 
-		genPwView.setDomainName(domain);
-		genPwView.setText(genPw);
-
 		if (rememberDomains) {
-			RememberedDomainProvider.addRememberedDomain(mContentResolver, domain);
+			RememberedDomainProvider.addRememberedDomain(mContentResolver, getDomain());
 		}
 
 		if (copyToClipboard) {
-			genPwView.copyToClipboard();
+			mGenPwView.copyToClipboard();
 
 			if (Intent.ACTION_SEND.equals(getIntent().getAction())
-					&& (genPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
+					&& (mGenPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
 				finish();
 			}
 		}
@@ -255,10 +292,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		switch (buttonView.getId()) {
 			case R.id.show_gen_password: {
 				if (isChecked) {
-					genPwView.setInputType(InputType.TYPE_CLASS_TEXT
+					mGenPwView.setInputType(InputType.TYPE_CLASS_TEXT
 							| InputType.TYPE_TEXT_VARIATION_NORMAL);
 				} else {
-					genPwView.setInputType(InputType.TYPE_CLASS_TEXT
+					mGenPwView.setInputType(InputType.TYPE_CLASS_TEXT
 							| InputType.TYPE_TEXT_VARIATION_PASSWORD);
 				}
 
@@ -413,6 +450,40 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		}
 	}
 
+	private void bindTextWatchers() {
+		mDomainEdit.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				mHandler.sendEmptyMessage(MSG_UPDATE_PW_VIEW);
+			}
+
+		});
+		mMasterPwEdit.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				mHandler.sendEmptyMessage(MSG_UPDATE_PW_VIEW);
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+		});
+	}
+
 	/**
 	 * Loads the preferences and updates the program state based on them.
 	 */
@@ -468,14 +539,14 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		hasher.setCheckDomain(!noDomainCheck);
 
 		if (noDomainCheck) {
-			domainEdit.setHint(R.string.domain_hint_no_checking);
+			mDomainEdit.setHint(R.string.domain_hint_no_checking);
 		} else {
-			domainEdit.setHint(R.string.domain_hint);
+			mDomainEdit.setHint(R.string.domain_hint);
 		}
 
-		showVisualHash(prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true));
+		mMasterPwEdit.setShowVisualHash(prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true));
 
-		((ToggleButton) findViewById(R.id.show_gen_password)).setChecked(prefs.getBoolean(
+		mShowGenPassword.setChecked(prefs.getBoolean(
 				Preferences.PREF_SHOW_GEN_PW, false));
 	}
 
@@ -496,48 +567,4 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 		return c;
 	}
-
-	private VisualHashWatcher mVisualHashWatcher;
-
-	private void showVisualHash(boolean showVisualHash) {
-		if (mVisualHashWatcher == null && showVisualHash) {
-			final VisualHash vh = new VisualHash();
-
-			final float scale = getResources().getDisplayMetrics().scaledDensity;
-
-			// this number is based on what looks good with standard edit boxes.
-			vh.setBounds(0, 0, (int) (45 * scale), (int) (45 * scale));
-			mMasterPwEdit.setCompoundDrawables(null, null, vh, null);
-
-			mVisualHashWatcher = new VisualHashWatcher(vh);
-			mMasterPwEdit.addTextChangedListener(mVisualHashWatcher);
-
-		} else if (mVisualHashWatcher != null && !showVisualHash) {
-			mMasterPwEdit.setCompoundDrawables(null, null, null, null);
-			mMasterPwEdit.removeTextChangedListener(mVisualHashWatcher);
-			mVisualHashWatcher = null;
-		}
-	}
-
-	private class VisualHashWatcher implements TextWatcher {
-
-		private final VisualHash mVisualHash;
-
-		public VisualHashWatcher(VisualHash visualHash) {
-			mVisualHash = visualHash;
-		}
-
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			mVisualHash.setData(s.toString().getBytes());
-		}
-
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
-
-		@Override
-		public void afterTextChanged(Editable s) {
-		}
-	};
 }
