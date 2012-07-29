@@ -26,6 +26,7 @@ import info.staticfree.SuperGenPass.hashes.SuperGenPass;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -67,6 +68,10 @@ import android.widget.ToggleButton;
 
 // TODO Wipe generated password from clipboard after delay.
 // TODO Wipe passwords on screen lock event.
+
+// the check below is a nice reminder, however this activity uses no delayed messages,
+// so nothing should be holding onto references past this activity's lifetime.
+@SuppressLint("HandlerLeak")
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
 		OnCheckedChangeListener, OnEditorActionListener, FilterQueryProvider {
 	private final static String TAG = Super_Gen_Pass.class.getSimpleName();
@@ -189,8 +194,11 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	@Override
 	protected void onPause() {
-
 		super.onPause();
+
+		// this is overly cautious to avoid memory leaks
+		mHandler.removeMessages(MSG_UPDATE_PW_VIEW);
+
 		lastStoppedTime = SystemClock.elapsedRealtime();
 	}
 
@@ -467,6 +475,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			}
 
 		});
+
 		mMasterPwEdit.addTextChangedListener(new TextWatcher() {
 
 			@Override
