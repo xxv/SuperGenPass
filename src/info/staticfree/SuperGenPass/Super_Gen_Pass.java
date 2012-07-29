@@ -240,31 +240,32 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 				mGenPwView.setText(null);
 				mMasterPwEdit.setError(getText(R.string.err_empty_master_password));
 				mMasterPwEdit.requestFocus();
+				return;
 			}
+
 			generateAndDisplay();
+
+			if (rememberDomains) {
+				RememberedDomainProvider.addRememberedDomain(mContentResolver, getDomain());
+			}
+
+			if (copyToClipboard) {
+				mGenPwView.copyToClipboard();
+
+				if (Intent.ACTION_SEND.equals(getIntent().getAction())
+						&& (mGenPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
+					finish();
+				}
+			}
 
 		} catch (final IllegalDomainException e) {
 			mGenPwView.setText(null);
 			mDomainEdit.setError(e.getLocalizedMessage());
 			mDomainEdit.requestFocus();
-			return;
+
 		} catch (final PasswordGenerationException e) {
 			mGenPwView.setText(null);
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-			return;
-		}
-
-		if (rememberDomains) {
-			RememberedDomainProvider.addRememberedDomain(mContentResolver, getDomain());
-		}
-
-		if (copyToClipboard) {
-			mGenPwView.copyToClipboard();
-
-			if (Intent.ACTION_SEND.equals(getIntent().getAction())
-					&& (mGenPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
-				finish();
-			}
 		}
 	}
 
@@ -322,7 +323,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 		go();
-		return false;
+		return true;
 	}
 
 	@Override
