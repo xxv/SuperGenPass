@@ -11,11 +11,11 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dip"
-        android:layout_toLeftOf="@+id/go"
         android:hint="@string/domain_hint"
         android:imeOptions="actionNext"
         android:inputType="textUri"
         android:singleLine="true" />
+
 
     <info.staticfree.SuperGenPass.VisualHashEditText
         android:id="@+id/password_edit"
@@ -23,7 +23,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/domain_edit"
-        android:layout_toLeftOf="@+id/go"
         android:hint="@string/password_hint"
         android:imeActionId="@+id/go"
         android:imeActionLabel="@string/go"
@@ -34,34 +33,6 @@
         app:visualHashHeight="45dip"
         app:visualHashWidth="45dip" />
 
-    <Button
-        android:id="@+id/go"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignBottom="@+id/password_edit"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/domain_edit"
-        android:text="@string/go" />
-
-    <ImageView
-        android:id="@+id/down_arrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@null"
-        android:layout_below="@+id/password_edit"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/bg_arrow_down" />
-
-    <ToggleButton
-        android:id="@+id/show_gen_password"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignBottom="@+id/password_output"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/password_output"
-        android:textOff="@string/genpw_hidden"
-        android:textOn="@string/genpw_shown" />
-    
     <info.staticfree.SuperGenPass.GeneratedPasswordView
         android:id="@+id/password_output"
         android:layout_width="fill_parent"
@@ -72,5 +43,26 @@
         android:inputType="textPassword"
         android:minEms="10"
         android:textSize="30sp" />
+    
+    
+    <ToggleButton
+        android:id="@+id/show_gen_password"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignTop="@+id/password_output"
+        android:layout_alignBottom="@+id/password_output"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/password_edit"
+        android:textOff="@string/genpw_hidden"
+        android:textOn="@string/genpw_shown" />
+
+    <ImageView
+        android:id="@+id/down_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/password_edit"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@null"
+        android:src="@drawable/bg_arrow_down" />
 
 </RelativeLayout>

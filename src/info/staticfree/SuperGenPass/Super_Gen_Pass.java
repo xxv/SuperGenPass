@@ -37,6 +37,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -148,7 +149,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		mMasterPwEdit.setOnEditorActionListener(this);
 
 		// hook in our buttons
-		((Button) findViewById(R.id.go)).setOnClickListener(this);
+		final Button go = ((Button) findViewById(R.id.go));
+		if (go != null) {
+			go.setOnClickListener(this);
+		}
 		mShowGenPassword = ((ToggleButton) findViewById(R.id.show_gen_password));
 		mShowGenPassword.setOnCheckedChangeListener(this);
 
@@ -329,6 +333,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.options, menu);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			// use the AcionBar for our Go button
+			menu.findItem(R.id.go).setVisible(true);
+		}
 		return true;
 	}
 
@@ -355,6 +363,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 			case R.id.verify:
 				showDialog(DIALOG_CONFIRM_MASTER);
+				return true;
+
+			case R.id.go:
+				go();
 				return true;
 
 			default:
