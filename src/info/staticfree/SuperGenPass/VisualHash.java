@@ -58,6 +58,11 @@ public class VisualHash extends Drawable {
 	private float mScaleX, mScaleY;
 
 	/**
+	 * Whether or not to show a visual hash where there's no data.
+	 */
+	private final boolean mShowBlankData = false;
+
+	/**
 	 * <p>
 	 * Make sure that any hash function you specify has an even number of bytes in the output, as
 	 * each shape requires 2 bytes of data.
@@ -110,12 +115,13 @@ public class VisualHash extends Drawable {
 	 *            hash.
 	 */
 	public void setData(byte[] input) {
-		if (mHasher == null) {
-			mHash = new byte[2];
-			return;
+		if (mHasher == null || (!mShowBlankData && input.length == 0)) {
+			mHash = null;
+		} else {
+			mHasher.update(input);
+			mHash = mHasher.digest();
 		}
-		mHasher.update(input);
-		mHash = mHasher.digest();
+
 		invalidateSelf();
 	}
 
@@ -258,6 +264,11 @@ public class VisualHash extends Drawable {
 	public void draw(Canvas canvas) {
 
 		canvas.scale(mScaleX, mScaleY);
+
+		if (mHash == null) {
+			// this state means there's no useful data.
+			return;
+		}
 
 		// go through all the bytes in the hash and draw them as shapes.
 		for (int offset = 0; offset < (mHash.length); offset += BYTES_PER_SHAPE) {
