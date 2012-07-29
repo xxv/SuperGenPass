@@ -151,10 +151,12 @@ public class VisualHash extends Drawable {
 
 			G_OFFSET = 11, G_MAX = 0x3, G_MASK = G_MAX << G_OFFSET,
 
-			B_OFFSET = 13, B_MAX = 0x3, B_MASK = B_MAX << B_OFFSET,
+			B_OFFSET = 13, B_MAX = 0x3, B_MASK = B_MAX << B_OFFSET
 
 			// one extra bit remain
-			A_OFFSET = 15, A_MAX = 0x1, A_MASK = A_MAX << A_OFFSET;
+			// ,A_OFFSET = 15, A_MAX = 0x1, A_MASK = A_MAX << A_OFFSET
+
+			;
 
 	/**
 	 * The spacing between the shapes. Units are pre-scale pixels.
@@ -278,8 +280,8 @@ public class VisualHash extends Drawable {
 			final int x = (dat & X_MASK) >> X_OFFSET;
 			final int y = (dat & Y_MASK) >> Y_OFFSET;
 
-			// TODO use these for something
-			final int a = (dat & A_MASK) >> A_OFFSET;
+			// TODO use this bit for something
+			// final int a = (dat & A_MASK) >> A_OFFSET;
 
 			p.setARGB(SHAPE_ALPHA, scaleInt(R_MAX, (dat & R_MASK) >> R_OFFSET, 255),
 					scaleInt(G_MAX, (dat & G_MASK) >> G_OFFSET, 255),
