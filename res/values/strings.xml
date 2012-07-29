@@ -3,7 +3,7 @@
     
     <string name="app_name">SuperGenPass</string>
 	<string name="domain_hint">site\'s domain</string>
-	<string name="go">Go!</string>
+	<string name="go">Go</string>
 	<string name="password_hint">master password</string>
 	<string name="genpw_shown">shown</string>
 	<string name="genpw_hidden">hidden</string>
