@@ -21,7 +21,8 @@
     <application
         android:description="@string/app_description"
         android:icon="@drawable/icon"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
         <activity
             android:name="Super_Gen_Pass"
             android:label="@string/app_name"

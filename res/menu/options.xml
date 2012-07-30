@@ -2,7 +2,8 @@
 
     <item
         android:id="@+id/go"
-        android:showAsAction="always"
+        android:icon="@drawable/ic_menu_genpass"
+        android:showAsAction="always|withText"
         android:title="@string/go"
         android:visible="false"/>
     <item

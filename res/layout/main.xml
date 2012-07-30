@@ -34,22 +34,23 @@
         app:visualHashHeight="45dip"
         app:visualHashWidth="45dip" />
 
-    <Button
+    <ImageButton
         android:id="@+id/go"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignBottom="@+id/password_edit"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/domain_edit"
-        android:text="@string/go" />
+        android:contentDescription="@string/go"
+        android:src="@drawable/ic_menu_genpass_light" />
 
     <ImageView
         android:id="@+id/down_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@null"
         android:layout_below="@+id/password_edit"
         android:layout_centerHorizontal="true"
+        android:contentDescription="@null"
         android:src="@drawable/bg_arrow_down" />
 
     <ToggleButton
@@ -61,7 +62,7 @@
         android:layout_alignTop="@+id/password_output"
         android:textOff="@string/genpw_hidden"
         android:textOn="@string/genpw_shown" />
-    
+
     <info.staticfree.SuperGenPass.GeneratedPasswordView
         android:id="@+id/password_output"
         android:layout_width="fill_parent"

@@ -2,7 +2,6 @@ package info.staticfree.SuperGenPass;
 
 import android.app.Application;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.ClipboardManager;
@@ -10,7 +9,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -32,19 +30,13 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
 	}
 
 	public GeneratedPasswordView(Context context, AttributeSet attrs){
-		this(context, attrs, 0);
+		this(context, attrs, R.attr.generatedPasswordViewStyle);
 	}
 
 	public GeneratedPasswordView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
-		// XXX this should probably go in a style
-		setBackgroundResource(R.drawable.sgp_output);
-		setTextColor(getResources().getColor(android.R.color.primary_text_light));
-		setTypeface(Typeface.MONOSPACE);
-		setGravity(Gravity.CENTER_HORIZONTAL);
-		setFocusable(true);
-		setFocusableInTouchMode(true);
+
 		super.setOnClickListener(this);
 	}
 

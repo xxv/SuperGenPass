@@ -56,7 +56,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
@@ -149,7 +148,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		mMasterPwEdit.setOnEditorActionListener(this);
 
 		// hook in our buttons
-		final Button go = ((Button) findViewById(R.id.go));
+		final View go = findViewById(R.id.go);
 		if (go != null) {
 			go.setOnClickListener(this);
 		}
