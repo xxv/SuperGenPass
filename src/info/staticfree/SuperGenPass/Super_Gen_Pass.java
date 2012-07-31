@@ -109,13 +109,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case MSG_UPDATE_PW_VIEW:
-					try {
-						if (mMasterPwEdit.length() > 0 && mDomainEdit.length() > 0) {
-							generateAndDisplay();
-						}
-					} catch (final PasswordGenerationException e) {
-						// okay!
-					}
+					generateIfValid();
 					break;
 			}
 
@@ -222,7 +216,19 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		outState.putLong(STATE_LAST_STOPPED_TIME, lastStoppedTime);
 	}
 
-	String generateAndDisplay() throws PasswordGenerationException {
+	private void generateIfValid() {
+		try {
+			if (mMasterPwEdit.length() > 0 && mDomainEdit.length() > 0) {
+				generateAndDisplay();
+			} else {
+				mGenPwView.setText(null);
+			}
+		} catch (final PasswordGenerationException e) {
+			mGenPwView.setText(null);
+		}
+	}
+
+	private String generateAndDisplay() throws PasswordGenerationException {
 		final String domain = getDomain();
 
 		final String genPw = hasher.generate(getMasterPassword() + pwSalt, domain, pwLength);
