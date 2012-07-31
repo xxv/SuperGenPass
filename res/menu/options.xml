@@ -1,11 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/go"
-        android:icon="@drawable/ic_menu_genpass"
+        android:id="@+id/copy"
+        android:icon="@drawable/ic_menu_copy"
         android:showAsAction="always|withText"
-        android:title="@string/go"
-        android:visible="false"/>
+        android:title="@android:string/copy"/>
     <item
         android:id="@+id/verify"
         android:icon="@drawable/ic_menu_login"

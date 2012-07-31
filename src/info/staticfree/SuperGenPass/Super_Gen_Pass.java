@@ -24,6 +24,8 @@ import info.staticfree.SuperGenPass.hashes.PasswordComposer;
 import info.staticfree.SuperGenPass.hashes.SuperGenPass;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.NoSuchAlgorithmException;
 
 import android.annotation.SuppressLint;
@@ -85,13 +87,14 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	private static final int REQUEST_CODE_PREFERENCES = 0;
 	private static final String
 		STATE_LAST_STOPPED_TIME = "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
+	private static final String STATE_SHOWING_PASSWORD = "info.staticfree.SuperGenPass.STATE_SHOWING_PASSWORD";
 	// @formatter:on
 
 	private int pwLength;
 	private String pwType;
 	private String pwSalt;
-	private boolean copyToClipboard;
-	private boolean rememberDomains;
+	private boolean mCopyToClipboard;
+	private boolean mRememberDomains;
 	private boolean noDomainCheck;
 
 	private GeneratedPasswordView mGenPwView;
@@ -129,8 +132,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		final Intent intent = getIntent();
 		final Uri data = intent.getData();
 
-		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_LAST_STOPPED_TIME)) {
-			lastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME);
+		if (savedInstanceState != null) {
+			lastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME, 0);
+			mShowingPassword = savedInstanceState.getBoolean(STATE_SHOWING_PASSWORD, false);
 		}
 
 		mDomainEdit = (EditText) findViewById(R.id.domain_edit);
@@ -143,10 +147,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		mMasterPwEdit.setOnEditorActionListener(this);
 
 		// hook in our buttons
-		final View go = findViewById(R.id.go);
-		if (go != null) {
-			go.setOnClickListener(this);
-		}
 		mShowGenPassword = ((ToggleButton) findViewById(R.id.show_gen_password));
 		mShowGenPassword.setOnCheckedChangeListener(this);
 
@@ -207,7 +207,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		// wipe master password and generated password.
 		if (SystemClock.elapsedRealtime() - lastStoppedTime > pwClearTimeout * 60 * 1000) {
 			((EditText) findViewById(R.id.password_edit)).getText().clear();
-			mGenPwView.setText("");
+			clearGenPassword();
 		}
 	}
 
@@ -215,17 +215,51 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putLong(STATE_LAST_STOPPED_TIME, lastStoppedTime);
+		outState.putBoolean(STATE_SHOWING_PASSWORD, mShowingPassword);
 	}
+
+	private boolean mShowingPassword = false;
 
 	private void generateIfValid() {
 		try {
 			if (mMasterPwEdit.length() > 0 && mDomainEdit.length() > 0) {
 				generateAndDisplay();
 			} else {
-				mGenPwView.setText(null);
+				clearGenPassword();
 			}
 		} catch (final PasswordGenerationException e) {
+
+			clearGenPassword();
+		}
+	}
+
+	private void clearGenPassword() {
+		if (mShowingPassword) {
 			mGenPwView.setText(null);
+			mShowingPassword = false;
+			honeycombInvalidateOptionsMenu();
+		}
+	}
+
+	private void honeycombInvalidateOptionsMenu() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			try {
+				final Method invalidateOptionsMenu = Activity.class
+						.getMethod("invalidateOptionsMenu");
+				invalidateOptionsMenu.invoke(this);
+			} catch (final NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (final IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (final IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (final InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -236,8 +270,26 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 		mGenPwView.setDomainName(domain);
 		mGenPwView.setText(genPw);
+		mShowingPassword = true;
+		honeycombInvalidateOptionsMenu();
 
 		return genPw;
+	}
+
+	private void postGenerate(boolean copyToClipboard) {
+
+		if (mRememberDomains) {
+			RememberedDomainProvider.addRememberedDomain(mContentResolver, getDomain());
+		}
+
+		if (copyToClipboard) {
+			mGenPwView.copyToClipboard();
+
+			if (Intent.ACTION_SEND.equals(getIntent().getAction())
+					&& (mGenPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
+				finish();
+			}
+		}
 	}
 
 	/**
@@ -247,7 +299,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	void go() {
 		try {
 			if (mMasterPwEdit.length() == 0) {
-				mGenPwView.setText(null);
+				clearGenPassword();
 				mMasterPwEdit.setError(getText(R.string.err_empty_master_password));
 				mMasterPwEdit.requestFocus();
 				return;
@@ -255,26 +307,15 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 			generateAndDisplay();
 
-			if (rememberDomains) {
-				RememberedDomainProvider.addRememberedDomain(mContentResolver, getDomain());
-			}
-
-			if (copyToClipboard) {
-				mGenPwView.copyToClipboard();
-
-				if (Intent.ACTION_SEND.equals(getIntent().getAction())
-						&& (mGenPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
-					finish();
-				}
-			}
+			postGenerate(mCopyToClipboard);
 
 		} catch (final IllegalDomainException e) {
-			mGenPwView.setText(null);
+			clearGenPassword();
 			mDomainEdit.setError(e.getLocalizedMessage());
 			mDomainEdit.requestFocus();
 
 		} catch (final PasswordGenerationException e) {
-			mGenPwView.setText(null);
+			clearGenPassword();
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
@@ -339,10 +380,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.options, menu);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			// use the AcionBar for our Go button
-			menu.findItem(R.id.go).setVisible(true);
-		}
+
 		return true;
 	}
 
@@ -350,6 +388,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		final MenuItem verify = menu.findItem(R.id.verify);
 		verify.setEnabled(getMasterPassword().length() != 0);
+		menu.findItem(R.id.copy).setEnabled(mShowingPassword);
 		return true;
 	}
 
@@ -373,6 +412,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 			case R.id.go:
 				go();
+				return true;
+
+			case R.id.copy:
+				postGenerate(true);
 				return true;
 
 			default:
@@ -522,15 +565,15 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		this.pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE);
 		this.pwLength = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10);
 		this.pwSalt = prefs.getString(Preferences.PREF_PW_SALT, "");
-		this.copyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
-		this.rememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true);
+		this.mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
+		this.mRememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true);
 		this.noDomainCheck = prefs.getBoolean(Preferences.PREF_DOMAIN_NOCHECK, false);
 		this.pwClearTimeout = Preferences.getStringAsInteger(prefs,
 				Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
 
 		// While it doesn't really make sense to clear this every time this is saved,
 		// there isn't much of a better option beyond remembering more state.
-		if (!rememberDomains) {
+		if (!mRememberDomains) {
 			mContentResolver.delete(Domain.CONTENT_URI, null, null);
 		}
 

@@ -11,7 +11,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dip"
-        android:layout_toLeftOf="@+id/go"
         android:hint="@string/domain_hint"
         android:imeOptions="actionNext"
         android:inputType="textUri"
@@ -23,7 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/domain_edit"
-        android:layout_toLeftOf="@+id/go"
         android:hint="@string/password_hint"
         android:imeActionId="@+id/go"
         android:imeActionLabel="@string/go"
@@ -34,16 +32,6 @@
         app:visualHashHeight="45dip"
         app:visualHashWidth="45dip" />
 
-    <ImageButton
-        android:id="@+id/go"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignBottom="@+id/password_edit"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/domain_edit"
-        android:contentDescription="@string/go"
-        android:src="@drawable/ic_menu_genpass_light" />
-
     <ImageView
         android:id="@+id/down_arrow"
         android:layout_width="wrap_content"
@@ -53,25 +41,24 @@
         android:contentDescription="@null"
         android:src="@drawable/bg_arrow_down" />
 
+    <info.staticfree.SuperGenPass.GeneratedPasswordView
+        android:id="@+id/password_output"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/down_arrow"
+        android:layout_toRightOf="@+id/show_gen_password"
+        android:inputType="textPassword"
+        android:minEms="10"
+        android:textSize="30sp" />
+
     <ToggleButton
         android:id="@+id/show_gen_password"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignBottom="@+id/password_output"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/password_output"
         android:textOff="@string/genpw_hidden"
         android:textOn="@string/genpw_shown" />
-
-    <info.staticfree.SuperGenPass.GeneratedPasswordView
-        android:id="@+id/password_output"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/password_edit"
-        android:layout_below="@+id/down_arrow"
-        android:layout_toLeftOf="@+id/show_gen_password"
-        android:inputType="textPassword"
-        android:minEms="10"
-        android:textSize="30sp" />
 
 </RelativeLayout>
