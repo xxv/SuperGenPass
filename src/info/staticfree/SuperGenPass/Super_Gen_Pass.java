@@ -124,6 +124,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
 		final Intent intent = getIntent();
 		final Uri data = intent.getData();
