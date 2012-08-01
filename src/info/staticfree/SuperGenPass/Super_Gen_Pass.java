@@ -82,9 +82,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	// @formatter:off
 	private static final int
-		DIALOG_ABOUT = 0,
-		DIALOG_CONFIRM_MASTER = 1;
-	private static final int REQUEST_CODE_PREFERENCES = 0;
+		DIALOG_ABOUT = 100,
+		DIALOG_CONFIRM_MASTER = 101;
+	private static final int REQUEST_CODE_PREFERENCES = 200;
 	private static final String
 		STATE_LAST_STOPPED_TIME = "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
 	private static final String STATE_SHOWING_PASSWORD = "info.staticfree.SuperGenPass.STATE_SHOWING_PASSWORD";
@@ -459,9 +459,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 				final Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(R.string.dialog_verify_title);
 				builder.setCancelable(true);
-				final LayoutInflater factory = LayoutInflater.from(this);
-				final EditText pwVerify = (EditText) factory.inflate(R.layout.master_pw_verify,
+				final LayoutInflater inflater = LayoutInflater.from(this);
+				final View pwVerifyLayout = inflater.inflate(R.layout.master_pw_verify,
 						null);
+				final EditText pwVerify = (EditText) pwVerifyLayout.findViewById(R.id.verify);
 
 				builder.setNegativeButton(android.R.string.cancel, new Dialog.OnClickListener() {
 					@Override
@@ -492,7 +493,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 						}
 					}
 				});
-				builder.setView(pwVerify);
+				builder.setView(pwVerifyLayout);
 				final Dialog d = builder.create();
 				// This is added below to ensure that the soft input doesn't get hidden if it's
 				// showing,

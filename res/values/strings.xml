@@ -78,5 +78,6 @@ This project is Free Software/Open Source and is licensed under the GNU GPL Vers
 
 Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\".
 </string>
+	<string name="master_pw_verify_description">Retype your master password below to verify that you typed it correctly.</string>
 
 </resources>
