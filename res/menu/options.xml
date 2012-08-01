@@ -4,7 +4,8 @@
         android:id="@+id/copy"
         android:icon="@drawable/ic_menu_copy"
         android:showAsAction="always|withText"
-        android:title="@android:string/copy"/>
+        android:title="@string/menu_copy_generated_password"
+        android:titleCondensed="@android:string/copy"/>
     <item
         android:id="@+id/verify"
         android:icon="@drawable/ic_menu_login"

@@ -296,18 +296,19 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	 * Go! Validates the forms, computes the password, displays it, remembers the domain, and copies
 	 * to clipboard.
 	 */
-	void go() {
+	boolean go() {
 		try {
 			if (mMasterPwEdit.length() == 0) {
 				clearGenPassword();
 				mMasterPwEdit.setError(getText(R.string.err_empty_master_password));
 				mMasterPwEdit.requestFocus();
-				return;
+				return false;
 			}
 
 			generateAndDisplay();
 
 			postGenerate(mCopyToClipboard);
+			return true;
 
 		} catch (final IllegalDomainException e) {
 			clearGenPassword();
@@ -318,6 +319,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			clearGenPassword();
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
+		return false;
 	}
 
 	/**
@@ -373,8 +375,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	}
 
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		go();
-		return true;
+		return !go();
 	}
 
 	@Override
@@ -616,6 +617,12 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		}
 
 		mMasterPwEdit.setShowVisualHash(prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true));
+
+		if (mCopyToClipboard) {
+			mMasterPwEdit.setImeActionLabel(getText(android.R.string.copy), R.id.go);
+		} else {
+			mMasterPwEdit.setImeActionLabel(getText(R.string.done), R.id.go);
+		}
 
 		mShowGenPassword.setChecked(prefs.getBoolean(
 				Preferences.PREF_SHOW_GEN_PW, false));

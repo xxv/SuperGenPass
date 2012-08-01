@@ -24,7 +24,7 @@
         android:layout_below="@id/domain_edit"
         android:hint="@string/password_hint"
         android:imeActionId="@+id/go"
-        android:imeActionLabel="@string/go"
+        android:imeActionLabel="@string/done"
         android:imeOptions="actionDone"
         android:inputType="textPassword"
         android:singleLine="true"
