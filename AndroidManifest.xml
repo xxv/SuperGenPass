@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="info.staticfree.SuperGenPass"
-    android:versionCode="13"
-    android:versionName="1.3" >
+    android:versionCode="14"
+    android:versionName="2.0" >
 
     <uses-sdk
         android:minSdkVersion="4"
@@ -18,6 +18,10 @@
         android:name="info.staticfree.android.sgp.permission.ACCESS_DOMAINS"
         android:label="Access and change SuperGenPass remembered domains"
         android:protectionLevel="normal" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
     <application
         android:description="@string/app_description"
