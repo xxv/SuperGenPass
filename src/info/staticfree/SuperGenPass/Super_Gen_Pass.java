@@ -74,6 +74,7 @@ import android.widget.ToggleButton;
 // the check below is a nice reminder, however this activity uses no delayed messages,
 // so nothing should be holding onto references past this activity's lifetime.
 @SuppressLint("HandlerLeak")
+@SuppressWarnings("deprecation")
 public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
 		OnCheckedChangeListener, OnEditorActionListener, FilterQueryProvider {
 	private final static String TAG = Super_Gen_Pass.class.getSimpleName();
@@ -156,7 +157,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 		mContentResolver = getContentResolver();
 
-		@SuppressWarnings("deprecation")
 		final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
 				android.R.layout.simple_dropdown_item_1line, null, new String[] { "domain" },
 				new int[] { android.R.id.text1 });
