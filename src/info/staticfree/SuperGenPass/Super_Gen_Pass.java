@@ -57,6 +57,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -166,6 +168,15 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 		// initialize the autocompletion
 		final AutoCompleteTextView domainEdit = (AutoCompleteTextView) findViewById(R.id.domain_edit);
+		domainEdit.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				mMasterPwEdit.requestFocus();
+
+			}
+
+		});
 		domainEdit.setAdapter(adapter);
 
 		// check for the "share page" intent. If present, pre-fill.
@@ -460,8 +471,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 				builder.setTitle(R.string.dialog_verify_title);
 				builder.setCancelable(true);
 				final LayoutInflater inflater = LayoutInflater.from(this);
-				final View pwVerifyLayout = inflater.inflate(R.layout.master_pw_verify,
-						null);
+				final View pwVerifyLayout = inflater.inflate(R.layout.master_pw_verify, null);
 				final EditText pwVerify = (EditText) pwVerifyLayout.findViewById(R.id.verify);
 
 				builder.setNegativeButton(android.R.string.cancel, new Dialog.OnClickListener() {
@@ -625,8 +635,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			mMasterPwEdit.setImeActionLabel(getText(R.string.done), R.id.go);
 		}
 
-		mShowGenPassword.setChecked(prefs.getBoolean(
-				Preferences.PREF_SHOW_GEN_PW, false));
+		mShowGenPassword.setChecked(prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false));
 	}
 
 	private static final String[] PROJECTION = { Domain.DOMAIN, Domain._ID };
