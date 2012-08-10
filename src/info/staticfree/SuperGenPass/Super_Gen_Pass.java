@@ -130,7 +130,11 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+		// This is disabled in versions below honeycomb, as they seem to result in corrupt displays.
+		// This is fine, as the stock UI doesn't use screenshots for the task management.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+		}
 
 		final Intent intent = getIntent();
 		final Uri data = intent.getData();
