@@ -279,7 +279,11 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	}
 
 	private String generateAndDisplay() throws PasswordGenerationException {
-		final String domain = extractDomain(getDomain());
+		String domain = getDomain();
+
+		if (!noDomainCheck) {
+			domain = extractDomain(domain);
+		}
 
 		final String genPw = hasher.generate(getMasterPassword() + pwSalt, domain, pwLength);
 
@@ -350,22 +354,23 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		return txt.getText().toString();
 	}
 
-    /**
-     * Returns the hostname portion of the supplied URL.
-     *
-     * @param maybeUrl: either a hostname or a URL.
-     * @return the hostname portion of maybeUrl, or null if maybeUrl was null.
-     */
-    String extractDomain(String maybeUrl) {
-	try {
-	    Uri uri = Uri.parse(maybeUrl);
-	    return hasher.getDomain(uri.getHost());
-	} catch (final NullPointerException e) {
-	    return maybeUrl;
-	} catch (final PasswordGenerationException e) {
-	    return maybeUrl;
+	/**
+	 * Returns the hostname portion of the supplied URL.
+	 *
+	 * @param maybeUrl
+	 *            : either a hostname or a URL.
+	 * @return the hostname portion of maybeUrl, or null if maybeUrl was null.
+	 */
+	String extractDomain(String maybeUrl) {
+		try {
+			final Uri uri = Uri.parse(maybeUrl);
+			return hasher.getDomain(uri.getHost());
+		} catch (final NullPointerException e) {
+			return maybeUrl;
+		} catch (final PasswordGenerationException e) {
+			return maybeUrl;
+		}
 	}
-    }
 
 	public void onClick(View v) {
 		switch (v.getId()) {
