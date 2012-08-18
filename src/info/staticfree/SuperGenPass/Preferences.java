@@ -75,6 +75,7 @@ public class Preferences extends PreferenceActivity {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onNewIntent(Intent intent) {
 
@@ -90,6 +91,7 @@ public class Preferences extends PreferenceActivity {
 
 	private final int DIALOG_GENERATE = 100;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -142,11 +144,11 @@ public class Preferences extends PreferenceActivity {
 		qr.shareText(saltb64);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void setSaltPref(String salt) {
 		((EditTextPreference) findPreference(PREF_PW_SALT)).setText(salt);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		final IntentResult res = IntentIntegrator
