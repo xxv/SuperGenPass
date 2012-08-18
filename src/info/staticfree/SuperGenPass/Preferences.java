@@ -6,10 +6,15 @@ import org.apache.commons.codec.binary.Base64;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -24,6 +29,8 @@ public class Preferences extends PreferenceActivity {
 
 	public static final String ACTION_SCAN_SALT = "info.staticfree.android.supergenpass.action.SCAN_SALT";
 	public static final String ACTION_GENERATE_SALT = "info.staticfree.android.supergenpass.action.GENERATE_SALT";
+
+	public static final String ACTION_CLEAR_STORED_DOMAINS = "info.staticfree.android.supergenpass.action.CLEAR_STORED_DOMAINS";
 
 	// @formatter:off
 	public static final String
@@ -54,6 +61,15 @@ public class Preferences extends PreferenceActivity {
 			return true;
 		}
 	};
+	private ShowDomainCountTask mDomainCountTask;
+
+	private ContentResolver mCr;
+	private final ContentObserver mObserver = new ContentObserver(new Handler()) {
+		@Override
+		public void onChange(boolean selfChange) {
+			showDomainCount();
+		}
+	};
 
 	public boolean isInteger(Object newValue) {
 		try {
@@ -72,7 +88,24 @@ public class Preferences extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.preferences);
 		findPreference(PREF_PW_CLEAR_TIMEOUT).setOnPreferenceChangeListener(integerConformCheck);
 		findPreference(PREF_PW_LENGTH).setOnPreferenceChangeListener(integerConformCheck);
+		mCr = getContentResolver();
 
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		showDomainCount();
+
+		mCr.registerContentObserver(Domain.CONTENT_URI, true, mObserver);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		mCr.unregisterContentObserver(mObserver);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -86,6 +119,15 @@ public class Preferences extends PreferenceActivity {
 
 		} else if (ACTION_GENERATE_SALT.equals(action)) {
 			showDialog(DIALOG_GENERATE);
+		} else if (ACTION_CLEAR_STORED_DOMAINS.equals(action)) {
+			mCr.delete(Domain.CONTENT_URI, null, null);
+		}
+	}
+
+	private void showDomainCount() {
+		if (mDomainCountTask == null) {
+			mDomainCountTask = new ShowDomainCountTask();
+			mDomainCountTask.execute();
 		}
 	}
 
@@ -172,5 +214,29 @@ public class Preferences extends PreferenceActivity {
 			retval = def;
 		}
 		return retval;
+	}
+
+	private class ShowDomainCountTask extends AsyncTask<Void, Void, Integer> {
+
+		@Override
+		protected Integer doInBackground(Void... arg0) {
+			final Cursor c = mCr.query(Domain.CONTENT_URI, new String[] {}, null,
+					null, null);
+			final int domains = c.getCount();
+			c.close();
+			return domains;
+		}
+
+		@Override
+		protected void onPostExecute(Integer domains) {
+
+			@SuppressWarnings("deprecation")
+			final Preference clear = findPreference("clear_remembered");
+			clear.setEnabled(domains > 0);
+			clear.setSummary(getResources().getQuantityString(R.plurals.pref_autocomplete_count,
+					domains, domains));
+
+			mDomainCountTask = null;
+		}
 	}
 }

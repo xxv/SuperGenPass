@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android"  xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     
     <string name="app_name">SuperGenPass</string>
 	<string name="domain_hint">site\'s domain</string>
@@ -40,12 +40,22 @@
 
 	<string name="pref_visual_hash">Show visual hash</string>
 	<string name="pref_visual_hash_summary">Show a graphical SHA1 hash of the master password to aid entry</string>
-	
+
 	<string name="pref_pw_length">Generated password length</string>
 	<string name="pref_pw_length_description">This should be value between 4 and 24. A value of 10 for SGP and 8 for PWC is highly recommended for compatibility with the other implementations.</string>
-	
+
 	<string name="pref_autocomplete">Autocomplete domains</string>
-	<string name="pref_autocomplete_summary">Remember any domains you\'ve used. Uncheck to forget them all.</string>
+	<string name="pref_autocomplete_summary">Remember any domains you\'ve used</string>
+
+	<string name="pref_clear_remembered_domains">Clear remembered domains</string>
+	<string name="pref_clear_remembered_default_summary">…</string>
+
+	<plurals name="pref_autocomplete_count">
+        <item quantity="one">1 domain</item>
+        <item quantity="other">
+            <xliff:g id="count">%d</xliff:g> domains
+        </item>
+    </plurals>
 
     <string name="pref_pw_salt_category">Stealth password (salt)</string>
     <string name="pref_pw_salt_title">Set salt</string>
@@ -67,7 +77,7 @@
    	<string name="pref_scan_qr_code_to_load_zxing_message">Scan a QR code to load as your salt.</string>
 
 	<string name="pref_no_domain">Disable domain checking</string>
-	<string name="pref_no_domain_summary">Use any lowercase keywords instead of a domain name.</string>
+	<string name="pref_no_domain_summary">Use any lowercase keywords instead of a domain name</string>
 	<string name="domain_hint_no_checking">site\'s domain or keyword</string>
 
 	<string name="pref_err_not_number">Not updating preference: new value isn\'t a number.</string>
@@ -94,5 +104,6 @@ This project is Free Software/Open Source and is licensed under the GNU GPL Vers
 Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\".
 </string>
 	<string name="master_pw_verify_description">Retype your master password below to verify that you typed it correctly.</string>
+
 
 </resources>

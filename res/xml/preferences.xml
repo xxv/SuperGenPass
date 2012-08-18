@@ -11,6 +11,15 @@
             android:key="domain_autocomplete"
             android:summary="@string/pref_autocomplete_summary"
             android:title="@string/pref_autocomplete" />
+
+        <PreferenceScreen
+            android:enabled="false"
+            android:key="clear_remembered"
+            android:summary="@string/pref_clear_remembered_default_summary"
+            android:title="@string/pref_clear_remembered_domains" >
+            <intent android:action="info.staticfree.android.supergenpass.action.CLEAR_STORED_DOMAINS" />
+        </PreferenceScreen>
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="domain_nocheck"

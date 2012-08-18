@@ -609,12 +609,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		this.pwClearTimeout = Preferences.getStringAsInteger(prefs,
 				Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
 
-		// While it doesn't really make sense to clear this every time this is saved,
-		// there isn't much of a better option beyond remembering more state.
-		if (!mRememberDomains) {
-			mContentResolver.delete(Domain.CONTENT_URI, null, null);
-		}
-
 		try {
 			if (pwType.equals(SuperGenPass.TYPE)) {
 
