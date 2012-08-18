@@ -42,12 +42,12 @@
         <PreferenceScreen
             android:summary="@string/pref_scan_salt_summary"
             android:title="@string/pref_scan_salt_from_qr_code_title" >
-            <intent android:action="info.staticfree.android.supergenpass.SCAN_SALT" />
+            <intent android:action="info.staticfree.android.supergenpass.action.SCAN_SALT" />
         </PreferenceScreen>
         <PreferenceScreen
             android:summary="@string/pref_generate_salt_summary"
             android:title="@string/pref_generate_salt_title" >
-            <intent android:action="info.staticfree.android.supergenpass.GENERATE_SALT" />
+            <intent android:action="info.staticfree.android.supergenpass.action.GENERATE_SALT" />
         </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advanced_preferences" >

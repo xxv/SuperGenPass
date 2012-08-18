@@ -22,8 +22,8 @@ import com.google.zxing.integration.android.IntentResult;
 
 public class Preferences extends PreferenceActivity {
 
-	public static final String SCAN_SALT = "info.staticfree.android.supergenpass.SCAN_SALT";
-	public static final String GENERATE_SALT = "info.staticfree.android.supergenpass.GENERATE_SALT";
+	public static final String ACTION_SCAN_SALT = "info.staticfree.android.supergenpass.action.SCAN_SALT";
+	public static final String ACTION_GENERATE_SALT = "info.staticfree.android.supergenpass.action.GENERATE_SALT";
 
 	// @formatter:off
 	public static final String
@@ -81,10 +81,10 @@ public class Preferences extends PreferenceActivity {
 
 		final String action = intent.getAction();
 
-		if (SCAN_SALT.equals(action)) {
+		if (ACTION_SCAN_SALT.equals(action)) {
 			scanSalt();
 
-		} else if (GENERATE_SALT.equals(action)) {
+		} else if (ACTION_GENERATE_SALT.equals(action)) {
 			showDialog(DIALOG_GENERATE);
 		}
 	}
