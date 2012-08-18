@@ -47,7 +47,8 @@
 	<string name="pref_autocomplete">Autocomplete domains</string>
 	<string name="pref_autocomplete_summary">Remember any domains you\'ve used. Uncheck to forget them all.</string>
 
-    <string name="pref_pw_salt">Stealth Password</string>
+    <string name="pref_pw_salt_category">Stealth Password (Salt)</string>
+    <string name="pref_pw_salt_title">Set Salt</string>
     <string name="pref_pw_salt_summary">Add a salt to your master password for extra security.</string>
     <string name="pref_pw_salt_description">This password salt is added to the end of your master password upon generation. This is saved to your device and you will not be prompted for it again, so make sure you remember it somewhere else too. You can use any symbols/characters here.</string>
 	
@@ -55,13 +56,20 @@
     
   	<string name="pref_scan_salt_summary">Load a salt by scanning a QR code instead of typing it in.</string>
 
+  	<string name="pref_generate_salt_title">Generate and Set Salt</string>
+  	<string name="pref_generate_salt_summary">Generate a random 4096-bit base64-encoded salt, set it, and display it as a QR code.</string>
+
+ 	<string name="pref_generate_salt_dialog_message">This generates a random 4096-bit base64-encoded salt. Once generated, it sets the salt and displays it as a QR code. This barcode should be recorded and kept in a safe place (press "menu" to share it).\n\nThis will overwrite your existing salt.</string>
+	<string name="pref_generate_salt_and_set">Generate and Set</string>
+
+
     <!-- displayed in the zxing scan window -->
    	<string name="pref_scan_qr_code_to_load_zxing_message">Scan a QR code to load as your salt.</string>
 
 	<string name="pref_no_domain">Disable Domain Checking</string>
 	<string name="pref_no_domain_summary">Use any lowercase keywords instead of a domain name.</string>
 	<string name="domain_hint_no_checking">site\'s domain or keyword</string>
-	
+
 	<string name="pref_err_not_number">Not updating preference: new value isn\'t a number.</string>
 	
 	<string name="dialog_verify_title">Verify master password</string>

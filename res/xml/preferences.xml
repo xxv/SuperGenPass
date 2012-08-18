@@ -31,6 +31,25 @@
             android:summary="@string/pref_visual_hash_summary"
             android:title="@string/pref_visual_hash" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_pw_salt_category" >
+        <EditTextPreference
+            android:dialogMessage="@string/pref_pw_salt_description"
+            android:key="pw_salt"
+            android:password="true"
+            android:summary="@string/pref_pw_salt_summary"
+            android:title="@string/pref_pw_salt_title" />
+
+        <PreferenceScreen
+            android:summary="@string/pref_scan_salt_summary"
+            android:title="@string/pref_scan_salt_from_qr_code_title" >
+            <intent android:action="info.staticfree.android.supergenpass.SCAN_SALT" />
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:summary="@string/pref_generate_salt_summary"
+            android:title="@string/pref_generate_salt_title" >
+            <intent android:action="info.staticfree.android.supergenpass.GENERATE_SALT" />
+        </PreferenceScreen>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/advanced_preferences" >
         <ListPreference
             android:defaultValue="sgp"
@@ -53,18 +72,6 @@ XXX Due to a bug in Android, this doesn't work:
             android:key="pw_length"
             android:numeric="integer"
             android:title="@string/pref_pw_length" />
-        <EditTextPreference
-            android:dialogMessage="@string/pref_pw_salt_description"
-            android:key="pw_salt"
-            android:password="true"
-            android:summary="@string/pref_pw_salt_summary"
-            android:title="@string/pref_pw_salt" />
-
-        <PreferenceScreen
-            android:summary="@string/pref_scan_salt_summary"
-            android:title="@string/pref_scan_salt_from_qr_code_title" >
-            <intent android:action="info.staticfree.android.supergenpass.SCAN_SALT" />
-        </PreferenceScreen>
     </PreferenceCategory>
 
 </PreferenceScreen>

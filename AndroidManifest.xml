@@ -61,6 +61,7 @@
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="info.staticfree.android.supergenpass.SCAN_SALT" />
+                <action android:name="info.staticfree.android.supergenpass.GENERATE_SALT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
