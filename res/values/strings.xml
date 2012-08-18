@@ -29,17 +29,17 @@
 	<string name="pwgen_type_prompt">Password generator type</string>
 	<!-- XXX unused because of a bug in Android. See preferences.xml -->
 	<!-- <string name="pwgen_type_description">Password Composer is a simpler algorithm that generates weaker passwords. SuperGenPass is recommended.</string>-->
-	<string name="pwgen_type_summary">Lets you pick a password generating algorithm other than SuperGenPass.</string>
+	<string name="pwgen_type_summary">Pick a password generating algorithm other than SuperGenPass</string>
 	 
 	<string name="pref_copy_password">Copy gen\'d password</string>
-	<string name="pref_copy_password_summary">When enter is pressed on the keyboard, copy the generated password.</string>
+	<string name="pref_copy_password_summary">Copy the generated password when enter is pressed on the keyboard</string>
 	
 	<string name="pref_pw_clear_timeout">Clear password timeout</string>
 	<string name="pref_pw_clear_timeout_summary">Clear generated and master passwords after this many minutes of inactivity. Does not clear the clipboard.</string>
 	<string name="pref_pw_clear_timeout_description">Timeout in minutes. Enter 0 to clear immediately.</string>
-	
-	<string name="pref_visual_hash_summary">Shows a graphical SHA1 hash of the master password to aid entry.</string>
+
 	<string name="pref_visual_hash">Show visual hash</string>
+	<string name="pref_visual_hash_summary">Show a graphical SHA1 hash of the master password to aid entry</string>
 	
 	<string name="pref_pw_length">Generated password length</string>
 	<string name="pref_pw_length_description">This should be value between 4 and 24. A value of 10 for SGP and 8 for PWC is highly recommended for compatibility with the other implementations.</string>
@@ -47,17 +47,17 @@
 	<string name="pref_autocomplete">Autocomplete domains</string>
 	<string name="pref_autocomplete_summary">Remember any domains you\'ve used. Uncheck to forget them all.</string>
 
-    <string name="pref_pw_salt_category">Stealth Password (Salt)</string>
-    <string name="pref_pw_salt_title">Set Salt</string>
-    <string name="pref_pw_salt_summary">Add a salt to your master password for extra security.</string>
+    <string name="pref_pw_salt_category">Stealth password (salt)</string>
+    <string name="pref_pw_salt_title">Set salt</string>
+    <string name="pref_pw_salt_summary">Add a salt to your master password for extra security</string>
     <string name="pref_pw_salt_description">This password salt is added to the end of your master password upon generation. This is saved to your device and you will not be prompted for it again, so make sure you remember it somewhere else too. You can use any symbols/characters here.</string>
 	
-   	<string name="pref_scan_salt_from_qr_code_title">Scan Salt</string>
+   	<string name="pref_scan_salt_from_qr_code_title">Scan salt</string>
     
-  	<string name="pref_scan_salt_summary">Load a salt by scanning a QR code instead of typing it in.</string>
+  	<string name="pref_scan_salt_summary">Load a salt by scanning a QR code</string>
 
-  	<string name="pref_generate_salt_title">Generate and Set Salt</string>
-  	<string name="pref_generate_salt_summary">Generate a random 4096-bit base64-encoded salt, set it, and display it as a QR code.</string>
+  	<string name="pref_generate_salt_title">Generate and set salt</string>
+  	<string name="pref_generate_salt_summary">Generate a random salt, set it, and display it as a QR code</string>
 
  	<string name="pref_generate_salt_dialog_message">This generates a random 4096-bit base64-encoded salt. Once generated, it sets the salt and displays it as a QR code. This barcode should be recorded and kept in a safe place (press "menu" to share it).\n\nThis will overwrite your existing salt.</string>
 	<string name="pref_generate_salt_and_set">Generate and Set</string>
@@ -66,7 +66,7 @@
     <!-- displayed in the zxing scan window -->
    	<string name="pref_scan_qr_code_to_load_zxing_message">Scan a QR code to load as your salt.</string>
 
-	<string name="pref_no_domain">Disable Domain Checking</string>
+	<string name="pref_no_domain">Disable domain checking</string>
 	<string name="pref_no_domain_summary">Use any lowercase keywords instead of a domain name.</string>
 	<string name="domain_hint_no_checking">site\'s domain or keyword</string>
 
