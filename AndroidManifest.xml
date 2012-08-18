@@ -56,7 +56,14 @@
         </activity>
         <activity
             android:name=".Preferences"
-            android:label="@string/preferences" >
+            android:exported="false"
+            android:label="@string/preferences"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="info.staticfree.android.supergenpass.SCAN_SALT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <provider

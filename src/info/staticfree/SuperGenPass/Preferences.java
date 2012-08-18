@@ -1,13 +1,22 @@
 package info.staticfree.SuperGenPass;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
+import com.google.zxing.client.android.Intents;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 public class Preferences extends PreferenceActivity {
+
+	public static final String SCAN_SALT = "info.staticfree.android.supergenpass.SCAN_SALT";
+
 	// @formatter:off
 	public static final String
 		PREF_PW_TYPE            = "pw_type",
@@ -55,6 +64,35 @@ public class Preferences extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.preferences);
 		findPreference(PREF_PW_CLEAR_TIMEOUT).setOnPreferenceChangeListener(integerConformCheck);
 		findPreference(PREF_PW_LENGTH).setOnPreferenceChangeListener(integerConformCheck);
+
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+
+		if (SCAN_SALT.equals(intent.getAction())) {
+			scanSalt();
+		}
+	}
+
+	private void scanSalt() {
+		final IntentIntegrator qr = new IntentIntegrator(this);
+		qr.addExtra(Intents.Scan.PROMPT_MESSAGE,
+				getString(R.string.pref_scan_qr_code_to_load_zxing_message));
+		qr.addExtra(Intents.Scan.SAVE_HISTORY, false);
+		qr.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		final IntentResult res = IntentIntegrator
+				.parseActivityResult(requestCode, resultCode, data);
+
+		if (res != null && res.getContents() != null) {
+			final String salt = res.getContents();
+			((EditTextPreference) findPreference(PREF_PW_SALT)).setText(salt);
+		}
 	}
 
 	public static int getStringAsInteger(SharedPreferences prefs, String key, int def) {
