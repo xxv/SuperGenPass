@@ -144,6 +144,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 			mShowingPassword = savedInstanceState.getBoolean(STATE_SHOWING_PASSWORD, false);
 		}
 
+		mContentResolver = getContentResolver();
+
 		mDomainEdit = (EditText) findViewById(R.id.domain_edit);
 
 		mGenPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
@@ -157,11 +159,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		mShowGenPassword = ((ToggleButton) findViewById(R.id.show_gen_password));
 		mShowGenPassword.setOnCheckedChangeListener(this);
 
-		loadFromPreferences();
-
 		bindTextWatchers();
 
-		mContentResolver = getContentResolver();
+		loadFromPreferences();
 
 		final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
 				android.R.layout.simple_dropdown_item_1line, null, new String[] { "domain" },
