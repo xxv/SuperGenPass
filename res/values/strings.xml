@@ -8,9 +8,9 @@
 	<string name="genpw_shown">shown</string>
 	<string name="genpw_hidden">hidden</string>
 	
-	<string name="sgp_type">SuperGenPass (MD5)</string>
-	<string name="sgp_type_sha_512">SuperGenPass (SHA-512)</string>
-	<string name="pwc_type">Password Composer</string>
+	<string name="sgp_type" translatable="false">SuperGenPass (MD5)</string>
+	<string name="sgp_type_sha_512" translatable="false">SuperGenPass (SHA-512)</string>
+	<string name="pwc_type" translatable="false">Password Composer</string>
 
 	<string name="app_description">Password hashing tool.</string>
 	<string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
@@ -27,8 +27,6 @@
 	<string name="advanced_preferences">Advanced Preferences</string>
 	
 	<string name="pwgen_type_prompt">Password generator type</string>
-	<!-- XXX unused because of a bug in Android. See preferences.xml -->
-	<!-- <string name="pwgen_type_description">Password Composer is a simpler algorithm that generates weaker passwords. SuperGenPass is recommended.</string>-->
 	<string name="pwgen_type_summary">Pick a password generating algorithm other than SuperGenPass</string>
 	 
 	<string name="pref_copy_password">Copy gen\'d password</string>
@@ -84,6 +82,7 @@
 	
 	<string name="dialog_verify_title">Verify master password</string>
 	<string name="dialog_verify_hint">retype master password</string>
+	<string name="master_pw_verify_description">Retype your master password below to verify that you typed it correctly.</string>
 	<string name="toast_verify_success">Master password matches!</string>
 
 	<string name="menu_about">About</string>
@@ -103,7 +102,4 @@ This project is Free Software/Open Source and is licensed under the GNU GPL Vers
 
 Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\".
 </string>
-	<string name="master_pw_verify_description">Retype your master password below to verify that you typed it correctly.</string>
-
-
 </resources>
