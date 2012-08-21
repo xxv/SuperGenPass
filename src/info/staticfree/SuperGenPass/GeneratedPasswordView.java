@@ -90,6 +90,10 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
 
 	public void copyToClipboard(){
 		final CharSequence genPw = getText();
+		if (genPw == null) {
+			return;
+		}
+
 		final ClipboardManager clipMan = (ClipboardManager)getContext().getSystemService(Application.CLIPBOARD_SERVICE);
 		clipMan.setText(genPw);
 		if (genPw.length() > 0){
