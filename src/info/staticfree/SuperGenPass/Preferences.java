@@ -43,6 +43,8 @@ public class Preferences extends PreferenceActivity {
 		PREF_DOMAIN_NOCHECK     = "domain_nocheck",
 		PREF_SHOW_GEN_PW        = "show_gen_pw",
 		PREF_PW_CLEAR_TIMEOUT   = "pw_clear_timeout",
+		PREF_SHOW_PIN           = "show_pin",
+		PREF_PIN_DIGITS         = "pw_pin_digits",
 		PREF_VISUAL_HASH        = "visual_hash";
 
 	// @formatter:on

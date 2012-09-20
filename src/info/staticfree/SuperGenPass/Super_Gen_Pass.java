@@ -20,6 +20,7 @@ package info.staticfree.SuperGenPass;
  */
 
 import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
+import info.staticfree.SuperGenPass.hashes.HotpPin;
 import info.staticfree.SuperGenPass.hashes.PasswordComposer;
 import info.staticfree.SuperGenPass.hashes.SuperGenPass;
 
@@ -124,6 +125,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	private ToggleButton mShowGenPassword;
 
+    private GeneratedPasswordView mGenPinView;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -150,6 +153,9 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 		mGenPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
 		mGenPwView.setOnLongClickListener(this);
+
+        mGenPinView = (GeneratedPasswordView) findViewById(R.id.pin_output);
+        mGenPinView.setOnLongClickListener(this);
 
 		mMasterPwEdit = ((VisualHashEditText) findViewById(R.id.password_edit));
 
@@ -235,6 +241,12 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
 	private boolean mShowingPassword = false;
 
+    private HotpPin mPinGen;
+
+    private int mPinDigits;
+
+    private boolean mShowPin;
+
 	private void generateIfValid() {
 		try {
 			if (mMasterPwEdit.length() > 0 && mDomainEdit.length() > 0) {
@@ -251,6 +263,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	private void clearGenPassword() {
 		if (mShowingPassword) {
 			mGenPwView.setText(null);
+            mGenPinView.setText(null);
 			mShowingPassword = false;
 			honeycombInvalidateOptionsMenu();
 		}
@@ -284,11 +297,17 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		if (!noDomainCheck) {
 			domain = extractDomain(domain);
 		}
-
-		final String genPw = hasher.generate(getMasterPassword() + pwSalt, domain, pwLength);
+        final String masterPw = getMasterPassword() + pwSalt;
+        final String genPw = hasher.generate(masterPw, domain, pwLength);
 
 		mGenPwView.setDomainName(domain);
 		mGenPwView.setText(genPw);
+
+        if (mPinGen != null) {
+            final String pin = mPinGen.generate(masterPw, domain, mPinDigits);
+            mGenPinView.setDomainName(domain);
+            mGenPinView.setText(pin);
+        }
 		mShowingPassword = true;
 		honeycombInvalidateOptionsMenu();
 
@@ -390,13 +409,12 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 	public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
 		switch (buttonView.getId()) {
 			case R.id.show_gen_password: {
-				if (isChecked) {
-					mGenPwView.setInputType(InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_NORMAL);
-				} else {
-					mGenPwView.setInputType(InputType.TYPE_CLASS_TEXT
-							| InputType.TYPE_TEXT_VARIATION_PASSWORD);
-				}
+                final int inputType = isChecked ? InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_VARIATION_NORMAL : InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+
+                mGenPwView.setInputType(inputType);
+                mGenPinView.setInputType(inputType);
 
 				// run on a thread as commit() can take a while.
 				new Thread(new Runnable() {
@@ -609,6 +627,10 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 		this.pwClearTimeout = Preferences.getStringAsInteger(prefs,
 				Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
 
+        // PIN
+        mPinDigits = Preferences.getStringAsInteger(prefs, Preferences.PREF_PIN_DIGITS, 4);
+        mShowPin = prefs.getBoolean(Preferences.PREF_SHOW_PIN, true);
+
 		try {
 			if (pwType.equals(SuperGenPass.TYPE)) {
 
@@ -626,12 +648,15 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 				Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
 			}
 
+            mPinGen = new HotpPin(this);
+
 		} catch (final NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			Toast.makeText(getApplicationContext(),
 					String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()),
 					Toast.LENGTH_LONG).show();
 			finish();
+
 		} catch (final IOException e) {
 			Toast.makeText(this, getString(R.string.err_json_load, e.getLocalizedMessage()),
 					Toast.LENGTH_LONG).show();
