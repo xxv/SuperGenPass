@@ -39,6 +39,16 @@ public class SuperGenPass extends DomainBasedHash {
 
 	private final MessageDigest mHasher;
 
+    /**
+     * @param context
+     * @param hashAlgorithm
+     *            hash algorithm to use when generating the passwords. "md5" is the original one
+     *            used with SuperGenPass
+     * @throws NoSuchAlgorithmException
+     *             if the provided hashAlgorithm doesn't exist
+     * @throws IOException
+     *             if there's an issue loading the domain list
+     */
 	public SuperGenPass(Context context, String hashAlgorithm) throws NoSuchAlgorithmException,
 			IOException {
 		super(context);
