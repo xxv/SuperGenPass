@@ -26,14 +26,14 @@ import java.security.NoSuchAlgorithmException;
 import android.content.Context;
 
 public class PasswordComposer extends DomainBasedHash {
-	public static final String TYPE = "pwc";
+    public static final String TYPE = "pwc";
 
-	private final MessageDigest md5;
+    private final MessageDigest md5;
 
-	public PasswordComposer(Context context) throws NoSuchAlgorithmException, IOException {
-		super(context);
-		md5 = MessageDigest.getInstance("MD5");
-	}
+    public PasswordComposer(Context context) throws NoSuchAlgorithmException, IOException {
+        super(context);
+        md5 = MessageDigest.getInstance("MD5");
+    }
 
     /**
      * Returns the standard hex-encoded string md5sum of the data.
@@ -42,12 +42,12 @@ public class PasswordComposer extends DomainBasedHash {
      * @return hex-encoded string of the md5sum of the data
      */
     private String md5hex(byte[] data){
-    	final byte[] md5data = md5.digest(data);
-    	String md5hex = new String();
-    	for( int i = 0; i < md5data.length; i++){
-    		md5hex += String.format("%02x", md5data[i]);
-    	}
-    	return md5hex;
+        final byte[] md5data = md5.digest(data);
+        String md5hex = new String();
+        for( int i = 0; i < md5data.length; i++){
+            md5hex += String.format("%02x", md5data[i]);
+        }
+        return md5hex;
     }
 
     /**
@@ -60,10 +60,10 @@ public class PasswordComposer extends DomainBasedHash {
      * @see http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/
      */
     @Override
-	public String generate(String masterPass, String domain, int length) throws PasswordGenerationException {
-    	if (domain.equals("")){
-    		throw new IllegalDomainException("Missing domain");
-    	}
-    	return md5hex(new String(masterPass + ":" + getDomain(domain)).getBytes()).substring(0, length);
+    public String generate(String masterPass, String domain, int length) throws PasswordGenerationException {
+        if (domain.equals("")){
+            throw new IllegalDomainException("Missing domain");
+        }
+        return md5hex(new String(masterPass + ":" + getDomain(domain)).getBytes()).substring(0, length);
     }
 }

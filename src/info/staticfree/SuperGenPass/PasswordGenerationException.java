@@ -8,14 +8,14 @@ package info.staticfree.SuperGenPass;
  */
 public class PasswordGenerationException extends Exception {
 
-	public PasswordGenerationException(String string) {
-		super(string);
-	}
+    public PasswordGenerationException(String string) {
+        super(string);
+    }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6491091736643793303L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6491091736643793303L;
 
-	
+    
 }

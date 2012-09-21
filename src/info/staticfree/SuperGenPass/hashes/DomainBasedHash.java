@@ -42,41 +42,41 @@ import android.content.Context;
  *
  */
 public abstract class DomainBasedHash {
-	private boolean checkDomain;
-	private ArrayList<String> domains;
-	private final Context mContext;
+    private boolean checkDomain;
+    private ArrayList<String> domains;
+    private final Context mContext;
 
-	public DomainBasedHash(Context context) throws IOException {
-		mContext = context;
-		loadDomains();
-	}
+    public DomainBasedHash(Context context) throws IOException {
+        mContext = context;
+        loadDomains();
+    }
 
     /**
      * This list should remain the same and in sync with the canonical SGP,
-	 * so that passwords generated in one place are the same as others.
+     * so that passwords generated in one place are the same as others.
      */
     public void loadDomains() throws IOException {
-    	final InputStream is = mContext.getResources().openRawResource(R.raw.domains);
+        final InputStream is = mContext.getResources().openRawResource(R.raw.domains);
 
-    	final StringBuilder jsonString = new StringBuilder();
-    	try{
+        final StringBuilder jsonString = new StringBuilder();
+        try{
 
-    		for (final BufferedReader isReader = new BufferedReader(new InputStreamReader(is), 16000);
-    		isReader.ready();){
-    			jsonString.append(isReader.readLine());
-    		}
+            for (final BufferedReader isReader = new BufferedReader(new InputStreamReader(is), 16000);
+            isReader.ready();){
+                jsonString.append(isReader.readLine());
+            }
 
-    		final JSONArray domainJson = new JSONArray(jsonString.toString());
-    		domains = new ArrayList<String>(domainJson.length());
-    		for (int i = 0; i < domainJson.length(); i++){
-    			domains.add(domainJson.getString(i));
-    		}
-    	}catch (final Exception e){
-    		final IOException ioe = new IOException("Unable to load domains");
-    		ioe.initCause(e);
-    	}
+            final JSONArray domainJson = new JSONArray(jsonString.toString());
+            domains = new ArrayList<String>(domainJson.length());
+            for (int i = 0; i < domainJson.length(); i++){
+                domains.add(domainJson.getString(i));
+            }
+        }catch (final Exception e){
+            final IOException ioe = new IOException("Unable to load domains");
+            ioe.initCause(e);
+        }
 
-    	Assert.assertTrue("Domains did not seem to load", domains.size() > 100);
+        Assert.assertTrue("Domains did not seem to load", domains.size() > 100);
     }
 
     /**
@@ -89,42 +89,42 @@ public abstract class DomainBasedHash {
      */
     public String getDomain(String hostname) throws PasswordGenerationException{
 
-    	hostname = hostname.toLowerCase();
+        hostname = hostname.toLowerCase();
 
-    	if (!checkDomain){
-    		return hostname;
-    	}
+        if (!checkDomain){
+            return hostname;
+        }
 
-    	// IP addresses should be composed based on the full address.
-    	if (hostname.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")){
-    		return hostname;
-    	}
+        // IP addresses should be composed based on the full address.
+        if (hostname.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")){
+            return hostname;
+        }
 
-    	// for single-level TLDs, we only want the TLD and the 2nd level domain
-    	final String[] hostParts = hostname.split("\\.");
-    	if (hostParts.length < 2){
-    		throw new IllegalDomainException("Invalid domain: '"+hostname+"'");
-    	}
-    	String domain = hostParts[hostParts.length-2] + '.' + hostParts[hostParts.length-1];
+        // for single-level TLDs, we only want the TLD and the 2nd level domain
+        final String[] hostParts = hostname.split("\\.");
+        if (hostParts.length < 2){
+            throw new IllegalDomainException("Invalid domain: '"+hostname+"'");
+        }
+        String domain = hostParts[hostParts.length-2] + '.' + hostParts[hostParts.length-1];
 
-    	// do a slow search of all the possible multi-level TLDs and
-    	// see if we need to pull in one level deeper.
-    	for (final String tld: domains){
-    		if (domain.equals(tld)){
-    			if (hostParts.length < 3){
-    				throw new IllegalDomainException("Invalid domain. '"+domain+"' seems to be a TLD.");
-    			}
-    			domain = hostParts[hostParts.length - 3] + '.' + domain;
-    			break;
-    		}
-    	}
-    	return domain;
+        // do a slow search of all the possible multi-level TLDs and
+        // see if we need to pull in one level deeper.
+        for (final String tld: domains){
+            if (domain.equals(tld)){
+                if (hostParts.length < 3){
+                    throw new IllegalDomainException("Invalid domain. '"+domain+"' seems to be a TLD.");
+                }
+                domain = hostParts[hostParts.length - 3] + '.' + domain;
+                break;
+            }
+        }
+        return domain;
     }
 
 
-	public void setCheckDomain(boolean checkDomain){
-		this.checkDomain = checkDomain;
-	}
+    public void setCheckDomain(boolean checkDomain){
+        this.checkDomain = checkDomain;
+    }
 
     /**
      * Generates a domain password based on the PasswordComposer algorithm.

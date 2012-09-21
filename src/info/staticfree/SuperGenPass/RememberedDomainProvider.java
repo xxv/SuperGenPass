@@ -12,138 +12,138 @@ import edu.mit.mobile.android.utils.ProviderUtils;
 
 public class RememberedDomainProvider extends ContentProvider {
 
-	public static final String
-	AUTHORITY = "info.staticfree.android.sgp";
+    public static final String
+    AUTHORITY = "info.staticfree.android.sgp";
 
-	public static final String
-	TYPE_DOMAINS_DIR = "vnd.android.cursor.dir/vnd."+AUTHORITY+".domains",
-	TYPE_DOMAINS_ITEM = "vnd.android.cursor.item/vnd."+AUTHORITY+".domains";
-
-
-	private static final int
-	MATCHER_DOMAIN_DIR = 0,
-	MATCHER_DOMAIN_ITEM = 1;
-
-	private RememberedDBHelper mDBHelper;
+    public static final String
+    TYPE_DOMAINS_DIR = "vnd.android.cursor.dir/vnd."+AUTHORITY+".domains",
+    TYPE_DOMAINS_ITEM = "vnd.android.cursor.item/vnd."+AUTHORITY+".domains";
 
 
+    private static final int
+    MATCHER_DOMAIN_DIR = 0,
+    MATCHER_DOMAIN_ITEM = 1;
 
-
-	@Override
-	public String getType(Uri uri) {
-		switch (mUriMatcher.match(uri)){
-		case MATCHER_DOMAIN_DIR:
-			return TYPE_DOMAINS_DIR;
-		case MATCHER_DOMAIN_ITEM:
-			return TYPE_DOMAINS_ITEM;
-
-		default:
-			throw new IllegalArgumentException();
-		}
-	}
+    private RememberedDBHelper mDBHelper;
 
 
 
-	/**
-	 * Adds the given domain to the list of remembered domains.
-	 *
-	 * @param domain the filtered domain name
-	 */
-	public static void addRememberedDomain(ContentResolver cr, String domain){
-		final Cursor existingEntries = cr.query(Domain.CONTENT_URI, null,
-				Domain.DOMAIN + "=?", new String[] {domain}, null);
-		try{
-			if (!existingEntries.moveToFirst()) {
-				final ContentValues cv = new ContentValues();
-				cv.put(Domain.DOMAIN, domain);
-				cr.insert(Domain.CONTENT_URI,  cv);
-			}
-		}finally{
-			existingEntries.close();
-		}
-	}
 
-	@Override
-	public boolean onCreate() {
-		mDBHelper = new RememberedDBHelper(getContext());
-		return true;
-	}
+    @Override
+    public String getType(Uri uri) {
+        switch (mUriMatcher.match(uri)){
+        case MATCHER_DOMAIN_DIR:
+            return TYPE_DOMAINS_DIR;
+        case MATCHER_DOMAIN_ITEM:
+            return TYPE_DOMAINS_ITEM;
 
-	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        default:
+            throw new IllegalArgumentException();
+        }
+    }
 
-		switch(mUriMatcher.match(uri)){
-		case MATCHER_DOMAIN_DIR:
-			final long id = db.insert(RememberedDBHelper.DB_DOMAINS_TABLE, null, values);
-			return ContentUris.withAppendedId(Domain.CONTENT_URI, id);
 
-		default:
-			throw new IllegalArgumentException();
-		}
-	}
 
-	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-		final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+    /**
+     * Adds the given domain to the list of remembered domains.
+     *
+     * @param domain the filtered domain name
+     */
+    public static void addRememberedDomain(ContentResolver cr, String domain){
+        final Cursor existingEntries = cr.query(Domain.CONTENT_URI, null,
+                Domain.DOMAIN + "=?", new String[] {domain}, null);
+        try{
+            if (!existingEntries.moveToFirst()) {
+                final ContentValues cv = new ContentValues();
+                cv.put(Domain.DOMAIN, domain);
+                cr.insert(Domain.CONTENT_URI,  cv);
+            }
+        }finally{
+            existingEntries.close();
+        }
+    }
 
-		switch(mUriMatcher.match(uri)){
-		case MATCHER_DOMAIN_DIR:
-			return db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection, selection, selectionArgs, null, null, null);
+    @Override
+    public boolean onCreate() {
+        mDBHelper = new RememberedDBHelper(getContext());
+        return true;
+    }
 
-		case MATCHER_DOMAIN_ITEM:
-			return db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection,
-					ProviderUtils.addExtraWhere(selection, Domain._ID+"=?"),
-					ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
-					null, null, null);
-		default:
-			throw new IllegalArgumentException();
-		}
-	}
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        switch(mUriMatcher.match(uri)){
+        case MATCHER_DOMAIN_DIR:
+            final long id = db.insert(RememberedDBHelper.DB_DOMAINS_TABLE, null, values);
+            return ContentUris.withAppendedId(Domain.CONTENT_URI, id);
 
-		switch(mUriMatcher.match(uri)){
-		case MATCHER_DOMAIN_DIR:
-			return db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values, selection, selectionArgs);
+        default:
+            throw new IllegalArgumentException();
+        }
+    }
 
-		case MATCHER_DOMAIN_ITEM:
-			return db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values,
-					ProviderUtils.addExtraWhere(selection, Domain._ID+"=?"),
-					ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
-			default:
-				throw new IllegalArgumentException();
-		}
-	}
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        switch(mUriMatcher.match(uri)){
+        case MATCHER_DOMAIN_DIR:
+            return db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection, selection, selectionArgs, null, null, null);
 
-		switch (mUriMatcher.match(uri)){
-		case MATCHER_DOMAIN_DIR:
-			return db.delete(RememberedDBHelper.DB_DOMAINS_TABLE, selection, selectionArgs);
+        case MATCHER_DOMAIN_ITEM:
+            return db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection,
+                    ProviderUtils.addExtraWhere(selection, Domain._ID+"=?"),
+                    ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
+                    null, null, null);
+        default:
+            throw new IllegalArgumentException();
+        }
+    }
 
-		case MATCHER_DOMAIN_ITEM:
-			return db.delete(RememberedDBHelper.DB_DOMAINS_TABLE,
-					ProviderUtils.addExtraWhere(selection, Domain._ID+"=?"),
-					ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
+    @Override
+    public int update(Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
+        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-		default:
-			throw new IllegalArgumentException("delete not supported for the given uri");
-		}
-	}
+        switch(mUriMatcher.match(uri)){
+        case MATCHER_DOMAIN_DIR:
+            return db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values, selection, selectionArgs);
 
-	private static final UriMatcher mUriMatcher;
-	static {
-		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        case MATCHER_DOMAIN_ITEM:
+            return db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values,
+                    ProviderUtils.addExtraWhere(selection, Domain._ID+"=?"),
+                    ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
 
-		mUriMatcher.addURI(AUTHORITY, Domain.PATH, MATCHER_DOMAIN_DIR);
-		mUriMatcher.addURI(AUTHORITY, Domain.PATH + "/#", MATCHER_DOMAIN_ITEM);
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-	}
+        switch (mUriMatcher.match(uri)){
+        case MATCHER_DOMAIN_DIR:
+            return db.delete(RememberedDBHelper.DB_DOMAINS_TABLE, selection, selectionArgs);
+
+        case MATCHER_DOMAIN_ITEM:
+            return db.delete(RememberedDBHelper.DB_DOMAINS_TABLE,
+                    ProviderUtils.addExtraWhere(selection, Domain._ID+"=?"),
+                    ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
+
+        default:
+            throw new IllegalArgumentException("delete not supported for the given uri");
+        }
+    }
+
+    private static final UriMatcher mUriMatcher;
+    static {
+        mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+        mUriMatcher.addURI(AUTHORITY, Domain.PATH, MATCHER_DOMAIN_DIR);
+        mUriMatcher.addURI(AUTHORITY, Domain.PATH + "/#", MATCHER_DOMAIN_ITEM);
+
+    }
 }
