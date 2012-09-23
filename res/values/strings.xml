@@ -91,6 +91,8 @@ In addition to launching it directly, in the Browser activity, go to: Menu → M
 
 To use on your computer, please see the parent project: SuperGenPass.com. This has both a handy bookmarklet as well as a stand-alone Javascript page. The author of Android SuperGenPass highly recommends finding a plugin for your browser instead of the bookmarklet as it\'s more secure.\n\n
 
+This app also includes a strong PIN generation algorithm. It\'s a slightly modified version of RFC4226 HOTP (modified to work with domains instead of numerical counters) and is designed to never generate easily-guessable pins, such as 1234, 0000, 1985, 8675309, or 0007. See the source code for more details.\n\n
+
 This project is Free Software/Open Source and is licensed under the GNU GPL Version 3. You can get the source for this application from http://staticfree.info/projects/sgp/\n\n
 
 Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\".</string>
