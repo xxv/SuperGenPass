@@ -35,9 +35,12 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.TabActivity;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -77,7 +80,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 // TODO Wipe generated password from clipboard after delay.
-// TODO Wipe passwords on screen lock event.
 
 // the check below is a nice reminder, however this activity uses no delayed messages,
 // so nothing should be holding onto references past this activity's lifetime.
@@ -126,7 +128,6 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
                     generateIfValid();
                     break;
             }
-
         };
     };
 
@@ -289,6 +290,17 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         // this is overly cautious to avoid memory leaks
         mHandler.removeMessages(MSG_UPDATE_PW_VIEW);
 
+        // listen for a screen off event and clear everything if received.
+        if (mShowingPassword) {
+            registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    clearEditTexts();
+                    unregisterReceiver(this);
+                }
+            }, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        }
+
         mLastStoppedTime = SystemClock.elapsedRealtime();
     }
 
@@ -300,18 +312,19 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         if (!mShowPin) {
             getTabHost().setCurrentTab(0);
         }
-        clearEditTextsIfExpired();
-    }
-
-    private void clearEditTextsIfExpired() {
         // when the user has left the app for more than pwClearTimeout minutes,
         // wipe master password and generated password.
         if (SystemClock.elapsedRealtime() - mLastStoppedTime > pwClearTimeout * 60 * 1000) {
-            mDomainEdit.getText().clear();
-            mMasterPwEdit.getText().clear();
-            clearGenPassword();
-            mDomainEdit.requestFocus();
+            clearEditTexts();
         }
+    }
+
+    private void clearEditTexts() {
+        mDomainEdit.getText().clear();
+        mMasterPwEdit.getText().clear();
+        clearGenPassword();
+        mDomainEdit.requestFocus();
+
     }
 
     @Override
