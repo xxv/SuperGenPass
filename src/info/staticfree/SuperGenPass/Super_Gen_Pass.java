@@ -82,7 +82,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         OnCheckedChangeListener, OnEditorActionListener, FilterQueryProvider {
     private final static String TAG = Super_Gen_Pass.class.getSimpleName();
 
-    DomainBasedHash hasher;
+    DomainBasedHash mHasher;
 
     // @formatter:off
     private static final int
@@ -105,7 +105,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     private EditText mDomainEdit;
     private VisualHashEditText mMasterPwEdit;
 
-    private long lastStoppedTime;
+    private long mLastStoppedTime;
     private int pwClearTimeout;
 
     private ContentResolver mContentResolver;
@@ -143,7 +143,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         final Uri data = intent.getData();
 
         if (savedInstanceState != null) {
-            lastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME, 0);
+            mLastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME, 0);
             mShowingPassword = savedInstanceState.getBoolean(STATE_SHOWING_PASSWORD, false);
         }
 
@@ -218,7 +218,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         // this is overly cautious to avoid memory leaks
         mHandler.removeMessages(MSG_UPDATE_PW_VIEW);
 
-        lastStoppedTime = SystemClock.elapsedRealtime();
+        mLastStoppedTime = SystemClock.elapsedRealtime();
     }
 
     @Override
@@ -226,7 +226,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         super.onResume();
         // when the user has left the app for more than pwClearTimeout minutes,
         // wipe master password and generated password.
-        if (SystemClock.elapsedRealtime() - lastStoppedTime > pwClearTimeout * 60 * 1000) {
+        if (SystemClock.elapsedRealtime() - mLastStoppedTime > pwClearTimeout * 60 * 1000) {
             ((EditText) findViewById(R.id.password_edit)).getText().clear();
             clearGenPassword();
         }
@@ -235,7 +235,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(STATE_LAST_STOPPED_TIME, lastStoppedTime);
+        outState.putLong(STATE_LAST_STOPPED_TIME, mLastStoppedTime);
         outState.putBoolean(STATE_SHOWING_PASSWORD, mShowingPassword);
     }
 
@@ -298,7 +298,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
             domain = extractDomain(domain);
         }
         final String masterPw = getMasterPassword() + pwSalt;
-        final String genPw = hasher.generate(masterPw, domain, pwLength);
+        final String genPw = mHasher.generate(masterPw, domain, pwLength);
 
         mGenPwView.setDomainName(domain);
         mGenPwView.setText(genPw);
@@ -383,7 +383,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     String extractDomain(String maybeUrl) {
         try {
             final Uri uri = Uri.parse(maybeUrl);
-            return hasher.getDomain(uri.getHost());
+            return mHasher.getDomain(uri.getHost());
         } catch (final NullPointerException e) {
             return maybeUrl;
         } catch (final PasswordGenerationException e) {
@@ -634,17 +634,17 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         try {
             if (pwType.equals(SuperGenPass.TYPE)) {
 
-                hasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
 
             } else if (pwType.equals(SuperGenPass.TYPE_SHA_512)) {
 
-                hasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_SHA512);
+                mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_SHA512);
 
             } else if (pwType.equals(PasswordComposer.TYPE)) {
-                hasher = new PasswordComposer(this);
+                mHasher = new PasswordComposer(this);
 
             } else {
-                hasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
                 Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
             }
 
@@ -664,7 +664,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
             finish();
         }
 
-        hasher.setCheckDomain(!noDomainCheck);
+        mHasher.setCheckDomain(!noDomainCheck);
 
         if (noDomainCheck) {
             mDomainEdit.setHint(R.string.domain_hint_no_checking);
