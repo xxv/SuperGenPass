@@ -310,6 +310,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
             mDomainEdit.getText().clear();
             mMasterPwEdit.getText().clear();
             clearGenPassword();
+            mDomainEdit.requestFocus();
         }
     }
 
