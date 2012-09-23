@@ -20,6 +20,9 @@
     <string name="toast_copied">Password for %s copied to clipboard.</string>
     <string name="toast_copied_no_domain">Password copied to clipboard.</string>
     <string name="pin_length">PIN length</string>
+    
+    <string name="tab_password">PASSWORD</string>
+    <string name="tab_pin">PIN</string>
 
     <string-array name="pin_lengths">
         <item>3</item>

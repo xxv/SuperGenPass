@@ -57,9 +57,12 @@
 
             <TabWidget
                 android:id="@android:id/tabs"
-                android:layout_width="match_parent"
+                style="@style/TabWidget"
+                android:layout_width="fill_parent"
+                android:layout_height="48dip"
                 android:gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_marginBottom="4dip"
+                android:orientation="horizontal" />
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
@@ -87,6 +90,7 @@
                         android:layout_alignBottom="@+id/password_output"
                         android:layout_alignParentLeft="true"
                         android:layout_alignTop="@+id/password_output"
+                        android:minWidth="80sp"
                         android:textOff="@string/genpw_hidden"
                         android:textOn="@string/genpw_shown" />
                 </RelativeLayout>
@@ -102,9 +106,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/pin_output"
                         android:layout_alignRight="@+id/show_gen_password"
+                        android:layout_alignTop="@+id/pin_output"
                         android:entries="@array/pin_lengths"
                         android:gravity="center"
-                        android:minWidth="48dip"
+                        android:minWidth="80sp"
                         android:prompt="@string/pin_length"
                         android:spinnerMode="dialog"
                         android:textAppearance="@android:style/TextAppearance.Large" />

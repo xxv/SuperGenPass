@@ -70,6 +70,7 @@ import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -259,9 +260,26 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     private void initTabHost() {
 
         final TabHost mTabHost = (TabHost) findViewById(android.R.id.tabhost);
-        mTabHost.addTab(mTabHost.newTabSpec("password").setContent(R.id.tab_password)
-                .setIndicator("password"));
-        mTabHost.addTab(mTabHost.newTabSpec("pin").setContent(R.id.tab_pin).setIndicator("pin"));
+
+        mTabHost.addTab(createTabSpec(mTabHost, R.string.tab_password, R.id.tab_password,
+                "password"));
+        mTabHost.addTab(createTabSpec(mTabHost, R.string.tab_pin, R.id.tab_pin, "pin"));
+    }
+
+    private TabSpec createTabSpec(TabHost tabhost, int title, int content, String tag) {
+        if (Build.VERSION.SDK_INT < 11) {
+            return tabhost.newTabSpec(tag).setContent(content)
+                    .setIndicator(createTabIndicator(title));
+        } else {
+            return tabhost.newTabSpec(tag).setContent(content).setIndicator(getText(title));
+        }
+    }
+
+    private View createTabIndicator(int titleRes) {
+        final LayoutInflater inflater = LayoutInflater.from(this);
+        final TextView tab = (TextView) inflater.inflate(R.layout.tab_indicator, null);
+        tab.setText(titleRes);
+        return tab;
     }
 
     @Override
@@ -277,7 +295,6 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     @Override
     protected void onResume() {
         super.onResume();
-
         getTabWidget().setVisibility(mShowPin ? View.VISIBLE : View.GONE);
         findViewById(R.id.down_arrow).setVisibility(mShowPin ? View.GONE : View.VISIBLE);
         if (!mShowPin) {

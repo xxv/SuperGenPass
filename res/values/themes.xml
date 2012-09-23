@@ -3,10 +3,12 @@
 
     <style name="AppTheme" parent="@android:style/Theme.Black">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
+        <item name="android:tabWidgetStyle">@style/TabIndicator</item>
     </style>
 
     <style name="ShareTheme" parent="@android:style/Theme.Dialog">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
+        <item name="android:tabWidgetStyle">@style/TabIndicator</item>
     </style>
 
 </resources>
