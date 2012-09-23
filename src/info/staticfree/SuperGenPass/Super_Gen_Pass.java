@@ -357,17 +357,13 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
                         .getMethod("invalidateOptionsMenu");
                 invalidateOptionsMenu.invoke(this);
             } catch (final NoSuchMethodException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e(TAG, "error refreshing menu");
             } catch (final IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e(TAG, "error refreshing menu");
             } catch (final IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e(TAG, "error refreshing menu");
             } catch (final InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e(TAG, "error refreshing menu");
             }
         }
     }
