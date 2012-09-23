@@ -11,6 +11,28 @@ import org.openauthentication.otp.OneTimePasswordAlgorithm;
 import android.content.Context;
 import android.util.Log;
 
+/**
+ * <p>
+ * This generates strong Personal Identification Numbers (PINs).
+ * </p>
+ *
+ * <p>
+ * PINs generated with this can be used for bank accounts, phone lock screens, ATMs, etc. The
+ * generator avoids common bad PINs ("1234", "0000", "0007", etc.) detected using a variety of
+ * techniques.
+ * </p>
+ * <p>
+ * The generation algorithm is a modified version of <a
+ * href="http://tools.ietf.org/html/rfc4226">HOTP</a> which uses the master password for the HMAC
+ * secret and the domain instead of the moving factor. If a bad PIN is detected, the text " 1" is
+ * added to the end of the domain and it's recomputed. If a bad PIN is still generated, it suffixes
+ * " 2" instead and will continue in this way until a good PIN comes out.
+ * </p>
+ *
+ * @author <a href="mailto:steve@staticfree.info">Steve Pomeroy</a>
+ * @see OneTimePasswordAlgorithm#generateOTPFromText(byte[], byte[], int, boolean, int)
+ * 
+ */
 public class HotpPin extends DomainBasedHash {
 
     private static final String TAG = HotpPin.class.getSimpleName();
@@ -86,7 +108,7 @@ public class HotpPin extends DomainBasedHash {
      * @param pin
      * @return
      */
-    public boolean isIncompleteNumericRun(String pin) {
+    public boolean isIncompleteNumericalRun(String pin) {
         final int len = pin.length();
         int consecutive = 0;
         char last = pin.charAt(0);
@@ -162,7 +184,7 @@ public class HotpPin extends DomainBasedHash {
             return true;
         }
 
-        if (isIncompleteNumericRun(pin)) {
+        if (isIncompleteNumericalRun(pin)) {
             return true;
         }
 

@@ -10,8 +10,7 @@ import android.test.AndroidTestCase;
 public class TestHotpPin extends AndroidTestCase {
 
     public void testHotpPin() throws PasswordGenerationException, IOException {
-        HotpPin pinGen;
-        pinGen = new HotpPin(mContext);
+        final HotpPin pinGen = new HotpPin(mContext);
 
         // these are bad to give as an output
 
@@ -30,6 +29,42 @@ public class TestHotpPin extends AndroidTestCase {
 
     }
 
+    public void testNumericRuns() throws IOException {
+        final HotpPin pinGen = new HotpPin(mContext);
+
+        // these are bad to give as an output
+
+        assertTrue(pinGen.isNumericalRun("1111"));
+        assertTrue(pinGen.isNumericalRun("1234"));
+        assertTrue(pinGen.isNumericalRun("4321"));
+        assertTrue(pinGen.isNumericalRun("2468"));
+        assertTrue(pinGen.isNumericalRun("0000"));
+        assertTrue(pinGen.isNumericalRun("9999"));
+        assertTrue(pinGen.isNumericalRun("0369"));
+
+        // these aren't runs
+
+        assertFalse(pinGen.isNumericalRun("0101"));
+        assertFalse(pinGen.isNumericalRun("1235"));
+    }
+
+    public void testIncompleteNumericRuns() throws IOException {
+        final HotpPin pinGen = new HotpPin(mContext);
+
+        // these are bad to give as an output
+
+        assertTrue(pinGen.isIncompleteNumericalRun("1111"));
+        assertTrue(pinGen.isIncompleteNumericalRun("1113"));
+        assertTrue(pinGen.isIncompleteNumericalRun("3111"));
+        assertTrue(pinGen.isIncompleteNumericalRun("10001"));
+        assertTrue(pinGen.isIncompleteNumericalRun("011101"));
+
+        // these aren't runs
+        assertFalse(pinGen.isIncompleteNumericalRun("0010"));
+        assertFalse(pinGen.isIncompleteNumericalRun("1234"));
+
+    }
+
     public void testGeneratedLength() throws PasswordGenerationException, IOException {
         final HotpPin pinGen = new HotpPin(mContext);
 
@@ -38,7 +73,7 @@ public class TestHotpPin extends AndroidTestCase {
         }
     }
 
-    public void testInvalidLength() throws IOException {
+    public void testInvalidLengths() throws IOException {
         final HotpPin pinGen = new HotpPin(mContext);
         testInvalidLength(pinGen, -1);
         testInvalidLength(pinGen, 0);
