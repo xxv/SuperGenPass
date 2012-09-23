@@ -300,11 +300,15 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         if (!mShowPin) {
             getTabHost().setCurrentTab(0);
         }
+        clearEditTextsIfExpired();
+    }
 
+    private void clearEditTextsIfExpired() {
         // when the user has left the app for more than pwClearTimeout minutes,
         // wipe master password and generated password.
         if (SystemClock.elapsedRealtime() - mLastStoppedTime > pwClearTimeout * 60 * 1000) {
-            ((EditText) findViewById(R.id.password_edit)).getText().clear();
+            mDomainEdit.getText().clear();
+            mMasterPwEdit.getText().clear();
             clearGenPassword();
         }
     }
@@ -446,8 +450,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     }
 
     String getMasterPassword() {
-        final EditText txt = (EditText) findViewById(R.id.password_edit);
-        return txt.getText().toString();
+        return mMasterPwEdit.getText().toString();
     }
 
     /**
