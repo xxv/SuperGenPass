@@ -39,6 +39,11 @@
             android:key="visual_hash"
             android:summary="@string/pref_visual_hash_summary"
             android:title="@string/pref_visual_hash" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_pin"
+            android:summary="@string/pref_pin_summary"
+            android:title="@string/pref_pin_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_pw_salt_category" >
         <EditTextPreference

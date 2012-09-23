@@ -14,7 +14,10 @@
         android:hint="@string/domain_hint"
         android:imeOptions="actionNext"
         android:inputType="textUri"
-        android:singleLine="true" />
+        android:singleLine="true" >
+
+        <requestFocus />
+    </AutoCompleteTextView>
 
     <info.staticfree.SuperGenPass.VisualHashEditText
         android:id="@+id/password_edit"
@@ -41,36 +44,83 @@
         android:contentDescription="@null"
         android:src="@drawable/bg_arrow_down" />
 
-    <info.staticfree.SuperGenPass.GeneratedPasswordView
-        android:id="@+id/password_output"
-        android:layout_width="fill_parent"
+    <TabHost
+        android:id="@android:id/tabhost"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/down_arrow"
-        android:layout_toRightOf="@+id/show_gen_password"
-        android:inputType="textPassword"
-        android:minEms="10"
-        android:textSize="30sp" />
+        android:layout_below="@+id/down_arrow" >
 
-    <ToggleButton
-        android:id="@+id/show_gen_password"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignBottom="@+id/password_output"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/password_output"
-        android:textOff="@string/genpw_hidden"
-        android:textOn="@string/genpw_shown" />
-    
-    <TextView android:id="@+id/label_pin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/password_output" android:text="PIN" android:textAppearance="@android:style/TextAppearance.Large" android:layout_alignBottom="@+id/pin_output" android:gravity="center_vertical"/>
-    
-    <info.staticfree.SuperGenPass.GeneratedPasswordView
-        android:id="@+id/pin_output"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/password_output"
-        android:layout_toRightOf="@+id/label_pin"
-        android:inputType="textPassword"
-        android:minEms="10"
-        android:textSize="30sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <RelativeLayout
+                    android:id="@+id/tab_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <info.staticfree.SuperGenPass.GeneratedPasswordView
+                        android:id="@+id/password_output"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/show_gen_password"
+                        android:inputType="textPassword"
+                        android:minEms="10"
+                        android:textSize="30sp" />
+
+                    <ToggleButton
+                        android:id="@+id/show_gen_password"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/password_output"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignTop="@+id/password_output"
+                        android:textOff="@string/genpw_hidden"
+                        android:textOn="@string/genpw_shown" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tab_pin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <Spinner
+                        android:id="@+id/pin_length"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/pin_output"
+                        android:layout_alignRight="@+id/show_gen_password"
+                        android:entries="@array/pin_lengths"
+                        android:gravity="center"
+                        android:minWidth="48dip"
+                        android:prompt="@string/pin_length"
+                        android:spinnerMode="dialog"
+                        android:textAppearance="@android:style/TextAppearance.Large" />
+
+                    <info.staticfree.SuperGenPass.GeneratedPasswordView
+                        android:id="@+id/pin_output"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/pin_length"
+                        android:editable="false"
+                        android:inputType="text"
+                        android:minEms="10"
+                        android:textSize="30sp" />
+                </RelativeLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
 
 </RelativeLayout>

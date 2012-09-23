@@ -34,6 +34,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.app.TabActivity;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,12 +61,15 @@ import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -78,7 +82,7 @@ import android.widget.ToggleButton;
 // so nothing should be holding onto references past this activity's lifetime.
 @SuppressLint("HandlerLeak")
 @SuppressWarnings("deprecation")
-public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongClickListener,
+public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLongClickListener,
         OnCheckedChangeListener, OnEditorActionListener, FilterQueryProvider {
     private final static String TAG = Super_Gen_Pass.class.getSimpleName();
 
@@ -102,7 +106,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     private boolean noDomainCheck;
 
     private GeneratedPasswordView mGenPwView;
-    private EditText mDomainEdit;
+    private AutoCompleteTextView mDomainEdit;
     private VisualHashEditText mMasterPwEdit;
 
     private long mLastStoppedTime;
@@ -111,6 +115,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     private ContentResolver mContentResolver;
 
     private static final int MSG_UPDATE_PW_VIEW = 100;
+
+    private static final int MIN_PIN_LENGTH = 3;
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -126,6 +132,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     private ToggleButton mShowGenPassword;
 
     private GeneratedPasswordView mGenPinView;
+
+    private Spinner mPinDigitsSpinner;
 
     /** Called when the activity is first created. */
     @Override
@@ -149,45 +157,18 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
 
         mContentResolver = getContentResolver();
 
-        mDomainEdit = (EditText) findViewById(R.id.domain_edit);
+        initTabHost();
 
-        mGenPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
-        mGenPwView.setOnLongClickListener(this);
+        initPinWidgets();
 
-        mGenPinView = (GeneratedPasswordView) findViewById(R.id.pin_output);
-        mGenPinView.setOnLongClickListener(this);
-
-        mMasterPwEdit = ((VisualHashEditText) findViewById(R.id.password_edit));
-
-        mMasterPwEdit.setOnEditorActionListener(this);
-
-        // hook in our buttons
-        mShowGenPassword = ((ToggleButton) findViewById(R.id.show_gen_password));
-        mShowGenPassword.setOnCheckedChangeListener(this);
-
+        initDomainPasswordEntry();
+        initGenPassword();
         bindTextWatchers();
 
         loadFromPreferences();
 
-        final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_dropdown_item_1line, null, new String[] { "domain" },
-                new int[] { android.R.id.text1 });
-
-        adapter.setFilterQueryProvider(this);
-        adapter.setStringConversionColumn(DOMAIN_COLUMN);
-
-        // initialize the autocompletion
-        final AutoCompleteTextView domainEdit = (AutoCompleteTextView) findViewById(R.id.domain_edit);
-        domainEdit.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                mMasterPwEdit.requestFocus();
-
-            }
-
-        });
-        domainEdit.setAdapter(adapter);
+        // sometimes the domain doesn't have focus when first started. Perhaps because of the tabs?
+        mDomainEdit.requestFocus();
 
         // check for the "share page" intent. If present, pre-fill.
 
@@ -198,7 +179,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
                 try {
                     // populate the URL and give the password entry focus
                     final Uri uri = Uri.parse(maybeUrl);
-                    domainEdit.setText(hasher.getDomain(uri.getHost()));
+
+                    mDomainEdit.setText(mHasher.getDomain(uri.getHost()));
                     mMasterPwEdit.requestFocus();
 
                 } catch (final Exception e) {
@@ -209,6 +191,77 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
                 }
             }
         }
+    }
+
+    private void initDomainPasswordEntry() {
+        mDomainEdit = (AutoCompleteTextView) findViewById(R.id.domain_edit);
+
+        mMasterPwEdit = ((VisualHashEditText) findViewById(R.id.password_edit));
+
+        mMasterPwEdit.setOnEditorActionListener(this);
+
+        final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_dropdown_item_1line, null, new String[] { "domain" },
+                new int[] { android.R.id.text1 });
+
+        adapter.setFilterQueryProvider(this);
+        adapter.setStringConversionColumn(DOMAIN_COLUMN);
+
+        // initialize the autocompletion
+        mDomainEdit.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                mMasterPwEdit.requestFocus();
+            }
+        });
+        mDomainEdit.setAdapter(adapter);
+    }
+
+    private void initGenPassword() {
+
+        mGenPwView = (GeneratedPasswordView) findViewById(R.id.password_output);
+        mGenPwView.setOnLongClickListener(this);
+
+        // hook in our buttons
+        mShowGenPassword = ((ToggleButton) findViewById(R.id.show_gen_password));
+        mShowGenPassword.setOnCheckedChangeListener(this);
+    }
+
+    private void initPinWidgets() {
+        mGenPinView = (GeneratedPasswordView) findViewById(R.id.pin_output);
+        mGenPinView.setOnLongClickListener(this);
+
+        mPinDigitsSpinner = (Spinner) findViewById(R.id.pin_length);
+        mPinDigitsSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mPinDigits = position + MIN_PIN_LENGTH;
+
+                // run on a thread as commit() can take a while.
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final SharedPreferences prefs = PreferenceManager
+                                .getDefaultSharedPreferences(Super_Gen_Pass.this);
+                        prefs.edit().putInt(Preferences.PREF_PIN_DIGITS, mPinDigits).commit();
+                    }
+                }).start();
+                generateIfValid();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void initTabHost() {
+
+        final TabHost mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+        mTabHost.addTab(mTabHost.newTabSpec("password").setContent(R.id.tab_password)
+                .setIndicator("password"));
+        mTabHost.addTab(mTabHost.newTabSpec("pin").setContent(R.id.tab_pin).setIndicator("pin"));
     }
 
     @Override
@@ -224,6 +277,13 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
     @Override
     protected void onResume() {
         super.onResume();
+
+        getTabWidget().setVisibility(mShowPin ? View.VISIBLE : View.GONE);
+        findViewById(R.id.down_arrow).setVisibility(mShowPin ? View.GONE : View.VISIBLE);
+        if (!mShowPin) {
+            getTabHost().setCurrentTab(0);
+        }
+
         // when the user has left the app for more than pwClearTimeout minutes,
         // wipe master password and generated password.
         if (SystemClock.elapsedRealtime() - mLastStoppedTime > pwClearTimeout * 60 * 1000) {
@@ -303,7 +363,7 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
         mGenPwView.setDomainName(domain);
         mGenPwView.setText(genPw);
 
-        if (mPinGen != null) {
+        if (mPinGen != null && mShowPin) {
             final String pin = mPinGen.generate(masterPw, domain, mPinDigits);
             mGenPinView.setDomainName(domain);
             mGenPinView.setText(pin);
@@ -414,7 +474,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
                         | InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
                 mGenPwView.setInputType(inputType);
-                mGenPinView.setInputType(inputType);
 
                 // run on a thread as commit() can take a while.
                 new Thread(new Runnable() {
@@ -591,7 +650,6 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mHandler.sendEmptyMessage(MSG_UPDATE_PW_VIEW);
             }
-
         });
 
         mMasterPwEdit.addTextChangedListener(new TextWatcher() {
@@ -628,7 +686,8 @@ public class Super_Gen_Pass extends Activity implements OnClickListener, OnLongC
                 Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
 
         // PIN
-        mPinDigits = Preferences.getStringAsInteger(prefs, Preferences.PREF_PIN_DIGITS, 4);
+        mPinDigits = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4);
+        mPinDigitsSpinner.setSelection(mPinDigits - MIN_PIN_LENGTH);
         mShowPin = prefs.getBoolean(Preferences.PREF_SHOW_PIN, true);
 
         try {
