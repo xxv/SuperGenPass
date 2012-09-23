@@ -145,6 +145,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         }
     };
 
+    private boolean mPleaseDontClearDomain;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -192,6 +194,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
                     mDomainEdit.setText(mHasher.getDomain(uri.getHost()));
                     mMasterPwEdit.requestFocus();
+                    mPleaseDontClearDomain = true;
 
                 } catch (final Exception e) {
                     // nothing much to be done here.
@@ -318,9 +321,11 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         }
         // when the user has left the app for more than pwClearTimeout minutes,
         // wipe master password and generated password.
-        if (SystemClock.elapsedRealtime() - mLastStoppedTime > pwClearTimeout * 60 * 1000) {
+        if (!mPleaseDontClearDomain
+                && SystemClock.elapsedRealtime() - mLastStoppedTime > pwClearTimeout * 60 * 1000) {
             clearEditTexts();
         }
+        mPleaseDontClearDomain = false;
     }
 
     private void clearEditTexts() {
