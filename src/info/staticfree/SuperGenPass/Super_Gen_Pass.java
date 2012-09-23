@@ -137,6 +137,14 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
     private Spinner mPinDigitsSpinner;
 
+    private final BroadcastReceiver mScreenOffReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            clearEditTexts();
+            unregisterReceiver(this);
+        }
+    };
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -285,21 +293,17 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
     @Override
     protected void onPause() {
+
+        // listen for a screen off event and clear everything if received.
+        if (mShowingPassword) {
+            registerReceiver(mScreenOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        }
+
         super.onPause();
 
         // this is overly cautious to avoid memory leaks
         mHandler.removeMessages(MSG_UPDATE_PW_VIEW);
 
-        // listen for a screen off event and clear everything if received.
-        if (mShowingPassword) {
-            registerReceiver(new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    clearEditTexts();
-                    unregisterReceiver(this);
-                }
-            }, new IntentFilter(Intent.ACTION_SCREEN_OFF));
-        }
 
         mLastStoppedTime = SystemClock.elapsedRealtime();
     }
