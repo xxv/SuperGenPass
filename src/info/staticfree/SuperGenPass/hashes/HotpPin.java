@@ -81,6 +81,43 @@ public class HotpPin extends DomainBasedHash {
     }
 
     /**
+     * Tests the string to see if it contains a partial numeric run. Eg. 3000, 5553
+     *
+     * @param pin
+     * @return
+     */
+    public boolean isIncompleteNumericRun(String pin) {
+        final int len = pin.length();
+        int consecutive = 0;
+        char last = pin.charAt(0);
+        for (int i = 1; i < len; i++) {
+            final char c = pin.charAt(i);
+            if (last == c) {
+                consecutive++;
+            } else {
+                consecutive = 0;
+            }
+            last = c;
+            if (consecutive >= 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This is a hard-coded list of specific PINs that have cultural meaning. While they may be
+     * improbable, none the less they won't output from the generation.
+     */
+    private static final String[] BLACKLISTED_PINS = new String[] { "90210",
+            "8675309" /* Jenny */,
+            "1004" /* 10-4 */,
+            // in this document http://www.datagenetics.com/blog/september32012/index.html
+            // these were shown to be the least commonly used. Now they won't be used at all.
+            "8068", "8093", "9629", "6835", "7637", "0738", "8398", "6793", "9480", "8957", "0859",
+            "7394", "6827", "6093", "7063", "8196", "9539", "0439", "8438", "9047", "8557" };
+
+    /**
      * Tests to see if the PIN is a "bad" pin. That is, one that is easily guessable. Essentially,
      * this is a blacklist of the most commonly used PINs like "1234", "0000" and "1984".
      *
@@ -104,20 +141,14 @@ public class HotpPin extends DomainBasedHash {
             if (start == end) {
                 return true;
             }
-
-            // PINs that don't otherwise match the patterns from the top 20 list here:
-            // http://www.datagenetics.com/blog/september32012/index.html
-            if (start == 10 && end == 4) {
-                return true;
-            }
         }
 
         // find case where all digits are in pairs
         // eg 1122 3300447722
 
-        if (len % 2 == 0){
+        if (len % 2 == 0) {
             boolean paired = true;
-            for (int i = 0; i < len - 1 ; i += 2){
+            for (int i = 0; i < len - 1; i += 2) {
                 if (pin.charAt(i) != pin.charAt(i + 1)) {
                     paired = false;
                 }
@@ -129,6 +160,17 @@ public class HotpPin extends DomainBasedHash {
 
         if (isNumericalRun(pin)) {
             return true;
+        }
+
+        if (isIncompleteNumericRun(pin)) {
+            return true;
+        }
+
+        // filter out special numbers
+        for (final String blacklisted : BLACKLISTED_PINS) {
+            if (blacklisted.equals(pin)) {
+                return true;
+            }
         }
 
         return false;

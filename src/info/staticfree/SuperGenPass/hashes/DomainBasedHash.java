@@ -127,12 +127,17 @@ public abstract class DomainBasedHash {
     }
 
     /**
-     * Generates a domain password based on the PasswordComposer algorithm.
-     *
-     * @param masterPass master password
-     * @param domain un-filtered domain (eg. www.example.org)
-     * @return generated password
+     * Generates a password based on the given domain and a master password. Each time the method is
+     * passed a given master password / domain, it will output the same password for that pair.
+     * 
+     * @param masterPass
+     *            master password
+     * @param domain
+     *            un-filtered domain (eg. www.example.org)
+     * @return generated password based on the master password and the domain
      * @throws PasswordGenerationException
+     *             if the criteria for generating the password are not met. Often a length or domain
+     *             issue.
      */
     public abstract String generate(String masterPass, String domain, int length) throws PasswordGenerationException;
 }

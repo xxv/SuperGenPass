@@ -28,19 +28,51 @@ public class TestHotpPin extends AndroidTestCase {
 
         assertEquals("3097", pinGen.generate("foo", "example.org", 4));
 
+    }
+
+    public void testGeneratedLength() throws PasswordGenerationException, IOException {
+        final HotpPin pinGen = new HotpPin(mContext);
+
         for (int i = 3; i <= 8; i++) {
             assertTrue(pinGen.generate("foo", "example.org", i).length() == i);
         }
+    }
 
+    public void testInvalidLength() throws IOException {
+        final HotpPin pinGen = new HotpPin(mContext);
+        testInvalidLength(pinGen, -1);
+        testInvalidLength(pinGen, 0);
+        testInvalidLength(pinGen, 1);
+        testInvalidLength(pinGen, 2);
+        testInvalidLength(pinGen, 9);
+        testInvalidLength(pinGen, 100);
+    }
+
+    private void testInvalidLength(HotpPin pinGen, int len) {
+        boolean thrown = false;
+        try {
+            pinGen.generate("foo", "example.org", len);
+        } catch (final PasswordGenerationException e) {
+            thrown = true;
+        }
+        assertTrue("exception not thrown for length " + len, thrown);
+    }
+
+    public void testBadPins() throws IOException {
+        final HotpPin pinGen = new HotpPin(mContext);
         final String[] badPins = new String[] { "0000", "1111", "1234", "1984", "2001", "1122",
-                "553388", "1234567", "8844", "9876", "9753" };
+                "553388", "1234567", "8844", "9876", "9753", "2000", "8000", "10001", "4111",
+                "0007", "90210", "1004", "8068", "90210" };
 
         for (final String badPin : badPins) {
-            assertTrue(pinGen.isBadPin(badPin));
+            assertTrue("bad PIN: " + badPin + " not detected to be bad", pinGen.isBadPin(badPin));
         }
+    }
 
+    public void testGoodPins() throws IOException {
+        final HotpPin pinGen = new HotpPin(mContext);
         final String[] goodPins = new String[] { "1837", "7498", "8347", "7426", "7172", "9012",
-                "8493" };
+                "8493", "400500", "4385719", "12349" };
 
         for (final String goodPin : goodPins) {
             assertFalse(pinGen.isBadPin(goodPin));
