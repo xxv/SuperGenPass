@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.text.TextUtils;
+
 public class ProviderUtils {
 
     /**
@@ -29,7 +31,8 @@ public class ProviderUtils {
      * @return
      */
     public static String addExtraWhere(String where, String ... extraWhere){
-            final String extraWhereJoined = "(" + ListUtils.join(Arrays.asList(extraWhere), ") AND (") + ")";
+        final String extraWhereJoined = "(" + TextUtils.join(") AND (", Arrays.asList(extraWhere))
+                + ")";
             return extraWhereJoined + (where != null && where.length() > 0 ? " AND ("+where+")":"");
     }
 
