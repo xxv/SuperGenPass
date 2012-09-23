@@ -78,10 +78,7 @@
                         android:id="@+id/password_output"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/show_gen_password"
-                        android:inputType="textPassword"
-                        android:minEms="10"
-                        android:textSize="30sp" />
+                        android:layout_toRightOf="@+id/show_gen_password" />
 
                     <ToggleButton
                         android:id="@+id/show_gen_password"
@@ -120,9 +117,7 @@
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/pin_length"
                         android:editable="false"
-                        android:inputType="text"
-                        android:minEms="10"
-                        android:textSize="30sp" />
+                        android:inputType="text" />
                 </RelativeLayout>
             </FrameLayout>
         </LinearLayout>
