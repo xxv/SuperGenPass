@@ -6,6 +6,7 @@ import info.staticfree.SuperGenPass.hashes.HotpPin;
 import java.io.IOException;
 
 import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.LargeTest;
 
 public class TestHotpPin extends AndroidTestCase {
 
@@ -111,6 +112,18 @@ public class TestHotpPin extends AndroidTestCase {
 
         for (final String goodPin : goodPins) {
             assertFalse(pinGen.isBadPin(goodPin));
+        }
+    }
+
+    @LargeTest
+    public void testATonOfPasswords() throws PasswordGenerationException, IOException {
+        final HotpPin pinGen = new HotpPin(mContext);
+        for (int len = 3; len < 8; len++) {
+            for (int i = 0; i < 1000; i++) {
+                final String pin = pinGen.generate(String.valueOf(i), "example.org", len);
+                assertNotNull(pin);
+                assertEquals(len, pin.length());
+            }
         }
     }
 }

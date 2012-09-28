@@ -31,7 +31,7 @@ import android.util.Log;
  *
  * @author <a href="mailto:steve@staticfree.info">Steve Pomeroy</a>
  * @see OneTimePasswordAlgorithm#generateOTPFromText(byte[], byte[], int, boolean, int)
- * 
+ *
  */
 public class HotpPin extends DomainBasedHash {
 
@@ -48,19 +48,34 @@ public class HotpPin extends DomainBasedHash {
         if (length < 3 || length > 8) {
             throw new PasswordGenerationException("length must be >= 3 and <= 8");
         }
+
+        if (masterPass.length() == 0 || domain.length() == 0) {
+            throw new PasswordGenerationException(
+                    "master password and domain must be at least one character");
+        }
+
         try {
             String pin = OneTimePasswordAlgorithm.generateOTPFromText(masterPass.getBytes(),
                     domain.getBytes(), length, false, -1);
-            final int suffix = 0;
+
+            if (pin.length() != length) {
+                throw new PasswordGenerationException("PIN generator error; requested length "
+                        + length + ", but got " + pin.length());
+            }
+
+            int suffix = 0;
             int loopOverrun = 0;
+
             while (isBadPin(pin)) {
                 final String suffixedDomain = domain + " " + suffix;
                 pin = OneTimePasswordAlgorithm.generateOTPFromText(masterPass.getBytes(),
                         suffixedDomain.getBytes(), length, false, -1);
+
                 loopOverrun++;
+                suffix++;
                 if (loopOverrun > 100) {
                     throw new PasswordGenerationException(
-                            "Programming error: looped too many times");
+                            "PIN generator programming error: looped too many times");
                 }
             }
             return pin;
