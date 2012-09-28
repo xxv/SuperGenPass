@@ -51,7 +51,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -423,8 +422,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         if (copyToClipboard) {
             mGenPwView.copyToClipboard();
 
-            if (Intent.ACTION_SEND.equals(getIntent().getAction())
-                    && (mGenPwView.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0) {
+            if (Intent.ACTION_SEND.equals(getIntent().getAction()) && mGenPwView.getHidePassword()) {
                 finish();
             }
         }
@@ -508,11 +506,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.show_gen_password: {
-                final int inputType = isChecked ? InputType.TYPE_CLASS_TEXT
-                        | InputType.TYPE_TEXT_VARIATION_NORMAL : InputType.TYPE_CLASS_TEXT
-                        | InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
-                mGenPwView.setInputType(inputType);
+                mGenPwView.setHidePassword(!isChecked);
 
                 // run on a thread as commit() can take a while.
                 new Thread(new Runnable() {
@@ -778,7 +773,10 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
             mMasterPwEdit.setImeActionLabel(getText(R.string.done), R.id.go);
         }
 
-        mShowGenPassword.setChecked(prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false));
+        final boolean showPassword = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false);
+
+        mGenPwView.setHidePassword(!showPassword);
+        mShowGenPassword.setChecked(showPassword);
     }
 
     private static final String[] PROJECTION = { Domain.DOMAIN, Domain._ID };

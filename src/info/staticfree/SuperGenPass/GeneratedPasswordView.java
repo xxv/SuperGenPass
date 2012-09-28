@@ -5,7 +5,10 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.ClipboardManager;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.NumberKeyListener;
+import android.text.method.PasswordTransformationMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -38,6 +41,17 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
         super(context, attrs, defStyle);
 
         super.setOnClickListener(this);
+
+        setKeyListener(new NumberKeyListener() {
+            public int getInputType() {
+                return InputType.TYPE_NULL;
+            }
+
+            @Override
+            protected char[] getAcceptedChars() {
+                return new char[] {};
+            }
+        });
     }
 
     @Override
@@ -46,7 +60,6 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
     }
 
     public void onClick(View v) {
-        requestFocus();
         Log.d("gpwv", "click!");
 
         // propagate the click
@@ -105,6 +118,18 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
                         Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void setHidePassword(boolean hidePassword) {
+        if (hidePassword) {
+            setTransformationMethod(PasswordTransformationMethod.getInstance());
+        } else {
+            setTransformationMethod(null);
+        }
+    }
+
+    public boolean getHidePassword() {
+        return getTransformationMethod() != null;
     }
 
     public boolean onMenuItemClick(MenuItem item) {
