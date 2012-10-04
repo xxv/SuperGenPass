@@ -60,14 +60,18 @@
                 style="@style/TabWidget"
                 android:layout_width="fill_parent"
                 android:layout_height="48dip"
-                android:gravity="center"
                 android:layout_marginBottom="4dip"
+                android:gravity="center"
                 android:orientation="horizontal" />
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
+
+                <info.staticfree.workarounds.TabPatchView
+                    android:layout_width="0dip"
+                    android:layout_height="0dip" />
 
                 <RelativeLayout
                     android:id="@+id/tab_password"

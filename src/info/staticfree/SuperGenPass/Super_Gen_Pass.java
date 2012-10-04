@@ -306,7 +306,6 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         // this is overly cautious to avoid memory leaks
         mHandler.removeMessages(MSG_UPDATE_PW_VIEW);
 
-
         mLastStoppedTime = SystemClock.elapsedRealtime();
     }
 
