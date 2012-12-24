@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.LargeTest;
 
 public class SuperGenPassTest extends AndroidTestCase {
 
@@ -94,5 +95,19 @@ public class SuperGenPassTest extends AndroidTestCase {
     public void testSha1() throws NoSuchAlgorithmException, IOException {
         final SuperGenPass sgp = new SuperGenPass(mContext, "sha1");
         sgp.setCheckDomain(true);
+    }
+
+    @LargeTest
+    public void testATonOfPasswordsSha1() throws PasswordGenerationException, IOException,
+            NoSuchAlgorithmException {
+        final SuperGenPass sgp = new SuperGenPass(mContext, "sha1");
+        Utils.testATonOfPasswords(sgp, 4, 10);
+    }
+
+    @LargeTest
+    public void testATonOfPasswordsMd5() throws PasswordGenerationException, IOException,
+            NoSuchAlgorithmException {
+        final SuperGenPass sgp = new SuperGenPass(mContext, "md5");
+        Utils.testATonOfPasswords(sgp, 4, 10);
     }
 }

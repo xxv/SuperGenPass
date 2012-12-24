@@ -118,12 +118,6 @@ public class TestHotpPin extends AndroidTestCase {
     @LargeTest
     public void testATonOfPasswords() throws PasswordGenerationException, IOException {
         final HotpPin pinGen = new HotpPin(mContext);
-        for (int len = 3; len < 8; len++) {
-            for (int i = 0; i < 1000; i++) {
-                final String pin = pinGen.generate(String.valueOf(i), "example.org", len);
-                assertNotNull(pin);
-                assertEquals(len, pin.length());
-            }
-        }
+        Utils.testATonOfPasswords(pinGen, 3, 8);
     }
 }
