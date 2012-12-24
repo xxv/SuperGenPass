@@ -64,6 +64,16 @@ public class PasswordComposer extends DomainBasedHash {
         if (domain.equals("")){
             throw new IllegalDomainException("Missing domain");
         }
+
+        if (masterPass.equals("")) {
+            throw new PasswordGenerationException("empty password");
+        }
+
+        if (length < 1 || length > 31) {
+            throw new PasswordGenerationException(
+                    "Requested length out of range. Expecting value between 1 and 31 inclusive.");
+        }
+
         return md5hex(new String(masterPass + ":" + getDomain(domain)).getBytes()).substring(0, length);
     }
 }
