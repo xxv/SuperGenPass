@@ -100,7 +100,8 @@ public class SuperGenPass extends DomainBasedHash {
      * @see http://supergenpass.com/
      */
     @Override
-    public String generate(String masterPass, String domain, int length) throws PasswordGenerationException{
+    public String generateWithFilteredDomain(String masterPass, String domain, int length)
+            throws PasswordGenerationException {
         if (length < 4 || length > 24){
             throw new PasswordGenerationException("Requested length out of range. Expecting value between 4 and 24 inclusive.");
         }
@@ -108,7 +109,7 @@ public class SuperGenPass extends DomainBasedHash {
             throw new IllegalDomainException("Missing domain");
         }
 
-         String pwSeed = masterPass + ":" + getDomain(domain);
+        String pwSeed = masterPass + ":" + domain;
 
         // wash ten times
         for (int i = 0; i < 10; i++){

@@ -60,7 +60,8 @@ public class PasswordComposer extends DomainBasedHash {
      * @see http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/
      */
     @Override
-    public String generate(String masterPass, String domain, int length) throws PasswordGenerationException {
+    public String generateWithFilteredDomain(String masterPass, String domain, int length)
+            throws PasswordGenerationException {
         if (domain.equals("")){
             throw new IllegalDomainException("Missing domain");
         }
@@ -74,6 +75,6 @@ public class PasswordComposer extends DomainBasedHash {
                     "Requested length out of range. Expecting value between 1 and 31 inclusive.");
         }
 
-        return md5hex(new String(masterPass + ":" + getDomain(domain)).getBytes()).substring(0, length);
+        return md5hex(new String(masterPass + ":" + domain).getBytes()).substring(0, length);
     }
 }

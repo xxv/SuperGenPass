@@ -22,7 +22,7 @@ public class HmacPin extends DomainBasedHash {
     }
 
     @Override
-    public String generate(String masterPass, String domain, int length)
+    public String generateWithFilteredDomain(String masterPass, String domain, int length)
             throws PasswordGenerationException {
         try {
             final Mac mac = Mac.getInstance("hmac");

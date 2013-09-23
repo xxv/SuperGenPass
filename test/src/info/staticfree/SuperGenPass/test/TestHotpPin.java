@@ -30,6 +30,20 @@ public class TestHotpPin extends AndroidTestCase {
 
     }
 
+    public void testDomainFiltering() throws IOException, PasswordGenerationException {
+        final HotpPin pinGen = new HotpPin(mContext);
+        pinGen.setCheckDomain(true);
+        assertEquals(pinGen.generate("foo", "foo.example.org", 4),
+                pinGen.generate("foo", "example.org", 4));
+    }
+
+    public void testDomainFilteringOff() throws IOException, PasswordGenerationException {
+        final HotpPin pinGen = new HotpPin(mContext);
+        pinGen.setCheckDomain(false);
+        assertFalse(pinGen.generate("foo", "foo.example.org", 4).equals(
+                pinGen.generate("foo", "example.org", 4)));
+    }
+
     public void testNumericRuns() throws IOException {
         final HotpPin pinGen = new HotpPin(mContext);
 

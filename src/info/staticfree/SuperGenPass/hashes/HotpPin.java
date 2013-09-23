@@ -42,7 +42,7 @@ public class HotpPin extends DomainBasedHash {
     }
 
     @Override
-    public String generate(String masterPass, String domain, int length)
+    protected String generateWithFilteredDomain(String masterPass, String domain, int length)
             throws PasswordGenerationException {
 
         if (length < 3 || length > 8) {

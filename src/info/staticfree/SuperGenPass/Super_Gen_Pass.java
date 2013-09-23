@@ -757,6 +757,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         }
 
         mHasher.setCheckDomain(!noDomainCheck);
+        mPinGen.setCheckDomain(!noDomainCheck);
 
         if (noDomainCheck) {
             mDomainEdit.setHint(R.string.domain_hint_no_checking);
