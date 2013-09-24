@@ -38,6 +38,7 @@
         </p>
     <h3>Recent Changes</h3>
     <ul>
+        <li>v2.2.3 - Bugfix:  Major bugfix on PIN generation. If you generated a PIN using this app for a domain that contains a sub-domain (e.g. foo.example.org), the sub-domain was not properly stripped. This is now fixed so it works like SGP. To generate PINs in the same way as they were before this fix, disable domain checking in the Settings.</li>
         <li>v2.2.2 - Bugfixes: fixes hardware keyboard focus issue; fixes lockup when generating PIN; fixes editablity of the password output field.</li>
         <li>v2.2.1 - Adds PIN generation; clears passwords on screen off; adds unit tests</li>
         <li>v2.1 - adds salt QR code scanning / generation; parses URLs (thanks Mike Tsao!); cleans up preference screen</li>
