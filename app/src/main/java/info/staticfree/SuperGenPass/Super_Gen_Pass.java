@@ -19,16 +19,6 @@ package info.staticfree.SuperGenPass;
 
  */
 
-import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
-import info.staticfree.SuperGenPass.hashes.HotpPin;
-import info.staticfree.SuperGenPass.hashes.PasswordComposer;
-import info.staticfree.SuperGenPass.hashes.SuperGenPass;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.NoSuchAlgorithmException;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -77,6 +67,16 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.NoSuchAlgorithmException;
+
+import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
+import info.staticfree.SuperGenPass.hashes.HotpPin;
+import info.staticfree.SuperGenPass.hashes.PasswordComposer;
+import info.staticfree.SuperGenPass.hashes.SuperGenPass;
 
 // TODO Wipe generated password from clipboard after delay.
 
