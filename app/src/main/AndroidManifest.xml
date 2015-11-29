@@ -10,7 +10,7 @@
         android:smallScreens="true" />
 
     <permission
-        android:name="info.staticfree.android.sgp.permission.ACCESS_DOMAINS"
+        android:name="${applicationId}.permission.ACCESS_DOMAINS"
         android:label="Access and change SuperGenPass remembered domains"
         android:protectionLevel="normal" />
 
@@ -66,9 +66,9 @@
 
         <provider
             android:name=".RememberedDomainProvider"
-            android:authorities="info.staticfree.android.sgp"
-            android:readPermission="info.staticfree.android.sgp.permission.ACCESS_DOMAINS"
-            android:writePermission="info.staticfree.android.sgp.permission.ACCESS_DOMAINS" />
+            android:authorities="${applicationId}"
+            android:readPermission="${applicationId}.permission.ACCESS_DOMAINS"
+            android:writePermission="${applicationId}.permission.ACCESS_DOMAINS" />
     </application>
 
 </manifest>

@@ -13,7 +13,7 @@ import edu.mit.mobile.android.utils.ProviderUtils;
 public class RememberedDomainProvider extends ContentProvider {
 
     public static final String
-    AUTHORITY = "info.staticfree.android.sgp";
+    AUTHORITY = BuildConfig.APPLICATION_ID;
 
     public static final String
     TYPE_DOMAINS_DIR = "vnd.android.cursor.dir/vnd."+AUTHORITY+".domains",
