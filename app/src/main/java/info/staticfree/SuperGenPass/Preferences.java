@@ -1,9 +1,5 @@
 package info.staticfree.SuperGenPass;
 
-import java.security.SecureRandom;
-
-import org.apache.commons.codec.binary.Base64;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
@@ -25,56 +21,62 @@ import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.apache.commons.codec.binary.Base64;
+
+import java.security.SecureRandom;
+
 public class Preferences extends PreferenceActivity {
 
-    public static final String ACTION_SCAN_SALT = "info.staticfree.android.supergenpass.action.SCAN_SALT";
-    public static final String ACTION_GENERATE_SALT = "info.staticfree.android.supergenpass.action.GENERATE_SALT";
+    public static final String ACTION_SCAN_SALT =
+            "info.staticfree.android.supergenpass.action.SCAN_SALT";
+    public static final String ACTION_GENERATE_SALT =
+            "info.staticfree.android.supergenpass.action.GENERATE_SALT";
 
-    public static final String ACTION_CLEAR_STORED_DOMAINS = "info.staticfree.android.supergenpass.action.CLEAR_STORED_DOMAINS";
+    public static final String ACTION_CLEAR_STORED_DOMAINS =
+            "info.staticfree.android.supergenpass.action.CLEAR_STORED_DOMAINS";
 
-    // @formatter:off
-    public static final String
-        PREF_PW_TYPE            = "pw_type",
-        PREF_PW_LENGTH          = "pw_length",
-        PREF_PW_SALT            = "pw_salt",
-        PREF_CLIPBOARD          = "clipboard",
-        PREF_REMEMBER_DOMAINS   = "domain_autocomplete",
-        PREF_DOMAIN_HAS_CONTENT = "domain_has_content",
-        PREF_DOMAIN_NOCHECK     = "domain_nocheck",
-        PREF_SHOW_GEN_PW        = "show_gen_pw",
-        PREF_PW_CLEAR_TIMEOUT   = "pw_clear_timeout",
-        PREF_SHOW_PIN           = "show_pin",
-        PREF_PIN_DIGITS         = "pw_pin_digits",
-        PREF_VISUAL_HASH        = "visual_hash";
-
-    // @formatter:on
+    public static final String PREF_PW_TYPE = "pw_type";
+    public static final String PREF_PW_LENGTH = "pw_length";
+    public static final String PREF_PW_SALT = "pw_salt";
+    public static final String PREF_CLIPBOARD = "clipboard";
+    public static final String PREF_REMEMBER_DOMAINS = "domain_autocomplete";
+    public static final String PREF_DOMAIN_NOCHECK = "domain_nocheck";
+    public static final String PREF_SHOW_GEN_PW = "show_gen_pw";
+    public static final String PREF_PW_CLEAR_TIMEOUT = "pw_clear_timeout";
+    public static final String PREF_SHOW_PIN = "show_pin";
+    public static final String PREF_PIN_DIGITS = "pw_pin_digits";
+    public static final String PREF_VISUAL_HASH = "visual_hash";
 
     // idea borrowed from
-    // http://stackoverflow.com/questions/3206765/number-preferences-in-preference-activity-in-android
-    private final OnPreferenceChangeListener integerConformCheck = new OnPreferenceChangeListener() {
+    // http://stackoverflow.com/questions/3206765/number-preferences-in-preference-activity-in
+    // -android
+    private final OnPreferenceChangeListener integerConformCheck =
+            new OnPreferenceChangeListener() {
 
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            if (!isInteger(newValue)) {
-                Toast.makeText(getApplicationContext(), R.string.pref_err_not_number,
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
-            return true;
-        }
-    };
+                @Override
+                public boolean onPreferenceChange(final Preference preference,
+                        final Object newValue) {
+                    if (!isInteger(newValue)) {
+                        Toast.makeText(getApplicationContext(), R.string.pref_err_not_number,
+                                Toast.LENGTH_LONG).show();
+                        return false;
+                    }
+                    return true;
+                }
+            };
     private ShowDomainCountTask mDomainCountTask;
 
     private ContentResolver mCr;
     private final ContentObserver mObserver = new ContentObserver(new Handler()) {
         @Override
-        public void onChange(boolean selfChange) {
+        public void onChange(final boolean selfChange) {
             showDomainCount();
         }
     };
 
-    public boolean isInteger(Object newValue) {
+    public boolean isInteger(final Object newValue) {
         try {
+            //noinspection ResultOfMethodCallIgnored
             Integer.parseInt((String) newValue);
         } catch (final NumberFormatException e) {
             return false;
@@ -84,14 +86,13 @@ public class Preferences extends PreferenceActivity {
 
     @SuppressWarnings("deprecation")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
         findPreference(PREF_PW_CLEAR_TIMEOUT).setOnPreferenceChangeListener(integerConformCheck);
         findPreference(PREF_PW_LENGTH).setOnPreferenceChangeListener(integerConformCheck);
         mCr = getContentResolver();
-
     }
 
     @Override
@@ -112,13 +113,12 @@ public class Preferences extends PreferenceActivity {
 
     @SuppressWarnings("deprecation")
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(final Intent intent) {
 
         final String action = intent.getAction();
 
         if (ACTION_SCAN_SALT.equals(action)) {
             scanSalt();
-
         } else if (ACTION_GENERATE_SALT.equals(action)) {
             showDialog(DIALOG_GENERATE);
         } else if (ACTION_CLEAR_STORED_DOMAINS.equals(action)) {
@@ -137,31 +137,27 @@ public class Preferences extends PreferenceActivity {
 
     @SuppressWarnings("deprecation")
     @Override
-    protected Dialog onCreateDialog(int id) {
+    protected Dialog onCreateDialog(final int id) {
         switch (id) {
             case DIALOG_GENERATE:
 
-                return new AlertDialog.Builder(this)
-                        .setTitle(R.string.pref_generate_salt_title)
-                        .setMessage(
-                                R.string.pref_generate_salt_dialog_message)
+                return new AlertDialog.Builder(this).setTitle(R.string.pref_generate_salt_title)
+                        .setMessage(R.string.pref_generate_salt_dialog_message)
                         .setPositiveButton(R.string.pref_generate_salt_and_set,
                                 new DialogInterface.OnClickListener() {
 
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
+                                    public void onClick(final DialogInterface dialog,
+                                            final int which) {
                                         generateSalt();
-
                                     }
-                                })
-                        .setCancelable(true)
-                        .setNegativeButton(android.R.string.cancel,
+                                }).setCancelable(true).setNegativeButton(android.R.string.cancel,
                                 new DialogInterface.OnClickListener() {
 
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
+                                    public void onClick(final DialogInterface dialog,
+                                            final int which) {
                                         dialog.dismiss();
-
                                     }
                                 }).create();
             default:
@@ -189,14 +185,15 @@ public class Preferences extends PreferenceActivity {
     }
 
     @SuppressWarnings("deprecation")
-    private void setSaltPref(String salt) {
+    private void setSaltPref(final String salt) {
         ((EditTextPreference) findPreference(PREF_PW_SALT)).setText(salt);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        final IntentResult res = IntentIntegrator
-                .parseActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(final int requestCode, final int resultCode,
+            final Intent data) {
+        final IntentResult res =
+                IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
         if (res != null && res.getContents() != null) {
             final String salt = res.getContents();
@@ -204,7 +201,8 @@ public class Preferences extends PreferenceActivity {
         }
     }
 
-    public static int getStringAsInteger(SharedPreferences prefs, String key, int def) {
+    public static int getStringAsInteger(final SharedPreferences prefs, final String key,
+            final int def) {
         final String defString = Integer.toString(def);
         int retval;
         try {
@@ -212,7 +210,7 @@ public class Preferences extends PreferenceActivity {
 
             // in case the value ever gets corrupt, reset it to the default instead of freaking out
         } catch (final NumberFormatException e) {
-            prefs.edit().putString(key, defString).commit();
+            prefs.edit().putString(key, defString).apply();
             retval = def;
         }
         return retval;
@@ -221,22 +219,28 @@ public class Preferences extends PreferenceActivity {
     private class ShowDomainCountTask extends AsyncTask<Void, Void, Integer> {
 
         @Override
-        protected Integer doInBackground(Void... arg0) {
-            final Cursor c = mCr.query(Domain.CONTENT_URI, new String[] {}, null,
-                    null, null);
-            final int domains = c.getCount();
-            c.close();
+        protected Integer doInBackground(final Void... arg0) {
+            final Cursor c = mCr.query(Domain.CONTENT_URI, new String[] {}, null, null, null);
+            final int domains;
+
+            if (c != null) {
+                domains = c.getCount();
+                c.close();
+            } else {
+                domains = 0;
+            }
+
             return domains;
         }
 
         @Override
-        protected void onPostExecute(Integer domains) {
+        protected void onPostExecute(final Integer domains) {
 
-            @SuppressWarnings("deprecation")
-            final Preference clear = findPreference("clear_remembered");
+            @SuppressWarnings("deprecation") final Preference clear =
+                    findPreference("clear_remembered");
             clear.setEnabled(domains > 0);
-            clear.setSummary(getResources().getQuantityString(R.plurals.pref_autocomplete_count,
-                    domains, domains));
+            clear.setSummary(getResources()
+                    .getQuantityString(R.plurals.pref_autocomplete_count, domains, domains));
 
             mDomainCountTask = null;
         }

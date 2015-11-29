@@ -16,13 +16,17 @@ package edu.mit.mobile.android.utils;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import android.text.TextUtils;
+public final class ProviderUtils {
 
-public class ProviderUtils {
+    private ProviderUtils() {
+        // This class cannot be instantiated
+    }
 
     /**
      * Adds extra where clauses
@@ -30,10 +34,10 @@ public class ProviderUtils {
      * @param extraWhere
      * @return
      */
-    public static String addExtraWhere(String where, String ... extraWhere){
-        final String extraWhereJoined = "(" + TextUtils.join(") AND (", Arrays.asList(extraWhere))
-                + ")";
-            return extraWhereJoined + (where != null && where.length() > 0 ? " AND ("+where+")":"");
+    public static String addExtraWhere(final String where, final String ... extraWhere){
+        final String extraWhereJoined = '(' + TextUtils.join(") AND (", Arrays.asList(extraWhere))
+                + ')';
+            return extraWhereJoined + (where != null && where.length() > 0 ? " AND ("+where+ ')' :"");
     }
 
     /**
@@ -42,12 +46,12 @@ public class ProviderUtils {
      * @param extraArgs Extra arguments needed for the query.
      * @return
      */
-    public static String[] addExtraWhereArgs(String[] whereArgs, String...extraArgs){
-            final List<String> whereArgs2 = new ArrayList<String>();
+    public static String[] addExtraWhereArgs(final String[] whereArgs, final String...extraArgs){
+            final List<String> whereArgs2 = new ArrayList<>();
             if (whereArgs != null){
                     whereArgs2.addAll(Arrays.asList(whereArgs));
             }
             whereArgs2.addAll(0, Arrays.asList(extraArgs));
-            return whereArgs2.toArray(new String[]{});
+            return whereArgs2.toArray(new String[whereArgs2.size()]);
     }
 }
