@@ -96,5 +96,6 @@ This app also includes a strong PIN generation algorithm. It\'s a slightly modif
 This project is Free Software/Open Source and is licensed under the GNU GPL Version 3. You can get the source for this application from http://staticfree.info/projects/sgp/\n\n
 
 Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\".</string>
+    <string name="err_no_hash">Your device does not support the needed hash algorithms for this application</string>
 
 </resources>

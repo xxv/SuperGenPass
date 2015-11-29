@@ -25,7 +25,6 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,6 +37,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -86,18 +87,16 @@ public class Super_Gen_Pass extends TabActivity
     private static final String TAG = Super_Gen_Pass.class.getSimpleName();
     private static final int MINUTE_MS = 60000;
 
-    DomainBasedHash mHasher;
+    private DomainBasedHash mDomainBasedHash;
 
-    // @formatter:off
     private static final int DIALOG_ABOUT = 100, DIALOG_CONFIRM_MASTER = 101;
     private static final int REQUEST_CODE_PREFERENCES = 200;
     private static final String STATE_LAST_STOPPED_TIME =
             "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
     private static final String STATE_SHOWING_PASSWORD =
             "info.staticfree.SuperGenPass.STATE_SHOWING_PASSWORD";
-    // @formatter:on
-
     private int mPwLength;
+    @Nullable
     private String mPwSalt;
     private boolean mCopyToClipboard;
     private boolean mRememberDomains;
@@ -110,14 +109,12 @@ public class Super_Gen_Pass extends TabActivity
     private long mLastStoppedTime;
     private int mPwClearTimeout;
 
-    private ContentResolver mContentResolver;
-
     private static final int MSG_UPDATE_PW_VIEW = 100;
 
     private static final int MIN_PIN_LENGTH = 3;
     private final Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(final Message msg) {
+        public void handleMessage(@NonNull final Message msg) {
             switch (msg.what) {
                 case MSG_UPDATE_PW_VIEW:
                     generateIfValid();
@@ -146,7 +143,7 @@ public class Super_Gen_Pass extends TabActivity
      * Called when the activity is first created.
      */
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
@@ -159,8 +156,6 @@ public class Super_Gen_Pass extends TabActivity
             mLastStoppedTime = savedInstanceState.getLong(STATE_LAST_STOPPED_TIME, 0);
             mShowingPassword = savedInstanceState.getBoolean(STATE_SHOWING_PASSWORD, false);
         }
-
-        mContentResolver = getContentResolver();
 
         initTabHost();
 
@@ -185,10 +180,10 @@ public class Super_Gen_Pass extends TabActivity
                     // populate the URL and give the password entry focus
                     final Uri uri = Uri.parse(maybeUrl);
 
-                    mDomainEdit.setText(mHasher.getDomain(uri.getHost()));
+                    mDomainEdit.setText(mDomainBasedHash.getDomain(uri.getHost()));
                     mMasterPwEdit.requestFocus();
                     mClearDomain = false;
-                } catch (final PasswordGenerationException e) {
+                } catch (@NonNull final PasswordGenerationException e) {
                     // nothing much to be done here.
                     // Let the user figure it out.
                     Log.e(TAG, "Could not find valid URI in shared text", e);
@@ -267,8 +262,8 @@ public class Super_Gen_Pass extends TabActivity
         mTabHost.addTab(createTabSpec(mTabHost, R.string.tab_pin, R.id.tab_pin, "pin"));
     }
 
-    private TabSpec createTabSpec(final TabHost tabhost, final int title, final int content,
-            final String tag) {
+    private TabSpec createTabSpec(@NonNull final TabHost tabhost, final int title,
+            final int content, final String tag) {
         return tabhost.newTabSpec(tag).setContent(content).setIndicator(getText(title));
     }
 
@@ -313,7 +308,7 @@ public class Super_Gen_Pass extends TabActivity
     }
 
     @Override
-    protected void onSaveInstanceState(final Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(STATE_LAST_STOPPED_TIME, mLastStoppedTime);
         outState.putBoolean(STATE_SHOWING_PASSWORD, mShowingPassword);
@@ -334,7 +329,7 @@ public class Super_Gen_Pass extends TabActivity
             } else {
                 clearGenPassword();
             }
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
 
             clearGenPassword();
         }
@@ -349,6 +344,7 @@ public class Super_Gen_Pass extends TabActivity
         }
     }
 
+    @Nullable
     private String generateAndDisplay() throws PasswordGenerationException {
         String domain = getDomain();
 
@@ -356,7 +352,7 @@ public class Super_Gen_Pass extends TabActivity
             domain = extractDomain(domain);
         }
         final String masterPw = getMasterPassword() + mPwSalt;
-        final String genPw = mHasher.generate(masterPw, domain, mPwLength);
+        final String genPw = mDomainBasedHash.generate(masterPw, domain, mPwLength);
 
         mGenPwView.setDomainName(domain);
         mGenPwView.setText(genPw);
@@ -375,7 +371,7 @@ public class Super_Gen_Pass extends TabActivity
     private void postGenerate(final boolean copyToClipboard) {
 
         if (mRememberDomains) {
-            RememberedDomainProvider.addRememberedDomain(mContentResolver, getDomain());
+            RememberedDomainProvider.addRememberedDomain(getContentResolver(), getDomain());
         }
 
         if (copyToClipboard) {
@@ -405,11 +401,11 @@ public class Super_Gen_Pass extends TabActivity
 
             postGenerate(mCopyToClipboard);
             return true;
-        } catch (final IllegalDomainException e) {
+        } catch (@NonNull final IllegalDomainException e) {
             clearGenPassword();
             mDomainEdit.setError(e.getLocalizedMessage());
             mDomainEdit.requestFocus();
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             clearGenPassword();
             Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
@@ -419,11 +415,13 @@ public class Super_Gen_Pass extends TabActivity
     /**
      * @return the domain entered into the text box
      */
+    @NonNull
     String getDomain() {
         final AutoCompleteTextView txt = (AutoCompleteTextView) findViewById(R.id.domain_edit);
         return txt.getText().toString().trim();
     }
 
+    @NonNull
     String getMasterPassword() {
         return mMasterPwEdit.getText().toString();
     }
@@ -434,19 +432,18 @@ public class Super_Gen_Pass extends TabActivity
      * @param maybeUrl : either a hostname or a URL.
      * @return the hostname portion of maybeUrl, or null if maybeUrl was null.
      */
-    String extractDomain(final String maybeUrl) {
+    String extractDomain(@NonNull final String maybeUrl) {
         try {
             final Uri uri = Uri.parse(maybeUrl);
-            return mHasher.getDomain(uri.getHost());
-        } catch (final NullPointerException e) {
-            return maybeUrl;
-        } catch (final PasswordGenerationException e) {
+            final String host = uri.getHost();
+            return mDomainBasedHash.getDomain(host != null ? uri.getHost() : "");
+        } catch (@NonNull final PasswordGenerationException e) {
             return maybeUrl;
         }
     }
 
     @Override
-    public void onClick(final View v) {
+    public void onClick(@NonNull final View v) {
         switch (v.getId()) {
             case R.id.go:
                 go();
@@ -460,7 +457,8 @@ public class Super_Gen_Pass extends TabActivity
     }
 
     @Override
-    public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
+    public void onCheckedChanged(@NonNull final CompoundButton buttonView,
+            final boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.show_gen_password: {
 
@@ -468,7 +466,7 @@ public class Super_Gen_Pass extends TabActivity
 
                 final SharedPreferences prefs =
                         PreferenceManager.getDefaultSharedPreferences(Super_Gen_Pass.this);
-                        prefs.edit().putBoolean(Preferences.PREF_SHOW_GEN_PW, isChecked).apply();
+                prefs.edit().putBoolean(Preferences.PREF_SHOW_GEN_PW, isChecked).apply();
             }
         }
     }
@@ -486,7 +484,7 @@ public class Super_Gen_Pass extends TabActivity
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
+    public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
         final MenuItem verify = menu.findItem(R.id.verify);
         verify.setEnabled(getMasterPassword().length() != 0);
         menu.findItem(R.id.copy).setEnabled(mShowingPassword);
@@ -494,7 +492,7 @@ public class Super_Gen_Pass extends TabActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings:
 
@@ -567,7 +565,7 @@ public class Super_Gen_Pass extends TabActivity
 
                 builder.setNegativeButton(android.R.string.cancel, new Dialog.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.cancel();
                     }
                 });
@@ -585,7 +583,7 @@ public class Super_Gen_Pass extends TabActivity
                     }
 
                     @Override
-                    public void afterTextChanged(final Editable s) {
+                    public void afterTextChanged(@NonNull final Editable s) {
                         if (pwVerify.getTag() instanceof String) {
                             final String masterPw = (String) pwVerify.getTag();
                             if (masterPw.length() > 0 && masterPw.equals(s.toString())) {
@@ -611,7 +609,7 @@ public class Super_Gen_Pass extends TabActivity
     }
 
     @Override
-    protected void onPrepareDialog(final int id, final Dialog dialog) {
+    protected void onPrepareDialog(final int id, @NonNull final Dialog dialog) {
         switch (id) {
             case DIALOG_CONFIRM_MASTER:
                 final EditText verify = (EditText) dialog.findViewById(R.id.verify);
@@ -687,38 +685,38 @@ public class Super_Gen_Pass extends TabActivity
         try {
             switch (pwType) {
                 case SuperGenPass.TYPE:
-                    mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                    mDomainBasedHash = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
 
                     break;
                 case SuperGenPass.TYPE_SHA_512:
-                    mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_SHA512);
+                    mDomainBasedHash = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_SHA512);
 
                     break;
                 case PasswordComposer.TYPE:
-                    mHasher = new PasswordComposer(this);
+                    mDomainBasedHash = new PasswordComposer(this);
 
                     break;
                 default:
-                    mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                    mDomainBasedHash = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
                     Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
                     break;
             }
 
             mPinGen = new HotpPin(this);
-        } catch (final NoSuchAlgorithmException e) {
+        } catch (@NonNull final NoSuchAlgorithmException e) {
             Log.e(TAG, "could not find MD5", e);
             Toast.makeText(getApplicationContext(),
                     String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()),
                     Toast.LENGTH_LONG).show();
             finish();
-        } catch (final IOException e) {
+        } catch (@NonNull final IOException e) {
             Toast.makeText(this, getString(R.string.err_json_load, e.getLocalizedMessage()),
                     Toast.LENGTH_LONG).show();
             Log.d(TAG, getString(R.string.err_json_load), e);
             finish();
         }
 
-        mHasher.setCheckDomain(!mNoDomainCheck);
+        mDomainBasedHash.setCheckDomain(!mNoDomainCheck);
         mPinGen.setCheckDomain(!mNoDomainCheck);
 
         if (mNoDomainCheck) {
@@ -745,15 +743,17 @@ public class Super_Gen_Pass extends TabActivity
     private static final int DOMAIN_COLUMN = 0;
 
     // a filter that searches for domains starting with the given constraint
+    @Nullable
     @Override
-    public Cursor runQuery(final CharSequence constraint) {
+    public Cursor runQuery(@Nullable final CharSequence constraint) {
         final Cursor c;
         if (constraint == null || constraint.length() == 0) {
-            c = mContentResolver
+            c = getContentResolver()
                     .query(Domain.CONTENT_URI, PROJECTION, null, null, Domain.SORT_ORDER);
         } else {
-            c = mContentResolver.query(Domain.CONTENT_URI, PROJECTION, Domain.DOMAIN + " GLOB ?",
-                    new String[] { constraint + "*" }, Domain.SORT_ORDER);
+            c = getContentResolver()
+                    .query(Domain.CONTENT_URI, PROJECTION, Domain.DOMAIN + " GLOB ?",
+                            new String[] { constraint + "*" }, Domain.SORT_ORDER);
         }
 
         return c;

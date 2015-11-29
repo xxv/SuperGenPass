@@ -27,51 +27,47 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
  * <p> This displays a visual representation of the output of a hash function. Bits in the hash
- * output are mapped directly to colored shapes and their positions. </p>
- *
- * <p> This is intended to allow rapid visual identification of a known input based by using spatial
- * memory. For example, by hashing a password and displaying the output to the user as they type it,
- * they can learn to identify when they have typed the password successfully by recognizing their
- * password's distinct shapes, colors and arrangements. </p>
+ * output are mapped directly to colored shapes and their positions. </p> <p/> <p> This is intended
+ * to allow rapid visual identification of a known input based by using spatial memory. For example,
+ * by hashing a password and displaying the output to the user as they type it, they can learn to
+ * identify when they have typed the password successfully by recognizing their password's distinct
+ * shapes, colors and arrangements. </p>
  *
  * @author Steve Pomeroy
  */
+@SuppressWarnings("MagicNumber")
 public class VisualHash extends Drawable {
-
     private static final String TAG = VisualHash.class.getSimpleName();
-    private MessageDigest mHasher;
+    @NonNull
+    private final MessageDigest mMessageDigest;
+    @Nullable
     private byte[] mHash;
 
+    @NonNull
     private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private float mScaleX, mScaleY;
 
     /**
-     * <p>
-     * Make sure that any hash function you specify has an even number of bytes in the output, as
-     * each shape requires 2 bytes of data.
-     * </p>
+     * <p> Make sure that any hash function you specify has an even number of bytes in the output,
+     * as each shape requires 2 bytes of data. </p> <p/> <p> This will draw n/2 shapes, where n is
+     * the number of bytes of output from the hash function. These shapes will possibly overlap and
+     * possibly be the same color as the background, so one shouldn't rely on a certain number of
+     * shapes to be visible at any given time. </p>
      *
-     * <p>
-     * This will draw n/2 shapes, where n is the number of bytes of output from the hash function.
-     * These shapes will possibly overlap and possibly be the same color as the background, so one
-     * shouldn't rely on a certain number of shapes to be visible at any given time.
-     * </p>
-     *
-     * @param hashFunction
-     *            the name of the hash function, eg. "SHA-1"
-     * @throws NoSuchAlgorithmException
-     *             if the specified hash algorithm can't be found.
+     * @param hashFunction the name of the hash function, eg. "SHA-1"
+     * @throws NoSuchAlgorithmException if the specified hash algorithm can't be found.
      */
-    public VisualHash(final String hashFunction) throws NoSuchAlgorithmException {
-        mHasher = MessageDigest.getInstance(hashFunction);
+    public VisualHash(@NonNull final String hashFunction) throws NoSuchAlgorithmException {
+        mMessageDigest = MessageDigest.getInstance(hashFunction);
 
         init();
     }
@@ -79,16 +75,10 @@ public class VisualHash extends Drawable {
     /**
      * Creates a new {@link VisualHash} using SHA-1. This will draw 10 shapes, though some may be
      * obscured by others.
+     * @throws NoSuchAlgorithmException if SHA-1 can't be found.
      */
-    public VisualHash() {
-        try {
-            mHasher = MessageDigest.getInstance("SHA-1");
-        } catch (final NoSuchAlgorithmException e) {
-            mHasher = null;
-            Log.e(TAG, "SHA-1 is missing?!");
-        }
-
-        init();
+    public VisualHash() throws NoSuchAlgorithmException {
+        this("SHA-1");
     }
 
     private void init() {
@@ -103,49 +93,45 @@ public class VisualHash extends Drawable {
      * @param input the data to be hashed. This value is discarded immediately after computing the
      * hash.
      */
-    public void setData(final byte[] input) {
-        if (mHasher == null || (input.length == 0)) {
+    public void setData(@NonNull final byte[] input) {
+        if (input.length == 0) {
             mHash = null;
         } else {
-            mHasher.update(input);
-            mHash = mHasher.digest();
+            mMessageDigest.update(input);
+            mHash = mMessageDigest.digest();
         }
 
         invalidateSelf();
     }
 
-    // formatter:off
-    private static final int
-
-    TYPE_CIRCLE = 0x00, TYPE_SQUARE = 0x01, TYPE_STAR = 0x02, TYPE_TRIANGLE = 0x03,
-            TYPE_PLUS = 0x04, TYPE_X = 0x05, TYPE_DIAMOND = 0x06, TYPE_SMALL_CIRCLE = 0x07;
+    private static final int TYPE_CIRCLE = 0x00, TYPE_SQUARE = 0x01, TYPE_STAR = 0x02,
+            TYPE_TRIANGLE = 0x03, TYPE_PLUS = 0x04, TYPE_X = 0x05, TYPE_DIAMOND = 0x06,
+            TYPE_SMALL_CIRCLE = 0x07;
 
     // the below defines the offsets to pull the bits of the hash out into
     // visual characteristics.
-    private static final int
 
-    // how many bytes per shape. The mapping below would need to be adjusted if this is changed.
-            BYTES_PER_SHAPE = 2,
+    // how many bytes per shape. The mapping below would need to be adjusted if this is
+    // changed.
+    private static final int BYTES_PER_SHAPE = 2;
 
-            // the shape type
-            TYPE_OFFSET = 0, TYPE_MAX = 0x7, TYPE_MASK = TYPE_MAX << TYPE_OFFSET,
+    // the shape type
+    private static final int TYPE_OFFSET = 0, TYPE_MAX = 0x7, TYPE_MASK = TYPE_MAX << TYPE_OFFSET;
 
-            // this creates a grid of 4x4 potential shapes.
-            X_OFFSET = 3, X_MAX = 0x7, X_MASK = X_MAX << X_OFFSET,
+    // this creates a grid of 4x4 potential shapes.
+    private static final int X_OFFSET = 3, X_MAX = 0x7, X_MASK = X_MAX << X_OFFSET;
 
-            Y_OFFSET = 6, Y_MAX = 0x7, Y_MASK = Y_MAX << Y_OFFSET,
+    private static final int Y_OFFSET = 6, Y_MAX = 0x7, Y_MASK = Y_MAX << Y_OFFSET;
 
-            // There are 64 possible colors
-            R_OFFSET = 9, R_MAX = 0x3, R_MASK = R_MAX << R_OFFSET,
+    // There are 64 possible colors
+    private static final int R_OFFSET = 9, R_MAX = 0x3, R_MASK = R_MAX << R_OFFSET;
 
-            G_OFFSET = 11, G_MAX = 0x3, G_MASK = G_MAX << G_OFFSET,
+    private static final int G_OFFSET = 11, G_MAX = 0x3, G_MASK = G_MAX << G_OFFSET;
 
-            B_OFFSET = 13, B_MAX = 0x3, B_MASK = B_MAX << B_OFFSET
+    private static final int B_OFFSET = 13, B_MAX = 0x3, B_MASK = B_MAX << B_OFFSET;
 
-            // one extra bit remain
-            // ,A_OFFSET = 15, A_MAX = 0x1, A_MASK = A_MAX << A_OFFSET
-
-            ;
+    // one extra bit remain
+    // ,A_OFFSET = 15, A_MAX = 0x1, A_MASK = A_MAX << A_OFFSET
 
     /**
      * The spacing between the shapes. Units are pre-scale pixels.
@@ -175,8 +161,6 @@ public class VisualHash extends Drawable {
      */
     private static final int PRESCALE_WIDTH = (RADIUS * 2 + SPACING) * 4;
     private static final int PRESCALE_HEIGHT = (RADIUS * 2 + SPACING) * 4;
-
-    // formatter:on
 
     private static final Path TRIANGLE = new Path();
     private static final Path STAR = new Path();
@@ -239,11 +223,10 @@ public class VisualHash extends Drawable {
         DIAMOND.lineTo(0, RADIUS);
         DIAMOND.lineTo(-RADIUS, 0);
         DIAMOND.lineTo(0, -RADIUS);
-
     }
 
     @Override
-    protected void onBoundsChange(final Rect bounds) {
+    protected void onBoundsChange(@NonNull final Rect bounds) {
         super.onBoundsChange(bounds);
 
         final int width = bounds.width();
@@ -253,7 +236,7 @@ public class VisualHash extends Drawable {
     }
 
     @Override
-    public void draw(final Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
 
         canvas.scale(mScaleX, mScaleY);
 
@@ -351,11 +334,12 @@ public class VisualHash extends Drawable {
 
     @Override
     public void setAlpha(final int alpha) {
-
+        // do nothing
     }
 
     @Override
     public void setColorFilter(final ColorFilter arg0) {
+        // do nothing
     }
 
     @Override

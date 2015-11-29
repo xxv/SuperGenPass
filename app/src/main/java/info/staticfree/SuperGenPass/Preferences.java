@@ -15,6 +15,8 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.zxing.client.android.Intents;
@@ -64,6 +66,7 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             };
+    @Nullable
     private ShowDomainCountTask mDomainCountTask;
 
     private ContentResolver mCr;
@@ -78,7 +81,7 @@ public class Preferences extends PreferenceActivity {
         try {
             //noinspection ResultOfMethodCallIgnored
             Integer.parseInt((String) newValue);
-        } catch (final NumberFormatException e) {
+        } catch (@NonNull final NumberFormatException e) {
             return false;
         }
         return true;
@@ -113,7 +116,7 @@ public class Preferences extends PreferenceActivity {
 
     @SuppressWarnings("deprecation")
     @Override
-    protected void onNewIntent(final Intent intent) {
+    protected void onNewIntent(@NonNull final Intent intent) {
 
         final String action = intent.getAction();
 
@@ -155,7 +158,7 @@ public class Preferences extends PreferenceActivity {
                                 new DialogInterface.OnClickListener() {
 
                                     @Override
-                                    public void onClick(final DialogInterface dialog,
+                                    public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
                                         dialog.dismiss();
                                     }
@@ -191,7 +194,7 @@ public class Preferences extends PreferenceActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode,
-            final Intent data) {
+            @NonNull final Intent data) {
         final IntentResult res =
                 IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
@@ -201,7 +204,7 @@ public class Preferences extends PreferenceActivity {
         }
     }
 
-    public static int getStringAsInteger(final SharedPreferences prefs, final String key,
+    public static int getStringAsInteger(@NonNull final SharedPreferences prefs, final String key,
             final int def) {
         final String defString = Integer.toString(def);
         int retval;
@@ -209,7 +212,7 @@ public class Preferences extends PreferenceActivity {
             retval = Integer.parseInt(prefs.getString(key, defString));
 
             // in case the value ever gets corrupt, reset it to the default instead of freaking out
-        } catch (final NumberFormatException e) {
+        } catch (@NonNull final NumberFormatException e) {
             prefs.edit().putString(key, defString).apply();
             retval = def;
         }

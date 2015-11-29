@@ -19,6 +19,7 @@ package info.staticfree.SuperGenPass.hashes;
  */
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import junit.framework.Assert;
 
@@ -48,9 +49,10 @@ public abstract class DomainBasedHash {
             Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private boolean checkDomain;
     private ArrayList<String> domains;
+    @NonNull
     private final Context mContext;
 
-    public DomainBasedHash(final Context context) throws IOException {
+    public DomainBasedHash(@NonNull final Context context) throws IOException {
         mContext = context;
         loadDomains();
     }
@@ -77,7 +79,7 @@ public abstract class DomainBasedHash {
             for (int i = 0; i < domainJson.length(); i++) {
                 domains.add(domainJson.getString(i));
             }
-        } catch (IOException | JSONException e) {
+        } catch (@NonNull IOException | JSONException e) {
             final IOException ioe = new IOException("Unable to load domains");
             ioe.initCause(e);
         }
@@ -93,8 +95,8 @@ public abstract class DomainBasedHash {
      * @return the domain of the URI
      * @throws PasswordGenerationException if there is an error generating the password
      */
-    public String getDomain(String hostname) throws PasswordGenerationException {
-
+    @NonNull
+    public String getDomain(@NonNull String hostname) throws PasswordGenerationException {
         hostname = hostname.toLowerCase();
 
         if (!checkDomain) {
@@ -146,8 +148,9 @@ public abstract class DomainBasedHash {
      * @throws PasswordGenerationException if the criteria for generating the password are not met.
      * Often a length or domain issue.
      */
-    public String generate(final String masterPass, final String domain, final int length)
-            throws PasswordGenerationException {
+    @NonNull
+    public String generate(@NonNull final String masterPass, @NonNull final String domain,
+            final int length) throws PasswordGenerationException {
         return generateWithFilteredDomain(masterPass, getDomain(domain), length);
     }
 
@@ -162,6 +165,7 @@ public abstract class DomainBasedHash {
      * @throws PasswordGenerationException if the criteria for generating the password are not met.
      * Often a length or domain issue.
      */
-    protected abstract String generateWithFilteredDomain(String masterPass, String domain,
-            int length) throws PasswordGenerationException;
+    @NonNull
+    protected abstract String generateWithFilteredDomain(@NonNull String masterPass,
+            @NonNull String domain, int length) throws PasswordGenerationException;
 }

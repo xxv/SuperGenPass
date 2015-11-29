@@ -16,6 +16,8 @@ package edu.mit.mobile.android.utils;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -34,7 +36,8 @@ public final class ProviderUtils {
      * @param extraWhere
      * @return
      */
-    public static String addExtraWhere(final String where, final String ... extraWhere){
+    @NonNull
+    public static String addExtraWhere(@Nullable final String where, final String ... extraWhere){
         final String extraWhereJoined = '(' + TextUtils.join(") AND (", Arrays.asList(extraWhere))
                 + ')';
             return extraWhereJoined + (where != null && where.length() > 0 ? " AND ("+where+ ')' :"");
@@ -46,7 +49,7 @@ public final class ProviderUtils {
      * @param extraArgs Extra arguments needed for the query.
      * @return
      */
-    public static String[] addExtraWhereArgs(final String[] whereArgs, final String...extraArgs){
+    public static String[] addExtraWhereArgs(@Nullable final String[] whereArgs, final String...extraArgs){
             final List<String> whereArgs2 = new ArrayList<>();
             if (whereArgs != null){
                     whereArgs2.addAll(Arrays.asList(whereArgs));

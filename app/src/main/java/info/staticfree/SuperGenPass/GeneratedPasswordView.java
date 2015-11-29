@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.NumberKeyListener;
@@ -48,6 +50,7 @@ public class GeneratedPasswordView extends TextView
                 return InputType.TYPE_NULL;
             }
 
+            @NonNull
             @Override
             protected char[] getAcceptedChars() {
                 return new char[] {};
@@ -71,7 +74,7 @@ public class GeneratedPasswordView extends TextView
     }
 
     @Override
-    protected void onCreateContextMenu(final ContextMenu menu) {
+    protected void onCreateContextMenu(@NonNull final ContextMenu menu) {
         menu.add(Menu.NONE, MENU_ID_COPY, Menu.NONE, android.R.string.copy)
                 .setOnMenuItemClickListener(this);
         menu.setHeaderTitle(R.string.generated_password);
@@ -99,7 +102,7 @@ public class GeneratedPasswordView extends TextView
     }
 
     @Override
-    public void setText(final CharSequence text, final BufferType type) {
+    public void setText(@Nullable final CharSequence text, final BufferType type) {
         super.setText(text, type);
         setEnabled(text != null ? text.length() > 0 : false);
     }
@@ -140,7 +143,7 @@ public class GeneratedPasswordView extends TextView
     }
 
     @Override
-    public boolean onMenuItemClick(final MenuItem item) {
+    public boolean onMenuItemClick(@NonNull final MenuItem item) {
         return onTextContextMenuItem(item.getItemId());
     }
 
@@ -177,6 +180,7 @@ public class GeneratedPasswordView extends TextView
         }
     }
 
+    @NonNull
     @Override
     public Parcelable onSaveInstanceState() {
         final Parcelable superState = super.onSaveInstanceState();
@@ -204,11 +208,13 @@ public class GeneratedPasswordView extends TextView
 
         public static final Parcelable.Creator<SavedState> CREATOR =
                 new Parcelable.Creator<SavedState>() {
+                    @NonNull
                     @Override
                     public SavedState createFromParcel(final Parcel in) {
                         return new SavedState(in);
                     }
 
+                    @NonNull
                     @Override
                     public SavedState[] newArray(final int size) {
                         return new SavedState[size];

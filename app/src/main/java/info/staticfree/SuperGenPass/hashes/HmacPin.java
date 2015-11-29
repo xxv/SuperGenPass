@@ -1,6 +1,7 @@
 package info.staticfree.SuperGenPass.hashes;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -21,8 +22,9 @@ public class HmacPin extends DomainBasedHash {
         // TODO Auto-generated constructor stub
     }
 
+    @NonNull
     @Override
-    public String generateWithFilteredDomain(final String masterPass, final String domain, final int length)
+    public String generateWithFilteredDomain(@NonNull final String masterPass, @NonNull final String domain, final int length)
             throws PasswordGenerationException {
         try {
             final Mac mac = Mac.getInstance("hmac");
@@ -32,16 +34,16 @@ public class HmacPin extends DomainBasedHash {
             mac.init(k);
             // TODO figure out how to use PBEKey here
 
-        } catch (final NoSuchAlgorithmException e) {
+        } catch (@NonNull final NoSuchAlgorithmException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (final InvalidKeyException e) {
+        } catch (@NonNull final InvalidKeyException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (final InvalidKeySpecException e) {
+        } catch (@NonNull final InvalidKeySpecException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return null;
+        throw new IllegalAccessError("Not implemented");
     }
 }

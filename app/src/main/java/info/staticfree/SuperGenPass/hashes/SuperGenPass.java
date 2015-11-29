@@ -18,6 +18,7 @@ package info.staticfree.SuperGenPass.hashes;
  */
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 import info.staticfree.SuperGenPass.IllegalDomainException;
 import info.staticfree.SuperGenPass.PasswordGenerationException;
 
-public class SuperGenPass extends DomainBasedHash {
+public final class SuperGenPass extends DomainBasedHash {
     public static final String TYPE = "sgp";
     public static final String TYPE_SHA_512 = "sgp-sha-512";
 
@@ -46,7 +47,7 @@ public class SuperGenPass extends DomainBasedHash {
      * @throws NoSuchAlgorithmException if the provided hashAlgorithm doesn't exist
      * @throws IOException if there's an issue loading the domain list
      */
-    public SuperGenPass(final Context context, final String hashAlgorithm)
+    public SuperGenPass(@NonNull final Context context, @NonNull final String hashAlgorithm)
             throws NoSuchAlgorithmException, IOException {
         super(context);
         mHasher = MessageDigest.getInstance(hashAlgorithm);
@@ -59,7 +60,8 @@ public class SuperGenPass extends DomainBasedHash {
      *
      * @return base64-encoded string of the hash of the data
      */
-    private String hashBase64(final byte[] data) {
+    @NonNull
+    private String hashBase64(@NonNull final byte[] data) {
 
         String b64 = new String(Base64.encodeBase64(mHasher.digest(data)));
         // SuperGenPass-specific quirk so that these don't end up in the password.
@@ -94,9 +96,10 @@ public class SuperGenPass extends DomainBasedHash {
      * @return generated password
      * @see http://supergenpass.com/
      */
+    @NonNull
     @Override
-    public String generateWithFilteredDomain(final String masterPass, final String domain,
-            final int length) throws PasswordGenerationException {
+    public String generateWithFilteredDomain(@NonNull final String masterPass,
+            @NonNull final String domain, final int length) throws PasswordGenerationException {
         if (length < 4 || length > 24) {
             throw new PasswordGenerationException(
                     "Requested length out of range. Expecting value between 4 and 24 inclusive.");

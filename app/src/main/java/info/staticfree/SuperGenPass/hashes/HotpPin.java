@@ -1,6 +1,7 @@
 package info.staticfree.SuperGenPass.hashes;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.openauthentication.otp.OneTimePasswordAlgorithm;
@@ -13,32 +14,32 @@ import info.staticfree.SuperGenPass.PasswordGenerationException;
 
 /**
  * <p> This generates strong Personal Identification Numbers (PINs). </p>
- *
+ * <p/>
  * <p> PINs generated with this can be used for bank accounts, phone lock screens, ATMs, etc. The
  * generator avoids common bad PINs ("1234", "0000", "0007", etc.) detected using a variety of
  * techniques. </p>
- *
+ * <p/>
  * <p> The generation algorithm is a modified version of <a href="http://tools.ietf
- * .org/html/rfc4226">HOTP</a>
- * which uses the master password for the HMAC secret and the domain instead of the moving factor.
- * If a bad PIN is detected, the text " 1" is added to the end of the domain and it's recomputed. If
- * a bad PIN is still generated, it suffixes " 2" instead and will continue in this way until a good
- * PIN comes out. </p>
+ * .org/html/rfc4226">HOTP</a> which uses the master password for the HMAC secret and the domain
+ * instead of the moving factor. If a bad PIN is detected, the text " 1" is added to the end of the
+ * domain and it's recomputed. If a bad PIN is still generated, it suffixes " 2" instead and will
+ * continue in this way until a good PIN comes out. </p>
  *
  * @author <a href="mailto:steve@staticfree.info">Steve Pomeroy</a>
  * @see OneTimePasswordAlgorithm#generateOTPFromText(byte[], byte[], int, boolean, int)
  */
-public class HotpPin extends DomainBasedHash {
+public final class HotpPin extends DomainBasedHash {
 
     private static final String TAG = HotpPin.class.getSimpleName();
 
-    public HotpPin(final Context context) throws IOException {
+    public HotpPin(@NonNull final Context context) throws IOException {
         super(context);
     }
 
+    @NonNull
     @Override
-    protected String generateWithFilteredDomain(final String masterPass, final String domain,
-            final int length) throws PasswordGenerationException {
+    protected String generateWithFilteredDomain(@NonNull final String masterPass,
+            @NonNull final String domain, final int length) throws PasswordGenerationException {
 
         if (length < 3 || length > 8) {
             throw new PasswordGenerationException("length must be >= 3 and <= 8");
@@ -77,12 +78,9 @@ public class HotpPin extends DomainBasedHash {
                 }
             }
             return pin;
-        } catch (final InvalidKeyException e) {
+        } catch (@NonNull final InvalidKeyException | NoSuchAlgorithmException e) {
             Log.e(TAG, "HotpPin generation error", e);
-            return null;
-        } catch (final NoSuchAlgorithmException e) {
-            Log.e(TAG, "HotpPin generation error", e);
-            return null;
+            throw new PasswordGenerationException("Error generating PIN", e);
         }
     }
 
@@ -93,7 +91,7 @@ public class HotpPin extends DomainBasedHash {
      * @param pin the PIN to test
      * @return true if the string is a numeric run
      */
-    public boolean isNumericalRun(final String pin) {
+    public boolean isNumericalRun(@NonNull final String pin) {
         final int len = pin.length();
         // int[] diff = new int[len - 1];
         int prevDigit = Character.digit(pin.charAt(0), 10);
@@ -117,10 +115,11 @@ public class HotpPin extends DomainBasedHash {
 
     /**
      * Tests the string to see if it contains a partial numeric run. Eg. 3000, 5553
+     *
      * @param pin the PIN to check
      * @return true if it contains a partial run
      */
-    public boolean isIncompleteNumericalRun(final String pin) {
+    public boolean isIncompleteNumericalRun(@NonNull final String pin) {
         final int len = pin.length();
         int consecutive = 0;
         char last = pin.charAt(0);
@@ -158,7 +157,7 @@ public class HotpPin extends DomainBasedHash {
      * @param pin the PIN to test
      * @return true if the PIN matches the bad PIN criteria
      */
-    public boolean isBadPin(final String pin) {
+    public boolean isBadPin(@NonNull final String pin) {
         final int len = pin.length();
 
         // special cases for 4-digit PINs (which are quite common)

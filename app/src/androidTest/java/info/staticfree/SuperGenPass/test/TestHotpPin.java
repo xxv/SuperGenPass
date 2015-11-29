@@ -1,5 +1,6 @@
 package info.staticfree.SuperGenPass.test;
 
+import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 
@@ -98,11 +99,11 @@ public class TestHotpPin extends AndroidTestCase {
         testInvalidLength(pinGen, 100);
     }
 
-    private void testInvalidLength(final HotpPin pinGen, final int len) {
+    private void testInvalidLength(@NonNull final HotpPin pinGen, final int len) {
         boolean thrown = false;
         try {
             pinGen.generate("foo", "example.org", len);
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             thrown = true;
         }
         assertTrue("exception not thrown for length " + len, thrown);

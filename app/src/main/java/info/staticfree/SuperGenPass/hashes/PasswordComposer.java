@@ -16,7 +16,9 @@ package info.staticfree.SuperGenPass.hashes;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -25,12 +27,13 @@ import java.security.NoSuchAlgorithmException;
 import info.staticfree.SuperGenPass.IllegalDomainException;
 import info.staticfree.SuperGenPass.PasswordGenerationException;
 
-public class PasswordComposer extends DomainBasedHash {
+public final class PasswordComposer extends DomainBasedHash {
     public static final String TYPE = "pwc";
 
     private final MessageDigest md5;
 
-    public PasswordComposer(final Context context) throws NoSuchAlgorithmException, IOException {
+    public PasswordComposer(@NonNull final Context context)
+            throws NoSuchAlgorithmException, IOException {
         super(context);
         md5 = MessageDigest.getInstance("MD5");
     }
@@ -38,10 +41,9 @@ public class PasswordComposer extends DomainBasedHash {
     /**
      * Returns the standard hex-encoded string md5sum of the data.
      *
-     * @param data
      * @return hex-encoded string of the md5sum of the data
      */
-    private String md5hex(final byte[] data){
+    private String md5hex(final byte[] data) {
         final byte[] md5data = md5.digest(data);
         final StringBuilder md5hex = new StringBuilder();
         for (final byte aMd5data : md5data) {
@@ -56,13 +58,13 @@ public class PasswordComposer extends DomainBasedHash {
      * @param masterPass master password
      * @param domain un-filtered domain (eg. www.example.org)
      * @return generated password
-     * @throws PasswordGenerationException
      * @see http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/
      */
+    @NonNull
     @Override
-    public String generateWithFilteredDomain(final String masterPass, final String domain, final int length)
-            throws PasswordGenerationException {
-        if (domain.isEmpty()){
+    public String generateWithFilteredDomain(@NonNull final String masterPass,
+            @NonNull final String domain, final int length) throws PasswordGenerationException {
+        if (domain.isEmpty()) {
             throw new IllegalDomainException("Missing domain");
         }
 

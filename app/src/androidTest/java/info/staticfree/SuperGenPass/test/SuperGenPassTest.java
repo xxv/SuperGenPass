@@ -1,5 +1,6 @@
 package info.staticfree.SuperGenPass.test;
 
+import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 
@@ -54,7 +55,7 @@ public class SuperGenPassTest extends AndroidTestCase {
         try {
             //noinspection ResultOfObjectAllocationIgnored
             new SuperGenPass(mContext, "kittens");
-        } catch (final NoSuchAlgorithmException e) {
+        } catch (@NonNull final NoSuchAlgorithmException e) {
             caught = true;
         }
 
@@ -69,7 +70,7 @@ public class SuperGenPassTest extends AndroidTestCase {
         boolean caught = false;
         try {
             sgp.generate("12345", "bad domain", 10);
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             caught = true;
         }
         assertTrue("exception thrown", caught);
@@ -81,7 +82,7 @@ public class SuperGenPassTest extends AndroidTestCase {
         boolean caught = false;
         try {
             sgp.generate("12345", "example.org", 0);
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             caught = true;
         }
         assertTrue("exception thrown", caught);
@@ -94,7 +95,7 @@ public class SuperGenPassTest extends AndroidTestCase {
         boolean caught = false;
         try {
             sgp.generate("12345", "example.org", 100);
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             caught = true;
         }
         assertTrue("exception thrown", caught);

@@ -1,5 +1,7 @@
 package info.staticfree.SuperGenPass.test;
 
+import android.support.annotation.NonNull;
+
 import junit.framework.TestCase;
 
 import java.io.IOException;
@@ -13,7 +15,7 @@ public final class Utils {
         // This class cannot be instantiated.
     }
 
-    public static void testATonOfPasswords(final DomainBasedHash hash, final int minlen,
+    public static void testATonOfPasswords(@NonNull final DomainBasedHash hash, final int minlen,
             final int maxlen) throws PasswordGenerationException, IOException {
         for (int len = minlen; len < maxlen; len++) {
             for (int i = 0; i < 1000; i += 10) {

@@ -1,5 +1,6 @@
 package info.staticfree.SuperGenPass.test;
 
+import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 
@@ -52,7 +53,7 @@ public class PasswordComposerTest extends AndroidTestCase {
             try {
                 pwc.generate(knownBad[0], knownBad[1], Integer.parseInt(knownBad[2]));
                 fail("Expecting exception " + msg);
-            } catch (final PasswordGenerationException e) {
+            } catch (@NonNull final PasswordGenerationException e) {
                 // Expected exception
             }
         }
@@ -67,21 +68,21 @@ public class PasswordComposerTest extends AndroidTestCase {
                 final String s = pwc.generate("12345", "example.org", i);
                 assertEquals(i, s.length());
             }
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             fail("got an exception for a known-good length " + i);
         }
 
         try {
             pwc.generate("12345", "example.org", 0);
             fail("Expecting exception to be caught for length 0");
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             // Expected exception
         }
 
         try {
             pwc.generate("12345", "example.org", 32);
             fail("Expecting exception to be caught for length 32");
-        } catch (final PasswordGenerationException e) {
+        } catch (@NonNull final PasswordGenerationException e) {
             // Expected exception
         }
     }

@@ -31,6 +31,8 @@
 
 package org.openauthentication.otp;
 
+import android.support.annotation.NonNull;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -44,8 +46,10 @@ import javax.crypto.spec.SecretKeySpec;
  * @author Loren Hart
  * @version 1.0
  */
-public class OneTimePasswordAlgorithm {
+@SuppressWarnings("MagicNumber")
+public final class OneTimePasswordAlgorithm {
     private OneTimePasswordAlgorithm() {
+       // This class cannot be instantiated.
     }
 
     // These are used to calculate the check-sum digits.
@@ -96,14 +100,16 @@ public class OneTimePasswordAlgorithm {
      * @throws InvalidKeyException
      *             The secret provided was not a valid HMAC-SHA-1 key.
      *
+     * @return HMAC SHA-1
      */
 
-    public static byte[] hmac_sha1(byte[] keyBytes, byte[] text) throws NoSuchAlgorithmException,
-            InvalidKeyException {
+    @NonNull
+    public static byte[] hmac_sha1(@NonNull final byte[] keyBytes, @NonNull final byte[] text)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmacSha1;
         try {
             hmacSha1 = Mac.getInstance("HmacSHA1");
-        } catch (final NoSuchAlgorithmException nsae) {
+        } catch (@NonNull final NoSuchAlgorithmException nsae) {
             hmacSha1 = Mac.getInstance("HMAC-SHA-1");
         }
         final SecretKeySpec macKey = new SecretKeySpec(keyBytes, "RAW");
@@ -137,12 +143,13 @@ public class OneTimePasswordAlgorithm {
      * @throws InvalidKeyException
      *             The secret provided was not a valid HMAC-SHA-1 key.
      *
-     * @return A numeric String in base 10 that includes {@link codeDigits} digits plus the optional
+     * @return A numeric String in base 10 that includes {@code codeDigits} digits plus the optional
      *         checksum digit if requested.
      */
-    static public String generateOTP(byte[] secret, long movingFactor, int codeDigits,
-            boolean addChecksum, int truncationOffset) throws NoSuchAlgorithmException,
-            InvalidKeyException {
+    @NonNull
+    public static String generateOTP(@NonNull final byte[] secret, long movingFactor,
+            final int codeDigits, final boolean addChecksum, final int truncationOffset)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         // put movingFactor value into text byte array
         final byte[] text = new byte[8];
         for (int i = text.length - 1; i >= 0; i--) {
@@ -176,13 +183,14 @@ public class OneTimePasswordAlgorithm {
      * @throws InvalidKeyException
      *             The secret provided was not a valid HMAC-SHA-1 key.
      *
-     * @return A numeric String in base 10 that includes {@link codeDigits} digits plus the optional
+     * @return A numeric String in base 10 that includes {@code codeDigits} digits plus the optional
      *         checksum digit if requested.
      */
-    static public String generateOTPFromText(byte[] secret, byte[] text, int codeDigits,
-            boolean addChecksum, int truncationOffset) throws InvalidKeyException,
-            NoSuchAlgorithmException {
-        String result = null;
+    @NonNull
+    public static String generateOTPFromText(@NonNull final byte[] secret, @NonNull
+    final byte[] text, final int codeDigits, final boolean addChecksum, final int truncationOffset)
+            throws InvalidKeyException, NoSuchAlgorithmException {
+        final StringBuilder result = new StringBuilder();
         final int digits = addChecksum ? (codeDigits + 1) : codeDigits;
         // compute hmac hash
         final byte[] hash = hmac_sha1(secret, text);
@@ -199,10 +207,11 @@ public class OneTimePasswordAlgorithm {
         if (addChecksum) {
             otp = (otp * 10) + calcChecksum(otp, codeDigits);
         }
-        result = Integer.toString(otp);
+        result.append(otp);
         while (result.length() < digits) {
-            result = "0" + result;
+            result.insert(0, '0');
         }
-        return result;
+
+        return result.toString();
     }
 }
