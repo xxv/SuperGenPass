@@ -30,7 +30,7 @@ public class RememberedDomainProvider extends ContentProvider {
 
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(final Uri uri) {
         switch (mUriMatcher.match(uri)){
         case MATCHER_DOMAIN_DIR:
             return TYPE_DOMAINS_DIR;
@@ -47,19 +47,23 @@ public class RememberedDomainProvider extends ContentProvider {
     /**
      * Adds the given domain to the list of remembered domains.
      *
+     * @param cr the resolver
      * @param domain the filtered domain name
      */
-    public static void addRememberedDomain(ContentResolver cr, String domain){
+    public static void addRememberedDomain(final ContentResolver cr, final String domain){
         final Cursor existingEntries = cr.query(Domain.CONTENT_URI, null,
                 Domain.DOMAIN + "=?", new String[] {domain}, null);
-        try{
-            if (!existingEntries.moveToFirst()) {
-                final ContentValues cv = new ContentValues();
-                cv.put(Domain.DOMAIN, domain);
-                cr.insert(Domain.CONTENT_URI,  cv);
+
+        if (existingEntries != null) {
+            try {
+                if (!existingEntries.moveToFirst()) {
+                    final ContentValues cv = new ContentValues();
+                    cv.put(Domain.DOMAIN, domain);
+                    cr.insert(Domain.CONTENT_URI, cv);
+                }
+            } finally {
+                existingEntries.close();
             }
-        }finally{
-            existingEntries.close();
         }
     }
 
@@ -70,7 +74,7 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(final Uri uri, final ContentValues values) {
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
         switch(mUriMatcher.match(uri)){
@@ -84,8 +88,8 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
+    public Cursor query(final Uri uri, final String[] projection, final String selection,
+            final String[] selectionArgs, final String sortOrder) {
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
         switch(mUriMatcher.match(uri)){
@@ -103,8 +107,8 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection,
-            String[] selectionArgs) {
+    public int update(final Uri uri, final ContentValues values, final String selection,
+            final String[] selectionArgs) {
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
         switch(mUriMatcher.match(uri)){
@@ -121,7 +125,7 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
         switch (mUriMatcher.match(uri)){

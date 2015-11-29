@@ -11,7 +11,7 @@ public class Domain implements BaseColumns {
         PATH = "domain";
 
     public static final Uri
-        CONTENT_URI = Uri.parse("content://"+RememberedDomainProvider.AUTHORITY+"/"+PATH);
+        CONTENT_URI = Uri.parse("content://"+RememberedDomainProvider.AUTHORITY+ '/' +PATH);
 
     public static final String
         SORT_ORDER = DOMAIN+ " ASC";

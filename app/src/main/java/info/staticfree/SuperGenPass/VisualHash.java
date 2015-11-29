@@ -2,7 +2,7 @@ package info.staticfree.SuperGenPass;
 
 /*
  Visual Hash (SHA-1)
- Copyright (C) 2009-2012  Steve Pomeroy <steve@staticfree.info>
+ Copyright (C) 2009-2015  Steve Pomeroy <steve@staticfree.info>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,6 @@ package info.staticfree.SuperGenPass;
 
  */
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
@@ -30,37 +27,31 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
- * <p>
- * This displays a visual representation of the output of a hash function. Bits in the hash output
- * are mapped directly to colored shapes and their positions.
- * </p>
+ * <p> This displays a visual representation of the output of a hash function. Bits in the hash
+ * output are mapped directly to colored shapes and their positions. </p>
  *
- * <p>
- * This is intended to allow rapid visual identification of a known input based by using spatial
+ * <p> This is intended to allow rapid visual identification of a known input based by using spatial
  * memory. For example, by hashing a password and displaying the output to the user as they type it,
  * they can learn to identify when they have typed the password successfully by recognizing their
- * password's distinct shapes, colors and arrangements.
- * </p>
+ * password's distinct shapes, colors and arrangements. </p>
  *
  * @author Steve Pomeroy
- *
  */
 public class VisualHash extends Drawable {
 
+    private static final String TAG = VisualHash.class.getSimpleName();
     private MessageDigest mHasher;
     private byte[] mHash;
 
     private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private int mWidth, mHeight;
     private float mScaleX, mScaleY;
-
-    /**
-     * Whether or not to show a visual hash where there's no data.
-     */
-    private final boolean mShowBlankData = false;
 
     /**
      * <p>
@@ -79,8 +70,7 @@ public class VisualHash extends Drawable {
      * @throws NoSuchAlgorithmException
      *             if the specified hash algorithm can't be found.
      */
-    public VisualHash(String hashFunction) throws NoSuchAlgorithmException {
-        super();
+    public VisualHash(final String hashFunction) throws NoSuchAlgorithmException {
         mHasher = MessageDigest.getInstance(hashFunction);
 
         init();
@@ -95,7 +85,7 @@ public class VisualHash extends Drawable {
             mHasher = MessageDigest.getInstance("SHA-1");
         } catch (final NoSuchAlgorithmException e) {
             mHasher = null;
-            e.printStackTrace();
+            Log.e(TAG, "SHA-1 is missing?!");
         }
 
         init();
@@ -110,12 +100,11 @@ public class VisualHash extends Drawable {
     /**
      * Sets the data and digests it into the visual hash.
      *
-     * @param input
-     *            the data to be hashed. This value is discarded immediately after computing the
-     *            hash.
+     * @param input the data to be hashed. This value is discarded immediately after computing the
+     * hash.
      */
-    public void setData(byte[] input) {
-        if (mHasher == null || (!mShowBlankData && input.length == 0)) {
+    public void setData(final byte[] input) {
+        if (mHasher == null || (input.length == 0)) {
             mHash = null;
         } else {
             mHasher.update(input);
@@ -161,38 +150,39 @@ public class VisualHash extends Drawable {
     /**
      * The spacing between the shapes. Units are pre-scale pixels.
      */
-    private final static int SPACING = 2;
+    private static final int SPACING = 2;
 
-    private final static int SHAPE_ALPHA = 255;
+    private static final int SHAPE_ALPHA = 255;
 
     /**
      * This constant is based on the static shape definitions.
      */
-    private final static int RADIUS = 8;
+    private static final int RADIUS = 8;
 
     /**
      * The amount to move 0,0 so that drawing a circle with the given radius will be visible.
      */
-    private final static int ORIGIN_OFFSET = RADIUS + SPACING / 2;
+    private static final int ORIGIN_OFFSET = RADIUS + SPACING / 2;
 
     /**
      * pixel width; centers are 3 shapes wide
      */
-    private final static int PRESCALE_CENTER_WIDTH = (RADIUS * 2 + SPACING) * 3;
+    private static final int PRESCALE_CENTER_WIDTH = (RADIUS * 2 + SPACING) * 3;
 
     /**
      * The size of the rendered area before it's been scaled to fit the drawable's bounds. Width is
      * 4 shapes wide.
      */
-    private final static int PRESCALE_WIDTH = (RADIUS * 2 + SPACING) * 4;
+    private static final int PRESCALE_WIDTH = (RADIUS * 2 + SPACING) * 4;
+    private static final int PRESCALE_HEIGHT = (RADIUS * 2 + SPACING) * 4;
 
     // formatter:on
 
-    private final static Path TRIANGLE = new Path();
-    private final static Path STAR = new Path();
+    private static final Path TRIANGLE = new Path();
+    private static final Path STAR = new Path();
     private static final Path PLUS = new Path();
-    private final static Path X = new Path();
-    private final static Path DIAMOND = new Path();
+    private static final Path X = new Path();
+    private static final Path DIAMOND = new Path();
 
     static {
         TRIANGLE.moveTo(-RADIUS, RADIUS);
@@ -253,17 +243,17 @@ public class VisualHash extends Drawable {
     }
 
     @Override
-    protected void onBoundsChange(Rect bounds) {
+    protected void onBoundsChange(final Rect bounds) {
         super.onBoundsChange(bounds);
 
-        mWidth = bounds.width();
-        mHeight = bounds.height();
-        mScaleX = mWidth / (float) PRESCALE_WIDTH;
-        mScaleY = mHeight / (float) PRESCALE_WIDTH;
+        final int width = bounds.width();
+        final int height = bounds.height();
+        mScaleX = width / (float) PRESCALE_WIDTH;
+        mScaleY = height / (float) PRESCALE_HEIGHT;
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(final Canvas canvas) {
 
         canvas.scale(mScaleX, mScaleY);
 
@@ -273,7 +263,7 @@ public class VisualHash extends Drawable {
         }
 
         // go through all the bytes in the hash and draw them as shapes.
-        for (int offset = 0; offset < (mHash.length); offset += BYTES_PER_SHAPE) {
+        for (int offset = 0; offset < mHash.length; offset += BYTES_PER_SHAPE) {
             final int dat = (0xff & mHash[offset]) | (0xff00 & (mHash[offset + 1] << 8));
 
             final int type = (dat & TYPE_MASK) >> TYPE_OFFSET;
@@ -333,31 +323,25 @@ public class VisualHash extends Drawable {
     /**
      * Scale an int linearly, starting at zero.
      *
-     * @param valueMax
-     *            the maximum input value
-     * @param value
-     *            the value to scale
-     * @param max
-     *            the maximum output value
+     * @param valueMax the maximum input value
+     * @param value the value to scale
+     * @param max the maximum output value
      * @return the scaled value as an int
      */
-    private int scaleInt(int valueMax, int value, int max) {
-        return (int) ((value / ((float) valueMax)) * max);
+    private static int scaleInt(final int valueMax, final int value, final int max) {
+        return (int) ((value / (float) valueMax) * max);
     }
 
     /**
      * Scale an int linearly, starting at zero.
      *
-     * @param valueMax
-     *            the maximum input value
-     * @param value
-     *            the value to scale
-     * @param max
-     *            the maximum output value
+     * @param valueMax the maximum input value
+     * @param value the value to scale
+     * @param max the maximum output value
      * @return the scaled value as a float
      */
-    private float scale(int valueMax, int value, int max) {
-        return (value / ((float) valueMax)) * max;
+    private static float scale(final int valueMax, final int value, final int max) {
+        return (value / (float) valueMax) * max;
     }
 
     @Override
@@ -366,12 +350,12 @@ public class VisualHash extends Drawable {
     }
 
     @Override
-    public void setAlpha(int alpha) {
+    public void setAlpha(final int alpha) {
 
     }
 
     @Override
-    public void setColorFilter(ColorFilter arg0) {
+    public void setColorFilter(final ColorFilter arg0) {
     }
 
     @Override
@@ -381,6 +365,6 @@ public class VisualHash extends Drawable {
 
     @Override
     public int getIntrinsicHeight() {
-        return PRESCALE_WIDTH;
+        return PRESCALE_HEIGHT;
     }
 }

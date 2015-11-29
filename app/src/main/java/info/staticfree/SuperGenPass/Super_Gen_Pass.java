@@ -20,7 +20,6 @@ package info.staticfree.SuperGenPass;
  */
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -34,7 +33,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -57,6 +55,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
@@ -69,8 +68,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.NoSuchAlgorithmException;
 
 import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
@@ -83,36 +80,35 @@ import info.staticfree.SuperGenPass.hashes.SuperGenPass;
 // the check below is a nice reminder, however this activity uses no delayed messages,
 // so nothing should be holding onto references past this activity's lifetime.
 @SuppressLint("HandlerLeak")
-@SuppressWarnings("deprecation")
-public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLongClickListener,
-        OnCheckedChangeListener, OnEditorActionListener, FilterQueryProvider {
-    private final static String TAG = Super_Gen_Pass.class.getSimpleName();
+public class Super_Gen_Pass extends TabActivity
+        implements OnClickListener, OnLongClickListener, OnCheckedChangeListener,
+        OnEditorActionListener, FilterQueryProvider {
+    private static final String TAG = Super_Gen_Pass.class.getSimpleName();
+    private static final int MINUTE_MS = 60000;
 
     DomainBasedHash mHasher;
 
     // @formatter:off
-    private static final int
-        DIALOG_ABOUT = 100,
-        DIALOG_CONFIRM_MASTER = 101;
+    private static final int DIALOG_ABOUT = 100, DIALOG_CONFIRM_MASTER = 101;
     private static final int REQUEST_CODE_PREFERENCES = 200;
-    private static final String
-        STATE_LAST_STOPPED_TIME = "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
-    private static final String STATE_SHOWING_PASSWORD = "info.staticfree.SuperGenPass.STATE_SHOWING_PASSWORD";
+    private static final String STATE_LAST_STOPPED_TIME =
+            "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
+    private static final String STATE_SHOWING_PASSWORD =
+            "info.staticfree.SuperGenPass.STATE_SHOWING_PASSWORD";
     // @formatter:on
 
-    private int pwLength;
-    private String pwType;
-    private String pwSalt;
+    private int mPwLength;
+    private String mPwSalt;
     private boolean mCopyToClipboard;
     private boolean mRememberDomains;
-    private boolean noDomainCheck;
+    private boolean mNoDomainCheck;
 
     private GeneratedPasswordView mGenPwView;
     private AutoCompleteTextView mDomainEdit;
     private VisualHashEditText mMasterPwEdit;
 
     private long mLastStoppedTime;
-    private int pwClearTimeout;
+    private int mPwClearTimeout;
 
     private ContentResolver mContentResolver;
 
@@ -121,13 +117,13 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     private static final int MIN_PIN_LENGTH = 3;
     private final Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             switch (msg.what) {
                 case MSG_UPDATE_PW_VIEW:
                     generateIfValid();
                     break;
             }
-        };
+        }
     };
 
     private ToggleButton mShowGenPassword;
@@ -138,25 +134,23 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
     private final BroadcastReceiver mScreenOffReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             clearEditTexts();
             unregisterReceiver(this);
         }
     };
 
-    private boolean mPleaseDontClearDomain;
+    private boolean mClearDomain = true;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
-        // This is disabled in versions below honeycomb, as they seem to result in corrupt displays.
-        // This is fine, as the stock UI doesn't use screenshots for the task management.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
         final Intent intent = getIntent();
         final Uri data = intent.getData();
@@ -193,9 +187,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
                     mDomainEdit.setText(mHasher.getDomain(uri.getHost()));
                     mMasterPwEdit.requestFocus();
-                    mPleaseDontClearDomain = true;
-
-                } catch (final Exception e) {
+                    mClearDomain = false;
+                } catch (final PasswordGenerationException e) {
                     // nothing much to be done here.
                     // Let the user figure it out.
                     Log.e(TAG, "Could not find valid URI in shared text", e);
@@ -208,13 +201,14 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     private void initDomainPasswordEntry() {
         mDomainEdit = (AutoCompleteTextView) findViewById(R.id.domain_edit);
 
-        mMasterPwEdit = ((VisualHashEditText) findViewById(R.id.password_edit));
+        mMasterPwEdit = (VisualHashEditText) findViewById(R.id.password_edit);
 
         mMasterPwEdit.setOnEditorActionListener(this);
 
-        final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_dropdown_item_1line, null, new String[] { "domain" },
-                new int[] { android.R.id.text1 });
+        final SimpleCursorAdapter adapter =
+                new SimpleCursorAdapter(this, android.R.layout.simple_dropdown_item_1line, null,
+                        new String[] { "domain" }, new int[] { android.R.id.text1 },
+                        CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         adapter.setFilterQueryProvider(this);
         adapter.setStringConversionColumn(DOMAIN_COLUMN);
@@ -223,7 +217,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         mDomainEdit.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+            public void onItemClick(final AdapterView<?> arg0, final View arg1, final int arg2,
+                    final long arg3) {
                 mMasterPwEdit.requestFocus();
             }
         });
@@ -236,7 +231,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         mGenPwView.setOnLongClickListener(this);
 
         // hook in our buttons
-        mShowGenPassword = ((ToggleButton) findViewById(R.id.show_gen_password));
+        mShowGenPassword = (ToggleButton) findViewById(R.id.show_gen_password);
         mShowGenPassword.setOnCheckedChangeListener(this);
     }
 
@@ -247,23 +242,18 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         mPinDigitsSpinner = (Spinner) findViewById(R.id.pin_length);
         mPinDigitsSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(final AdapterView<?> parent, final View view,
+                    final int position, final long id) {
                 mPinDigits = position + MIN_PIN_LENGTH;
 
-                // run on a thread as commit() can take a while.
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final SharedPreferences prefs = PreferenceManager
-                                .getDefaultSharedPreferences(Super_Gen_Pass.this);
-                        prefs.edit().putInt(Preferences.PREF_PIN_DIGITS, mPinDigits).commit();
-                    }
-                }).start();
+                final SharedPreferences prefs =
+                        PreferenceManager.getDefaultSharedPreferences(Super_Gen_Pass.this);
+                prefs.edit().putInt(Preferences.PREF_PIN_DIGITS, mPinDigits).apply();
                 generateIfValid();
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(final AdapterView<?> parent) {
             }
         });
     }
@@ -272,25 +262,14 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
         final TabHost mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 
-        mTabHost.addTab(createTabSpec(mTabHost, R.string.tab_password, R.id.tab_password,
-                "password"));
+        mTabHost.addTab(
+                createTabSpec(mTabHost, R.string.tab_password, R.id.tab_password, "password"));
         mTabHost.addTab(createTabSpec(mTabHost, R.string.tab_pin, R.id.tab_pin, "pin"));
     }
 
-    private TabSpec createTabSpec(TabHost tabhost, int title, int content, String tag) {
-        if (Build.VERSION.SDK_INT < 11) {
-            return tabhost.newTabSpec(tag).setContent(content)
-                    .setIndicator(createTabIndicator(title));
-        } else {
-            return tabhost.newTabSpec(tag).setContent(content).setIndicator(getText(title));
-        }
-    }
-
-    private View createTabIndicator(int titleRes) {
-        final LayoutInflater inflater = LayoutInflater.from(this);
-        final TextView tab = (TextView) inflater.inflate(R.layout.tab_indicator, null);
-        tab.setText(titleRes);
-        return tab;
+    private TabSpec createTabSpec(final TabHost tabhost, final int title, final int content,
+            final String tag) {
+        return tabhost.newTabSpec(tag).setContent(content).setIndicator(getText(title));
     }
 
     @Override
@@ -317,13 +296,13 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         if (!mShowPin) {
             getTabHost().setCurrentTab(0);
         }
-        // when the user has left the app for more than pwClearTimeout minutes,
+        // when the user has left the app for more than mPwClearTimeout minutes,
         // wipe master password and generated password.
-        if (!mPleaseDontClearDomain
-                && SystemClock.elapsedRealtime() - mLastStoppedTime > pwClearTimeout * 60 * 1000) {
+        if (mClearDomain &&
+                SystemClock.elapsedRealtime() - mLastStoppedTime > mPwClearTimeout * MINUTE_MS) {
             clearEditTexts();
         }
-        mPleaseDontClearDomain = false;
+        mClearDomain = true;
     }
 
     private void clearEditTexts() {
@@ -331,17 +310,16 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         mMasterPwEdit.getText().clear();
         clearGenPassword();
         mDomainEdit.requestFocus();
-
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(STATE_LAST_STOPPED_TIME, mLastStoppedTime);
         outState.putBoolean(STATE_SHOWING_PASSWORD, mShowingPassword);
     }
 
-    private boolean mShowingPassword = false;
+    private boolean mShowingPassword;
 
     private HotpPin mPinGen;
 
@@ -367,36 +345,18 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
             mGenPwView.setText(null);
             mGenPinView.setText(null);
             mShowingPassword = false;
-            honeycombInvalidateOptionsMenu();
-        }
-    }
-
-    private void honeycombInvalidateOptionsMenu() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            try {
-                final Method invalidateOptionsMenu = Activity.class
-                        .getMethod("invalidateOptionsMenu");
-                invalidateOptionsMenu.invoke(this);
-            } catch (final NoSuchMethodException e) {
-                Log.e(TAG, "error refreshing menu");
-            } catch (final IllegalArgumentException e) {
-                Log.e(TAG, "error refreshing menu");
-            } catch (final IllegalAccessException e) {
-                Log.e(TAG, "error refreshing menu");
-            } catch (final InvocationTargetException e) {
-                Log.e(TAG, "error refreshing menu");
-            }
+            invalidateOptionsMenu();
         }
     }
 
     private String generateAndDisplay() throws PasswordGenerationException {
         String domain = getDomain();
 
-        if (!noDomainCheck) {
+        if (!mNoDomainCheck) {
             domain = extractDomain(domain);
         }
-        final String masterPw = getMasterPassword() + pwSalt;
-        final String genPw = mHasher.generate(masterPw, domain, pwLength);
+        final String masterPw = getMasterPassword() + mPwSalt;
+        final String genPw = mHasher.generate(masterPw, domain, mPwLength);
 
         mGenPwView.setDomainName(domain);
         mGenPwView.setText(genPw);
@@ -407,12 +367,12 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
             mGenPinView.setText(pin);
         }
         mShowingPassword = true;
-        honeycombInvalidateOptionsMenu();
+        invalidateOptionsMenu();
 
         return genPw;
     }
 
-    private void postGenerate(boolean copyToClipboard) {
+    private void postGenerate(final boolean copyToClipboard) {
 
         if (mRememberDomains) {
             RememberedDomainProvider.addRememberedDomain(mContentResolver, getDomain());
@@ -421,7 +381,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         if (copyToClipboard) {
             mGenPwView.copyToClipboard();
 
-            if (Intent.ACTION_SEND.equals(getIntent().getAction()) && mGenPwView.getHidePassword()) {
+            if (Intent.ACTION_SEND.equals(getIntent().getAction()) &&
+                    mGenPwView.getHidePassword()) {
                 finish();
             }
         }
@@ -444,12 +405,10 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
             postGenerate(mCopyToClipboard);
             return true;
-
         } catch (final IllegalDomainException e) {
             clearGenPassword();
             mDomainEdit.setError(e.getLocalizedMessage());
             mDomainEdit.requestFocus();
-
         } catch (final PasswordGenerationException e) {
             clearGenPassword();
             Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -472,11 +431,10 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     /**
      * Returns the hostname portion of the supplied URL.
      *
-     * @param maybeUrl
-     *            : either a hostname or a URL.
+     * @param maybeUrl : either a hostname or a URL.
      * @return the hostname portion of maybeUrl, or null if maybeUrl was null.
      */
-    String extractDomain(String maybeUrl) {
+    String extractDomain(final String maybeUrl) {
         try {
             final Uri uri = Uri.parse(maybeUrl);
             return mHasher.getDomain(uri.getHost());
@@ -487,7 +445,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         }
     }
 
-    public void onClick(View v) {
+    @Override
+    public void onClick(final View v) {
         switch (v.getId()) {
             case R.id.go:
                 go();
@@ -495,45 +454,39 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         }
     }
 
-    public boolean onLongClick(View v) {
-        switch (v.getId()) {
-        }
+    @Override
+    public boolean onLongClick(final View v) {
         return false;
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+    public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.show_gen_password: {
 
                 mGenPwView.setHidePassword(!isChecked);
 
-                // run on a thread as commit() can take a while.
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final SharedPreferences prefs = PreferenceManager
-                                .getDefaultSharedPreferences(Super_Gen_Pass.this);
-                        prefs.edit().putBoolean(Preferences.PREF_SHOW_GEN_PW, isChecked).commit();
-                    }
-                }).start();
+                final SharedPreferences prefs =
+                        PreferenceManager.getDefaultSharedPreferences(Super_Gen_Pass.this);
+                        prefs.edit().putBoolean(Preferences.PREF_SHOW_GEN_PW, isChecked).apply();
             }
         }
     }
 
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+    @Override
+    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
         return !go();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.options, menu);
 
         return true;
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(final Menu menu) {
         final MenuItem verify = menu.findItem(R.id.verify);
         verify.setEnabled(getMasterPassword().length() != 0);
         menu.findItem(R.id.copy).setEnabled(mShowingPassword);
@@ -541,7 +494,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings:
 
@@ -572,7 +525,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode,
+            final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_PREFERENCES) {
@@ -581,7 +535,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     }
 
     @Override
-    protected Dialog onCreateDialog(int id) {
+    protected Dialog onCreateDialog(final int id) {
         switch (id) {
             case DIALOG_ABOUT: {
                 final Builder builder = new AlertDialog.Builder(this);
@@ -595,7 +549,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
                 builder.setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
                                 setResult(RESULT_OK);
                             }
                         });
@@ -612,7 +567,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
                 builder.setNegativeButton(android.R.string.cancel, new Dialog.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(final DialogInterface dialog, final int which) {
                         dialog.cancel();
                     }
                 });
@@ -620,15 +575,17 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
                 pwVerify.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    public void onTextChanged(final CharSequence s, final int start,
+                            final int before, final int count) {
                     }
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void beforeTextChanged(final CharSequence s, final int start,
+                            final int count, final int after) {
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
+                    public void afterTextChanged(final Editable s) {
                         if (pwVerify.getTag() instanceof String) {
                             final String masterPw = (String) pwVerify.getTag();
                             if (masterPw.length() > 0 && masterPw.equals(s.toString())) {
@@ -644,8 +601,8 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
                 // This is added below to ensure that the soft input doesn't get hidden if it's
                 // showing,
                 // which seems to be the default for dialogs.
-                d.getWindow().setSoftInputMode(
-                        WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
+                d.getWindow()
+                        .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
                 return d;
             }
             default:
@@ -654,7 +611,7 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
     }
 
     @Override
-    protected void onPrepareDialog(int id, Dialog dialog) {
+    protected void onPrepareDialog(final int id, final Dialog dialog) {
         switch (id) {
             case DIALOG_CONFIRM_MASTER:
                 final EditText verify = (EditText) dialog.findViewById(R.id.verify);
@@ -672,15 +629,17 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         mDomainEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(final Editable s) {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(final CharSequence s, final int start, final int count,
+                    final int after) {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(final CharSequence s, final int start, final int before,
+                    final int count) {
                 mHandler.sendEmptyMessage(MSG_UPDATE_PW_VIEW);
             }
         });
@@ -688,16 +647,18 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         mMasterPwEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(final CharSequence s, final int start, final int before,
+                    final int count) {
                 mHandler.sendEmptyMessage(MSG_UPDATE_PW_VIEW);
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(final CharSequence s, final int start, final int count,
+                    final int after) {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(final Editable s) {
             }
         });
     }
@@ -709,14 +670,14 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // when adding items here, make sure default values are in sync with the xml file
-        this.pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE);
-        this.pwLength = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10);
-        this.pwSalt = prefs.getString(Preferences.PREF_PW_SALT, "");
-        this.mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
-        this.mRememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true);
-        this.noDomainCheck = prefs.getBoolean(Preferences.PREF_DOMAIN_NOCHECK, false);
-        this.pwClearTimeout = Preferences.getStringAsInteger(prefs,
-                Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
+        final String pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE);
+        mPwLength = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10);
+        mPwSalt = prefs.getString(Preferences.PREF_PW_SALT, "");
+        mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
+        mRememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true);
+        mNoDomainCheck = prefs.getBoolean(Preferences.PREF_DOMAIN_NOCHECK, false);
+        mPwClearTimeout =
+                Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
 
         // PIN
         mPinDigits = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4);
@@ -724,31 +685,32 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
         mShowPin = prefs.getBoolean(Preferences.PREF_SHOW_PIN, true);
 
         try {
-            if (pwType.equals(SuperGenPass.TYPE)) {
+            switch (pwType) {
+                case SuperGenPass.TYPE:
+                    mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
 
-                mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                    break;
+                case SuperGenPass.TYPE_SHA_512:
+                    mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_SHA512);
 
-            } else if (pwType.equals(SuperGenPass.TYPE_SHA_512)) {
+                    break;
+                case PasswordComposer.TYPE:
+                    mHasher = new PasswordComposer(this);
 
-                mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_SHA512);
-
-            } else if (pwType.equals(PasswordComposer.TYPE)) {
-                mHasher = new PasswordComposer(this);
-
-            } else {
-                mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
-                Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
+                    break;
+                default:
+                    mHasher = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                    Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
+                    break;
             }
 
             mPinGen = new HotpPin(this);
-
         } catch (final NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Log.e(TAG, "could not find MD5", e);
             Toast.makeText(getApplicationContext(),
                     String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()),
                     Toast.LENGTH_LONG).show();
             finish();
-
         } catch (final IOException e) {
             Toast.makeText(this, getString(R.string.err_json_load, e.getLocalizedMessage()),
                     Toast.LENGTH_LONG).show();
@@ -756,10 +718,10 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
             finish();
         }
 
-        mHasher.setCheckDomain(!noDomainCheck);
-        mPinGen.setCheckDomain(!noDomainCheck);
+        mHasher.setCheckDomain(!mNoDomainCheck);
+        mPinGen.setCheckDomain(!mNoDomainCheck);
 
-        if (noDomainCheck) {
+        if (mNoDomainCheck) {
             mDomainEdit.setHint(R.string.domain_hint_no_checking);
         } else {
             mDomainEdit.setHint(R.string.domain_hint);
@@ -784,14 +746,14 @@ public class Super_Gen_Pass extends TabActivity implements OnClickListener, OnLo
 
     // a filter that searches for domains starting with the given constraint
     @Override
-    public Cursor runQuery(CharSequence constraint) {
-        Cursor c;
+    public Cursor runQuery(final CharSequence constraint) {
+        final Cursor c;
         if (constraint == null || constraint.length() == 0) {
-            c = mContentResolver.query(Domain.CONTENT_URI, PROJECTION, null, null,
-                    Domain.SORT_ORDER);
+            c = mContentResolver
+                    .query(Domain.CONTENT_URI, PROJECTION, null, null, Domain.SORT_ORDER);
         } else {
             c = mContentResolver.query(Domain.CONTENT_URI, PROJECTION, Domain.DOMAIN + " GLOB ?",
-                    new String[] { constraint.toString() + "*" }, Domain.SORT_ORDER);
+                    new String[] { constraint + "*" }, Domain.SORT_ORDER);
         }
 
         return c;

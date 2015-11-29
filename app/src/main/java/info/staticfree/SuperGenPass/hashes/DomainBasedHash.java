@@ -18,21 +18,23 @@ package info.staticfree.SuperGenPass.hashes;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import info.staticfree.SuperGenPass.IllegalDomainException;
-import info.staticfree.SuperGenPass.PasswordGenerationException;
-import info.staticfree.SuperGenPass.R;
+import android.content.Context;
+
+import junit.framework.Assert;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
-import junit.framework.Assert;
-
-import org.json.JSONArray;
-
-import android.content.Context;
+import info.staticfree.SuperGenPass.IllegalDomainException;
+import info.staticfree.SuperGenPass.PasswordGenerationException;
+import info.staticfree.SuperGenPass.R;
 
 /**
  * A password hash that takes a password and a domain. Domains are optionally checked against a
@@ -40,14 +42,15 @@ import android.content.Context;
  * "www.example.org" and "www2.example.org" will generate the same password.
  *
  * @author Steve Pomeroy
- *
  */
 public abstract class DomainBasedHash {
+    private static final Pattern PATTERN_IP_ADDRESS =
+            Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private boolean checkDomain;
     private ArrayList<String> domains;
     private final Context mContext;
 
-    public DomainBasedHash(Context context) throws IOException {
+    public DomainBasedHash(final Context context) throws IOException {
         mContext = context;
         loadDomains();
     }
@@ -55,6 +58,8 @@ public abstract class DomainBasedHash {
     /**
      * This list should remain the same and in sync with the canonical SGP, so that passwords
      * generated in one place are the same as others.
+     *
+     * @throws IOException on disk errors
      */
     public void loadDomains() throws IOException {
         final InputStream is = mContext.getResources().openRawResource(R.raw.domains);
@@ -63,16 +68,16 @@ public abstract class DomainBasedHash {
         try {
 
             for (final BufferedReader isReader =
-                    new BufferedReader(new InputStreamReader(is), 16000); isReader.ready();) {
+                 new BufferedReader(new InputStreamReader(is), 16000); isReader.ready(); ) {
                 jsonString.append(isReader.readLine());
             }
 
             final JSONArray domainJson = new JSONArray(jsonString.toString());
-            domains = new ArrayList<String>(domainJson.length());
+            domains = new ArrayList<>(domainJson.length());
             for (int i = 0; i < domainJson.length(); i++) {
                 domains.add(domainJson.getString(i));
             }
-        } catch (final Exception e) {
+        } catch (IOException | JSONException e) {
             final IOException ioe = new IOException("Unable to load domains");
             ioe.initCause(e);
         }
@@ -84,10 +89,9 @@ public abstract class DomainBasedHash {
      * Computes the site's domain, based on the provided hostname. This takes into account things
      * like "co.uk" and other such multi-level TLDs.
      *
-     * @param hostname
-     *            the full hostname
+     * @param hostname the full hostname
      * @return the domain of the URI
-     * @throws PasswordGenerationException
+     * @throws PasswordGenerationException if there is an error generating the password
      */
     public String getDomain(String hostname) throws PasswordGenerationException {
 
@@ -98,14 +102,14 @@ public abstract class DomainBasedHash {
         }
 
         // IP addresses should be composed based on the full address.
-        if (hostname.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
+        if (PATTERN_IP_ADDRESS.matcher(hostname).matches()) {
             return hostname;
         }
 
         // for single-level TLDs, we only want the TLD and the 2nd level domain
         final String[] hostParts = hostname.split("\\.");
         if (hostParts.length < 2) {
-            throw new IllegalDomainException("Invalid domain: '" + hostname + "'");
+            throw new IllegalDomainException("Invalid domain: '" + hostname + '\'');
         }
         String domain = hostParts[hostParts.length - 2] + '.' + hostParts[hostParts.length - 1];
 
@@ -114,8 +118,8 @@ public abstract class DomainBasedHash {
         for (final String tld : domains) {
             if (domain.equals(tld)) {
                 if (hostParts.length < 3) {
-                    throw new IllegalDomainException("Invalid domain. '" + domain
-                            + "' seems to be a TLD.");
+                    throw new IllegalDomainException(
+                            "Invalid domain. '" + domain + "' seems to be a TLD.");
                 }
                 domain = hostParts[hostParts.length - 3] + '.' + domain;
                 break;
@@ -124,7 +128,10 @@ public abstract class DomainBasedHash {
         return domain;
     }
 
-    public void setCheckDomain(boolean checkDomain) {
+    /**
+     * @param checkDomain if true, sub-domains will be stripped from the hashing
+     */
+    public void setCheckDomain(final boolean checkDomain) {
         this.checkDomain = checkDomain;
     }
 
@@ -132,16 +139,14 @@ public abstract class DomainBasedHash {
      * Generates a password based on the given domain and a master password. Each time the method is
      * passed a given master password / domain, it will output the same password for that pair.
      *
-     * @param masterPass
-     *            master password
-     * @param domain
-     *            un-filtered domain (eg. www.example.org)
+     * @param masterPass master password
+     * @param domain un-filtered domain (eg. www.example.org)
+     * @param length generated password length
      * @return generated password based on the master password and the domain
-     * @throws PasswordGenerationException
-     *             if the criteria for generating the password are not met. Often a length or domain
-     *             issue.
+     * @throws PasswordGenerationException if the criteria for generating the password are not met.
+     * Often a length or domain issue.
      */
-    public String generate(String masterPass, String domain, int length)
+    public String generate(final String masterPass, final String domain, final int length)
             throws PasswordGenerationException {
         return generateWithFilteredDomain(masterPass, getDomain(domain), length);
     }
@@ -150,14 +155,12 @@ public abstract class DomainBasedHash {
      * Generates a password based on the given domain and a master password. Each time the method is
      * passed a given master password / domain, it will output the same password for that pair.
      *
-     * @param masterPass
-     *            master password
-     * @param domain
-     *            filtered domain (eg. example.org)
+     * @param masterPass master password
+     * @param domain filtered domain (eg. example.org)
+     * @param length generated password length
      * @return generated password based on the master password and the domain
-     * @throws PasswordGenerationException
-     *             if the criteria for generating the password are not met. Often a length or domain
-     *             issue.
+     * @throws PasswordGenerationException if the criteria for generating the password are not met.
+     * Often a length or domain issue.
      */
     protected abstract String generateWithFilteredDomain(String masterPass, String domain,
             int length) throws PasswordGenerationException;

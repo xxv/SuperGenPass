@@ -16,21 +16,21 @@ package info.staticfree.SuperGenPass.hashes;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import info.staticfree.SuperGenPass.IllegalDomainException;
-import info.staticfree.SuperGenPass.PasswordGenerationException;
+import android.content.Context;
 
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import android.content.Context;
+import info.staticfree.SuperGenPass.IllegalDomainException;
+import info.staticfree.SuperGenPass.PasswordGenerationException;
 
 public class PasswordComposer extends DomainBasedHash {
     public static final String TYPE = "pwc";
 
     private final MessageDigest md5;
 
-    public PasswordComposer(Context context) throws NoSuchAlgorithmException, IOException {
+    public PasswordComposer(final Context context) throws NoSuchAlgorithmException, IOException {
         super(context);
         md5 = MessageDigest.getInstance("MD5");
     }
@@ -41,13 +41,13 @@ public class PasswordComposer extends DomainBasedHash {
      * @param data
      * @return hex-encoded string of the md5sum of the data
      */
-    private String md5hex(byte[] data){
+    private String md5hex(final byte[] data){
         final byte[] md5data = md5.digest(data);
-        String md5hex = new String();
-        for( int i = 0; i < md5data.length; i++){
-            md5hex += String.format("%02x", md5data[i]);
+        final StringBuilder md5hex = new StringBuilder();
+        for (final byte aMd5data : md5data) {
+            md5hex.append(String.format("%02x", aMd5data));
         }
-        return md5hex;
+        return md5hex.toString();
     }
 
     /**
@@ -60,13 +60,13 @@ public class PasswordComposer extends DomainBasedHash {
      * @see http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/
      */
     @Override
-    public String generateWithFilteredDomain(String masterPass, String domain, int length)
+    public String generateWithFilteredDomain(final String masterPass, final String domain, final int length)
             throws PasswordGenerationException {
-        if (domain.equals("")){
+        if (domain.isEmpty()){
             throw new IllegalDomainException("Missing domain");
         }
 
-        if (masterPass.equals("")) {
+        if (masterPass.isEmpty()) {
             throw new PasswordGenerationException("empty password");
         }
 
@@ -75,6 +75,6 @@ public class PasswordComposer extends DomainBasedHash {
                     "Requested length out of range. Expecting value between 1 and 31 inclusive.");
         }
 
-        return md5hex(new String(masterPass + ":" + domain).getBytes()).substring(0, length);
+        return md5hex((masterPass + ':' + domain).getBytes()).substring(0, length);
     }
 }

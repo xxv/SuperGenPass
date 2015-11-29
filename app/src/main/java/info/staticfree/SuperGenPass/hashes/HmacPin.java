@@ -1,6 +1,6 @@
 package info.staticfree.SuperGenPass.hashes;
 
-import info.staticfree.SuperGenPass.PasswordGenerationException;
+import android.content.Context;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -12,17 +12,17 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import android.content.Context;
+import info.staticfree.SuperGenPass.PasswordGenerationException;
 
 public class HmacPin extends DomainBasedHash {
 
-    public HmacPin(Context context) throws IOException {
+    public HmacPin(final Context context) throws IOException {
         super(context);
         // TODO Auto-generated constructor stub
     }
 
     @Override
-    public String generateWithFilteredDomain(String masterPass, String domain, int length)
+    public String generateWithFilteredDomain(final String masterPass, final String domain, final int length)
             throws PasswordGenerationException {
         try {
             final Mac mac = Mac.getInstance("hmac");

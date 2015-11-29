@@ -7,7 +7,7 @@ public class IllegalDomainException extends PasswordGenerationException {
      */
     private static final long serialVersionUID = 1896452619111521996L;
 
-    public IllegalDomainException(String string) {
+    public IllegalDomainException(final String string) {
         super(string);
     }
 }

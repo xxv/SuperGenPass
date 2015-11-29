@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/info.staticfree.SuperGenPass"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="5dip" >
+    android:padding="5dip">
 
     <AutoCompleteTextView
         android:id="@+id/domain_edit"
@@ -14,7 +14,7 @@
         android:hint="@string/domain_hint"
         android:imeOptions="actionNext"
         android:inputType="textUri"
-        android:singleLine="true" >
+        android:singleLine="true">
 
         <requestFocus />
     </AutoCompleteTextView>
@@ -48,12 +48,12 @@
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/down_arrow" >
+        android:layout_below="@+id/down_arrow">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TabWidget
                 android:id="@android:id/tabs"
@@ -67,7 +67,7 @@
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent">
 
                 <info.staticfree.workarounds.TabPatchView
                     android:layout_width="0dip"
@@ -76,7 +76,7 @@
                 <RelativeLayout
                     android:id="@+id/tab_password"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent">
 
                     <info.staticfree.SuperGenPass.GeneratedPasswordView
                         android:id="@+id/password_output"
@@ -99,14 +99,13 @@
                 <RelativeLayout
                     android:id="@+id/tab_pin"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent">
 
                     <Spinner
                         android:id="@+id/pin_length"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/pin_output"
-                        android:layout_alignRight="@+id/show_gen_password"
                         android:layout_alignTop="@+id/pin_output"
                         android:entries="@array/pin_lengths"
                         android:gravity="center"

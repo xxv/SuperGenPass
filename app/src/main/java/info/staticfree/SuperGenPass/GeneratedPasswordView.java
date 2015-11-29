@@ -1,10 +1,11 @@
 package info.staticfree.SuperGenPass;
 
 import android.app.Application;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.ClipboardManager;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.NumberKeyListener;
@@ -20,29 +21,29 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-@SuppressWarnings("deprecation")
-public class GeneratedPasswordView extends TextView implements OnClickListener, OnMenuItemClickListener {
-    public final static int
-        MENU_ID_COPY = android.R.id.copy;
+public class GeneratedPasswordView extends TextView
+        implements OnClickListener, OnMenuItemClickListener {
+    public static final int MENU_ID_COPY = android.R.id.copy;
 
-    private OnClickListener onClickListener;
+    private OnClickListener mOnClickListener;
     private CharSequence domain;
 
-    public GeneratedPasswordView(Context context) {
+    public GeneratedPasswordView(final Context context) {
         this(context, null);
     }
 
-    public GeneratedPasswordView(Context context, AttributeSet attrs){
+    public GeneratedPasswordView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.generatedPasswordViewStyle);
     }
 
-    public GeneratedPasswordView(Context context, AttributeSet attrs,
-            int defStyle) {
+    public GeneratedPasswordView(final Context context, final AttributeSet attrs,
+            final int defStyle) {
         super(context, attrs, defStyle);
 
         super.setOnClickListener(this);
 
         setKeyListener(new NumberKeyListener() {
+            @Override
             public int getInputType() {
                 return InputType.TYPE_NULL;
             }
@@ -55,31 +56,33 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
     }
 
     @Override
-    public void setOnClickListener(OnClickListener l) {
-        this.onClickListener = l;
+    public void setOnClickListener(final OnClickListener onClickListener) {
+        mOnClickListener = onClickListener;
     }
 
-    public void onClick(View v) {
+    @Override
+    public void onClick(final View v) {
         Log.d("gpwv", "click!");
 
         // propagate the click
-        if (onClickListener != null){
-            onClickListener.onClick(v);
+        if (mOnClickListener != null) {
+            mOnClickListener.onClick(v);
         }
     }
 
     @Override
-    protected void onCreateContextMenu(ContextMenu menu) {
-        menu.add(Menu.NONE, MENU_ID_COPY, Menu.NONE, android.R.string.copy).setOnMenuItemClickListener(this);
+    protected void onCreateContextMenu(final ContextMenu menu) {
+        menu.add(Menu.NONE, MENU_ID_COPY, Menu.NONE, android.R.string.copy)
+                .setOnMenuItemClickListener(this);
         menu.setHeaderTitle(R.string.generated_password);
     }
 
     @Override
-    public boolean onTextContextMenuItem(int id) {
-        switch (id){
-        case MENU_ID_COPY:
-            copyToClipboard();
-            return true;
+    public boolean onTextContextMenuItem(final int id) {
+        switch (id) {
+            case MENU_ID_COPY:
+                copyToClipboard();
+                return true;
 
             default:
                 return super.onTextContextMenuItem(id);
@@ -89,38 +92,42 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
     /**
      * Sets the domain name that will be displayed when copying to clipboard.
      *
-     * @param domainName
+     * @param domainName the domain to show in the Toast
      */
-    public void setDomainName(CharSequence domainName){
-        this.domain = domainName;
+    public void setDomainName(final CharSequence domainName) {
+        domain = domainName;
     }
 
     @Override
-    public void setText(CharSequence text, BufferType type) {
+    public void setText(final CharSequence text, final BufferType type) {
         super.setText(text, type);
         setEnabled(text != null ? text.length() > 0 : false);
     }
 
-    public void copyToClipboard(){
+    public void copyToClipboard() {
         final CharSequence genPw = getText();
         if (genPw == null) {
             return;
         }
 
-        final ClipboardManager clipMan = (ClipboardManager)getContext().getSystemService(Application.CLIPBOARD_SERVICE);
-        clipMan.setText(genPw);
-        if (genPw.length() > 0){
-            if (domain != null){
-                Toast.makeText(getContext(), getResources().getString(R.string.toast_copied, domain),
-                        Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(getContext(), getResources().getString(R.string.toast_copied_no_domain),
+        final ClipboardManager clipMan =
+                (ClipboardManager) getContext().getSystemService(Application.CLIPBOARD_SERVICE);
+        clipMan.setPrimaryClip(ClipData.newPlainText(getContext().getText(
+                R.string.generated_password), genPw));
+        if (genPw.length() > 0) {
+            if (domain != null) {
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.toast_copied, domain), Toast.LENGTH_SHORT)
+                        .show();
+            } else {
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.toast_copied_no_domain),
                         Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    public void setHidePassword(boolean hidePassword) {
+    public void setHidePassword(final boolean hidePassword) {
         if (hidePassword) {
             setTransformationMethod(PasswordTransformationMethod.getInstance());
         } else {
@@ -132,7 +139,8 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
         return getTransformationMethod() != null;
     }
 
-    public boolean onMenuItemClick(MenuItem item) {
+    @Override
+    public boolean onMenuItemClick(final MenuItem item) {
         return onTextContextMenuItem(item.getItemId());
     }
 
@@ -155,13 +163,13 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
      */
 
     @Override
-    public void onRestoreInstanceState(Parcelable state) {
+    public void onRestoreInstanceState(final Parcelable state) {
         if (!(state instanceof SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
 
-        final SavedState ss = (SavedState)state;
+        final SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         if (ss.text != null) {
@@ -183,29 +191,31 @@ public class GeneratedPasswordView extends TextView implements OnClickListener, 
 
         CharSequence text;
 
-        public SavedState(Parcelable superState) {
+        public SavedState(final Parcelable superState) {
             super(superState);
-
         }
+
         @Override
-        public void writeToParcel(Parcel dest, int flags) {
+        public void writeToParcel(final Parcel dest, final int flags) {
             super.writeToParcel(dest, flags);
 
             TextUtils.writeToParcel(text, dest, flags);
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    @Override
+                    public SavedState createFromParcel(final Parcel in) {
+                        return new SavedState(in);
+                    }
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
+                    @Override
+                    public SavedState[] newArray(final int size) {
+                        return new SavedState[size];
+                    }
+                };
 
-        private SavedState(Parcel in) {
+        private SavedState(final Parcel in) {
             super(in);
             text = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
         }

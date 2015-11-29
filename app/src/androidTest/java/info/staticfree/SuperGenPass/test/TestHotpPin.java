@@ -1,12 +1,12 @@
 package info.staticfree.SuperGenPass.test;
 
-import info.staticfree.SuperGenPass.PasswordGenerationException;
-import info.staticfree.SuperGenPass.hashes.HotpPin;
+import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.LargeTest;
 
 import java.io.IOException;
 
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.LargeTest;
+import info.staticfree.SuperGenPass.PasswordGenerationException;
+import info.staticfree.SuperGenPass.hashes.HotpPin;
 
 public class TestHotpPin extends AndroidTestCase {
 
@@ -98,7 +98,7 @@ public class TestHotpPin extends AndroidTestCase {
         testInvalidLength(pinGen, 100);
     }
 
-    private void testInvalidLength(HotpPin pinGen, int len) {
+    private void testInvalidLength(final HotpPin pinGen, final int len) {
         boolean thrown = false;
         try {
             pinGen.generate("foo", "example.org", len);

@@ -1,72 +1,64 @@
 package info.staticfree.SuperGenPass.test;
 
-import info.staticfree.SuperGenPass.PasswordGenerationException;
-import info.staticfree.SuperGenPass.hashes.PasswordComposer;
-
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 
+import info.staticfree.SuperGenPass.PasswordGenerationException;
+import info.staticfree.SuperGenPass.hashes.PasswordComposer;
+
 public class PasswordComposerTest extends AndroidTestCase {
 
-    public void testKnownGood() throws NoSuchAlgorithmException, IOException,
-            NumberFormatException, PasswordGenerationException {
+    public void testKnownGood() throws Exception {
         final PasswordComposer pwc = new PasswordComposer(getContext());
 
         final String[][] knownGoods = {
 
                 //@formatter:off
-                {"12345", "example.org", "8", "41affed2"},
+                { "12345", "example.org", "8", "41affed2" },
 
-                {"12345", "www.example.org", "8", "ce9c9736"},
+                { "12345", "www.example.org", "8", "ce9c9736" },
 
-                {"a","example.org","8", "343e55c8"},
-                {"aaaaaaaaaaaaaaaaaaaa", "example.org", "8", "bcfc5184"},
-                {" ", "example.org", "8", "9840922e"},
+                { "a", "example.org", "8", "343e55c8" },
+                { "aaaaaaaaaaaaaaaaaaaa", "example.org", "8", "bcfc5184" },
+                { " ", "example.org", "8", "9840922e" },
 
                 // this differs from the javascript implementation
-//                {"flambeé", "example.org", "8", "5ec4cedc"},
-//                {"♥", "example.org", "8", "d510d806"},
-
-
-                };
+                // {"flambeé", "example.org", "8", "5ec4cedc"},
+                // {"♥", "example.org", "8", "d510d806"},
+        };
         //@formatter:on
 
         for (final String[] knownGood : knownGoods) {
-            final String msg = "for secret '" + knownGood[0] + "' and domain '" + knownGood[1]
-                    + "' of length " + knownGood[2];
+            final String msg = "for secret '" + knownGood[0] + "' and domain '" + knownGood[1] +
+                    "' of length " + knownGood[2];
             assertEquals(msg, knownGood[3],
                     pwc.generate(knownGood[0], knownGood[1], Integer.parseInt(knownGood[2])));
         }
     }
 
-    public void testKnownBad() throws NoSuchAlgorithmException, IOException {
+    public void testKnownBad() throws Exception {
         final PasswordComposer pwc = new PasswordComposer(getContext());
 
         final String[][] knownBads = {
-//@formatter:off
-                {"", "", "8"},
-                {"", "example.org", "8"},
-                {"12345", "", "8"},
-
+                { "", "", "8" }, // Empty strings
+                { "", "example.org", "8" }, // Empty password
+                { "12345", "", "8" }, // Empty domain
         };
-//@formatter:on
 
         for (final String[] knownBad : knownBads) {
-            final String msg = "for secret '" + knownBad[0] + "' and domain '" + knownBad[1]
-                    + "' of length " + knownBad[2];
+            final String msg =
+                    "for secret '" + knownBad[0] + "' and domain '" + knownBad[1] + "' of length " +
+                            knownBad[2];
             try {
                 pwc.generate(knownBad[0], knownBad[1], Integer.parseInt(knownBad[2]));
                 fail("Expecting exception " + msg);
             } catch (final PasswordGenerationException e) {
-
+                // Expected exception
             }
         }
     }
 
-    public void testLength() throws NoSuchAlgorithmException, IOException {
+    public void testLength() throws Exception {
         final PasswordComposer pwc = new PasswordComposer(getContext());
 
         int i = 0;
@@ -83,20 +75,19 @@ public class PasswordComposerTest extends AndroidTestCase {
             pwc.generate("12345", "example.org", 0);
             fail("Expecting exception to be caught for length 0");
         } catch (final PasswordGenerationException e) {
-
+            // Expected exception
         }
 
         try {
             pwc.generate("12345", "example.org", 32);
             fail("Expecting exception to be caught for length 32");
         } catch (final PasswordGenerationException e) {
-
+            // Expected exception
         }
     }
 
     @LargeTest
-    public void testATonOfPasswords() throws PasswordGenerationException, IOException,
-            NoSuchAlgorithmException {
+    public void testATonOfPasswords() throws Exception {
         final PasswordComposer pwc = new PasswordComposer(getContext());
         Utils.testATonOfPasswords(pwc, 3, 8);
     }
