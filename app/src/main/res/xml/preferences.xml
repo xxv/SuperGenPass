@@ -6,7 +6,7 @@
             android:key="clipboard"
             android:summary="@string/pref_copy_password_summary"
             android:title="@string/pref_copy_password" />
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="domain_autocomplete"
             android:summary="@string/pref_autocomplete_summary"

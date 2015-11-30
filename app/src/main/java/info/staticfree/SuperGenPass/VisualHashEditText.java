@@ -15,7 +15,8 @@ public class VisualHashEditText extends EditText {
     @NonNull
     private final VisualHash mVh;
 
-    public VisualHashEditText(@NonNull final Context context, final AttributeSet attrs, final int defStyle) {
+    public VisualHashEditText(@NonNull final Context context, final AttributeSet attrs,
+            final int defStyle) {
         super(context, attrs, defStyle);
 
         try {
@@ -37,7 +38,6 @@ public class VisualHashEditText extends EditText {
         }
 
         init(context, attrs);
-
     }
 
     public VisualHashEditText(@NonNull final Context context) {
@@ -58,8 +58,9 @@ public class VisualHashEditText extends EditText {
         if (isInEditMode()) {
             h = 45;
             w = 45;
-        }else{
-            final TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.VisualHashEditText);
+        } else {
+            final TypedArray ta =
+                    context.obtainStyledAttributes(attrs, R.styleable.VisualHashEditText);
 
             mShowVisualHash = ta.getBoolean(R.styleable.VisualHashEditText_showVisualHash, true);
 
@@ -89,8 +90,8 @@ public class VisualHashEditText extends EditText {
     }
 
     @Override
-    protected void onTextChanged(@Nullable final CharSequence text, final int start, final int lengthBefore,
-            final int lengthAfter) {
+    protected void onTextChanged(@Nullable final CharSequence text, final int start,
+            final int lengthBefore, final int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
         if (text != null && mVh != null) {

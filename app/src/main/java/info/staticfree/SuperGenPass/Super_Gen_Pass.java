@@ -2,7 +2,7 @@ package info.staticfree.SuperGenPass;
 
 /*
  Android SuperGenPass
- Copyright (C) 2009-2012  Steve Pomeroy <steve@staticfree.info>
+ Copyright (C) 2009-2015  Steve Pomeroy <steve@staticfree.info>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@ package info.staticfree.SuperGenPass;
  */
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
-import android.app.TabActivity;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,6 +43,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +52,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -61,12 +65,9 @@ import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.TabHost;
-import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -81,7 +82,7 @@ import info.staticfree.SuperGenPass.hashes.SuperGenPass;
 // the check below is a nice reminder, however this activity uses no delayed messages,
 // so nothing should be holding onto references past this activity's lifetime.
 @SuppressLint("HandlerLeak")
-public class Super_Gen_Pass extends TabActivity
+public class Super_Gen_Pass extends Activity
         implements OnClickListener, OnLongClickListener, OnCheckedChangeListener,
         OnEditorActionListener, FilterQueryProvider {
     private static final String TAG = Super_Gen_Pass.class.getSimpleName();
@@ -89,7 +90,6 @@ public class Super_Gen_Pass extends TabActivity
 
     private DomainBasedHash mDomainBasedHash;
 
-    private static final int DIALOG_ABOUT = 100, DIALOG_CONFIRM_MASTER = 101;
     private static final int REQUEST_CODE_PREFERENCES = 200;
     private static final String STATE_LAST_STOPPED_TIME =
             "info.staticfree.SuperGenPass.STATE_LAST_STOPPED_TIME";
@@ -123,7 +123,7 @@ public class Super_Gen_Pass extends TabActivity
         }
     };
 
-    private ToggleButton mShowGenPassword;
+    private CompoundButton mShowGenPassword;
 
     private GeneratedPasswordView mGenPinView;
 
@@ -157,13 +157,12 @@ public class Super_Gen_Pass extends TabActivity
             mShowingPassword = savedInstanceState.getBoolean(STATE_SHOWING_PASSWORD, false);
         }
 
-        initTabHost();
-
         initPinWidgets();
 
         initDomainPasswordEntry();
         initGenPassword();
         bindTextWatchers();
+        initMasterPasswordHide();
 
         loadFromPreferences();
 
@@ -226,7 +225,7 @@ public class Super_Gen_Pass extends TabActivity
         mGenPwView.setOnLongClickListener(this);
 
         // hook in our buttons
-        mShowGenPassword = (ToggleButton) findViewById(R.id.show_gen_password);
+        mShowGenPassword = (CompoundButton) findViewById(R.id.show_gen_password);
         mShowGenPassword.setOnCheckedChangeListener(this);
     }
 
@@ -253,18 +252,20 @@ public class Super_Gen_Pass extends TabActivity
         });
     }
 
-    private void initTabHost() {
-
-        final TabHost mTabHost = (TabHost) findViewById(android.R.id.tabhost);
-
-        mTabHost.addTab(
-                createTabSpec(mTabHost, R.string.tab_password, R.id.tab_password, "password"));
-        mTabHost.addTab(createTabSpec(mTabHost, R.string.tab_pin, R.id.tab_pin, "pin"));
-    }
-
-    private TabSpec createTabSpec(@NonNull final TabHost tabhost, final int title,
-            final int content, final String tag) {
-        return tabhost.newTabSpec(tag).setContent(content).setIndicator(getText(title));
+    private void initMasterPasswordHide() {
+        final CompoundButton masterPasswordHide =
+                (CompoundButton) findViewById(R.id.hide_master_password);
+        masterPasswordHide.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
+                Log.d(TAG, "toggle master password hide");
+                final int selStart = mMasterPwEdit.getSelectionStart();
+                final int selEnd = mMasterPwEdit.getSelectionEnd();
+                mMasterPwEdit
+                        .setTransformationMethod(b ? null : new PasswordTransformationMethod());
+                mMasterPwEdit.setSelection(selStart, selEnd);
+            }
+        });
     }
 
     @Override
@@ -286,11 +287,8 @@ public class Super_Gen_Pass extends TabActivity
     @Override
     protected void onResume() {
         super.onResume();
-        getTabWidget().setVisibility(mShowPin ? View.VISIBLE : View.GONE);
-        findViewById(R.id.down_arrow).setVisibility(mShowPin ? View.GONE : View.VISIBLE);
-        if (!mShowPin) {
-            getTabHost().setCurrentTab(0);
-        }
+
+        findViewById(R.id.tab_pin).setVisibility(mShowPin ? View.VISIBLE : View.GONE);
         // when the user has left the app for more than mPwClearTimeout minutes,
         // wipe master password and generated password.
         if (mClearDomain &&
@@ -463,6 +461,7 @@ public class Super_Gen_Pass extends TabActivity
             case R.id.show_gen_password: {
 
                 mGenPwView.setHidePassword(!isChecked);
+                mGenPinView.setHidePassword(!isChecked);
 
                 final SharedPreferences prefs =
                         PreferenceManager.getDefaultSharedPreferences(Super_Gen_Pass.this);
@@ -488,6 +487,7 @@ public class Super_Gen_Pass extends TabActivity
         final MenuItem verify = menu.findItem(R.id.verify);
         verify.setEnabled(getMasterPassword().length() != 0);
         menu.findItem(R.id.copy).setEnabled(mShowingPassword);
+
         return true;
     }
 
@@ -496,17 +496,17 @@ public class Super_Gen_Pass extends TabActivity
         switch (item.getItemId()) {
             case R.id.settings:
 
-                final Intent preferencesIntent = new Intent().setClass(this, Preferences.class);
+                final Intent preferencesIntent = new Intent().setClass(this, SgpPreferencesActivity.class);
                 startActivityForResult(preferencesIntent, REQUEST_CODE_PREFERENCES);
 
                 return true;
 
             case R.id.about:
-                showDialog(DIALOG_ABOUT);
+                new AboutFragment().show(getFragmentManager(), "about");
                 return true;
 
             case R.id.verify:
-                showDialog(DIALOG_CONFIRM_MASTER);
+                VerifyFragment.showVerifyFragment(getFragmentManager(), getMasterPassword());
                 return true;
 
             case R.id.go:
@@ -529,97 +529,6 @@ public class Super_Gen_Pass extends TabActivity
 
         if (requestCode == REQUEST_CODE_PREFERENCES) {
             loadFromPreferences();
-        }
-    }
-
-    @Override
-    protected Dialog onCreateDialog(final int id) {
-        switch (id) {
-            case DIALOG_ABOUT: {
-                final Builder builder = new AlertDialog.Builder(this);
-
-                builder.setTitle(R.string.about_title);
-                builder.setIcon(R.drawable.icon);
-
-                // using this instead of setMessage lets us have clickable links.
-                final LayoutInflater factory = LayoutInflater.from(this);
-                builder.setView(factory.inflate(R.layout.about, null));
-
-                builder.setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                setResult(RESULT_OK);
-                            }
-                        });
-                return builder.create();
-            }
-
-            case DIALOG_CONFIRM_MASTER: {
-                final Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.dialog_verify_title);
-                builder.setCancelable(true);
-                final LayoutInflater inflater = LayoutInflater.from(this);
-                final View pwVerifyLayout = inflater.inflate(R.layout.master_pw_verify, null);
-                final EditText pwVerify = (EditText) pwVerifyLayout.findViewById(R.id.verify);
-
-                builder.setNegativeButton(android.R.string.cancel, new Dialog.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                pwVerify.addTextChangedListener(new TextWatcher() {
-
-                    @Override
-                    public void onTextChanged(final CharSequence s, final int start,
-                            final int before, final int count) {
-                    }
-
-                    @Override
-                    public void beforeTextChanged(final CharSequence s, final int start,
-                            final int count, final int after) {
-                    }
-
-                    @Override
-                    public void afterTextChanged(@NonNull final Editable s) {
-                        if (pwVerify.getTag() instanceof String) {
-                            final String masterPw = (String) pwVerify.getTag();
-                            if (masterPw.length() > 0 && masterPw.equals(s.toString())) {
-                                dismissDialog(DIALOG_CONFIRM_MASTER);
-                                Toast.makeText(getApplicationContext(),
-                                        R.string.toast_verify_success, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                });
-                builder.setView(pwVerifyLayout);
-                final Dialog d = builder.create();
-                // This is added below to ensure that the soft input doesn't get hidden if it's
-                // showing,
-                // which seems to be the default for dialogs.
-                d.getWindow()
-                        .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
-                return d;
-            }
-            default:
-                throw new IllegalArgumentException("Unknown dialog ID: " + id);
-        }
-    }
-
-    @Override
-    protected void onPrepareDialog(final int id, @NonNull final Dialog dialog) {
-        switch (id) {
-            case DIALOG_CONFIRM_MASTER:
-                final EditText verify = (EditText) dialog.findViewById(R.id.verify);
-                verify.setTag(getMasterPassword());
-                verify.setText(null);
-                verify.requestFocus();
-                break;
-
-            default:
-                super.onPrepareDialog(id, dialog);
         }
     }
 
@@ -736,6 +645,7 @@ public class Super_Gen_Pass extends TabActivity
         final boolean showPassword = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false);
 
         mGenPwView.setHidePassword(!showPassword);
+        mGenPinView.setHidePassword(!showPassword);
         mShowGenPassword.setChecked(showPassword);
     }
 
@@ -757,5 +667,111 @@ public class Super_Gen_Pass extends TabActivity
         }
 
         return c;
+    }
+
+    /**
+     * A Dialog that verifies that the master password was typed correctly.
+     */
+    public static class VerifyFragment extends DialogFragment {
+        private static final String ARG_PASSWORD = "password";
+        @NonNull
+        private String mPasswordToCheck = "";
+
+        /**
+         * Shows the password verification dialog
+         *
+         * @param fragmentManager Activity's fragment manager
+         * @param passwordToVerify the password that must be entered to dismiss the dialog
+         */
+        public static void showVerifyFragment(@NonNull final FragmentManager fragmentManager,
+                @NonNull final String passwordToVerify) {
+            final VerifyFragment vf = new VerifyFragment();
+            final Bundle args = new Bundle();
+            args.putString(ARG_PASSWORD, passwordToVerify);
+            vf.setArguments(args);
+            vf.show(fragmentManager, VerifyFragment.class.getSimpleName());
+        }
+
+        @Override
+        public void onCreate(final Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            mPasswordToCheck = getArguments().getString(ARG_PASSWORD, "");
+        }
+
+        @Override
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+            final Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.dialog_verify_title);
+            builder.setCancelable(true);
+            final LayoutInflater inflater = LayoutInflater.from(getActivity());
+            final View pwVerifyLayout =
+                    inflater.inflate(R.layout.master_pw_verify, (ViewGroup) getView());
+            final EditText pwVerify = (EditText) pwVerifyLayout.findViewById(R.id.verify);
+
+            builder.setNegativeButton(android.R.string.cancel,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull final DialogInterface dialog,
+                                final int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+            pwVerify.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void onTextChanged(final CharSequence s, final int start, final int before,
+                        final int count) {
+                }
+
+                @Override
+                public void beforeTextChanged(final CharSequence s, final int start,
+                        final int count, final int after) {
+                }
+
+                @Override
+                public void afterTextChanged(@NonNull final Editable s) {
+                    if (mPasswordToCheck.length() > 0 && mPasswordToCheck.equals(s.toString())) {
+                        getDialog().dismiss();
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                R.string.toast_verify_success, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            builder.setView(pwVerifyLayout);
+            final Dialog d = builder.create();
+            // This is added below to ensure that the soft input doesn't get hidden if it's
+            // showing, which seems to be the default for dialogs.
+            d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
+
+            return d;
+        }
+    }
+
+    /**
+     * The about dialog
+     */
+    public static class AboutFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+            final Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(R.string.about_title);
+            builder.setIcon(R.drawable.icon);
+
+            // using this instead of setMessage lets us have clickable links.
+            final LayoutInflater factory = LayoutInflater.from(getActivity());
+            builder.setView(factory.inflate(R.layout.about, (ViewGroup) getView()));
+
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    getDialog().dismiss();
+                }
+            });
+            return builder.create();
+        }
     }
 }

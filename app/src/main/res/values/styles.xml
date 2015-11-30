@@ -1,31 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="GeneratedPasswordView" parent="@android:style/Widget.EditText">
-        <item name="android:drawableRight">@drawable/ic_textview_supergenpass</item>
+    <style name="GeneratedPasswordView" parent="@android:style/Widget.TextView">
         <item name="android:typeface">monospace</item>
-        <item name="android:gravity">center_horizontal</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:minEms">10</item>
         <item name="android:textSize">25sp</item>
-    </style>
-
-    <style name="TabIndicator">
-        <item name="android:gravity">center</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:background">@drawable/tab_indicator_holo</item>
-    </style>
-
-    <style name="TabWidget">
-        <item name="android:divider">@drawable/divider_vertical_holo_dark</item>
-        <item name="android:tabStripLeft">@null</item>
-        <item name="android:tabStripRight">@null</item>
-        <item name="android:tabStripEnabled">false</item>
-        <item name="android:measureWithLargestChild">true</item>
     </style>
 
 </resources>
