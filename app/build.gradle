@@ -8,9 +8,12 @@ android {
         applicationId "info.staticfree.SuperGenPass"
         minSdkVersion 15
         targetSdkVersion 23
+        versionName '3.0.0-rc.1'
+        versionCode 22
 
         testApplicationId "info.staticfree.SuperGenPass.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        setProperty("archivesBaseName", "$applicationId-$versionCode-$versionName")
     }
 
     buildTypes {
