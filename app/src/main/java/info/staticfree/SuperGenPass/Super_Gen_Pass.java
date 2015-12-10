@@ -314,6 +314,7 @@ public class Super_Gen_Pass extends Activity
 
     private boolean mShowingPassword;
 
+    @Nullable
     private HotpPin mPinGen;
 
     private int mPinDigits;
@@ -626,7 +627,9 @@ public class Super_Gen_Pass extends Activity
         }
 
         mDomainBasedHash.setCheckDomain(!mNoDomainCheck);
-        mPinGen.setCheckDomain(!mNoDomainCheck);
+        if (mPinGen != null) {
+            mPinGen.setCheckDomain(!mNoDomainCheck);
+        }
 
         if (mNoDomainCheck) {
             mDomainEdit.setHint(R.string.domain_hint_no_checking);
