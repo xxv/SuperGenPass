@@ -19,7 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -120,11 +119,11 @@ public class Preferences extends PreferenceFragment {
         }
     }
 
-    private void scanSalt() {
+    public void scanSalt() {
         final IntentIntegrator qr = new IntentIntegrator(getActivity());
-        qr.addExtra(Intents.Scan.PROMPT_MESSAGE,
+        qr.addExtra("PROMPT_MESSAGE",
                 getString(R.string.pref_scan_qr_code_to_load_zxing_message));
-        qr.addExtra(Intents.Scan.SAVE_HISTORY, false);
+        qr.addExtra("SAVE_HISTORY", false);
         qr.initiateScan(IntentIntegrator.QR_CODE_TYPES);
     }
 
@@ -220,7 +219,7 @@ public class Preferences extends PreferenceFragment {
             sr.nextBytes(salt);
             final String saltb64 = new String(Base64.encodeBase64(salt)).replaceAll("\\s", "");
             ((Preferences)getFragmentManager().findFragmentById(R.id.preferences)).setSaltPref(saltb64);
-            qr.addExtra(Intents.Encode.SHOW_CONTENTS, false);
+            qr.addExtra("SHOW_CONTENTS", false);
             qr.shareText(saltb64);
         }
     }
