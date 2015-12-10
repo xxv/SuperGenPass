@@ -15,11 +15,13 @@ public class SgpPreferencesActivity extends Activity {
 
     @Override
     protected void onNewIntent(@NonNull final Intent intent) {
-
         final String action = intent.getAction();
 
+        final Preferences preferences =
+                (Preferences) getFragmentManager().findFragmentByTag(Preferences.class.getName());
+
         if (Preferences.ACTION_SCAN_SALT.equals(action)) {
-            // TODO scanSalt();
+            preferences.scanSalt();
         } else if (Preferences.ACTION_GENERATE_SALT.equals(action)) {
             new Preferences.SaltFragment().show(getFragmentManager(), "salt");
         } else if (Preferences.ACTION_CLEAR_STORED_DOMAINS.equals(action)) {

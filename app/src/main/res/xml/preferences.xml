@@ -1,6 +1,6 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/user_preferences" >
+    <PreferenceCategory android:title="@string/user_preferences">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="clipboard"
@@ -16,9 +16,7 @@
             android:enabled="false"
             android:key="clear_remembered"
             android:summary="@string/pref_clear_remembered_default_summary"
-            android:title="@string/pref_clear_remembered_domains" >
-            <intent android:action="info.staticfree.android.supergenpass.action.CLEAR_STORED_DOMAINS" />
-        </PreferenceScreen>
+            android:title="@string/pref_clear_remembered_domains" />
 
         <CheckBoxPreference
             android:defaultValue="false"
@@ -45,7 +43,7 @@
             android:summary="@string/pref_pin_summary"
             android:title="@string/pref_pin_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_pw_salt_category" >
+    <PreferenceCategory android:title="@string/pref_pw_salt_category">
         <EditTextPreference
             android:dialogMessage="@string/pref_pw_salt_description"
             android:key="pw_salt"
@@ -54,17 +52,15 @@
             android:title="@string/pref_pw_salt_title" />
 
         <PreferenceScreen
+            android:key="scan_salt"
             android:summary="@string/pref_scan_salt_summary"
-            android:title="@string/pref_scan_salt_from_qr_code_title" >
-            <intent android:action="info.staticfree.android.supergenpass.action.SCAN_SALT" />
-        </PreferenceScreen>
+            android:title="@string/pref_scan_salt_from_qr_code_title" />
         <PreferenceScreen
             android:summary="@string/pref_generate_salt_summary"
-            android:title="@string/pref_generate_salt_title" >
-            <intent android:action="info.staticfree.android.supergenpass.action.GENERATE_SALT" />
-        </PreferenceScreen>
+            android:key="generate_salt"
+            android:title="@string/pref_generate_salt_title"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/advanced_preferences" >
+    <PreferenceCategory android:title="@string/advanced_preferences">
         <ListPreference
             android:defaultValue="sgp"
             android:entries="@array/pwgen_types_label"
