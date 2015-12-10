@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">SuperGenPass</string>
     <string name="domain_hint">site\'s domain</string>
     <string name="done">Done</string>
     <string name="password_hint">master password</string>
-    <string name="genpw_shown">shown</string>
-    <string name="genpw_hidden">hidden</string>
+    <string name="genpw_shown">abc1</string>
+    <string name="genpw_hidden">•••••</string>
     <string name="sgp_type" translatable="false">SuperGenPass (MD5)</string>
     <string name="sgp_type_sha_512" translatable="false">SuperGenPass (SHA-512)</string>
     <string name="pwc_type" translatable="false">Password Composer</string>
@@ -67,7 +67,7 @@
     <string name="pref_scan_salt_summary">Load a salt by scanning a QR code</string>
     <string name="pref_generate_salt_title">Generate and set salt</string>
     <string name="pref_generate_salt_summary">Generate a random salt, set it, and display it as a QR code</string>
-    <string name="pref_generate_salt_dialog_message">This generates a random 4096-bit base64-encoded salt. Once generated, it sets the salt and displays it as a QR code. This barcode should be recorded and kept in a safe place (press "menu" to share it).\n\nThis will overwrite your existing salt.</string>
+    <string name="pref_generate_salt_dialog_message">This generates a random 4096-bit base64-encoded salt. Once generated, it sets the salt and displays it as a QR code. This barcode should be recorded and kept in a safe place (press “menu” to share it).\n\nThis will overwrite your existing salt.</string>
     <string name="pref_generate_salt_and_set">Generate and Set</string>
 
     <!-- displayed in the zxing scan window -->
@@ -85,17 +85,17 @@
     <string name="menu_verify">Verify</string>
     <string name="menu_copy_generated_password">Copy Generated Password</string>
     <string name="about_title">About SuperGenPass</string>
-    <string name="about_text">SuperGenPass is a different kind of password manager: instead of randomly generating and storing passwords, it combines a Web site\'s domain and your master password to generate a unique password for each Web site you visit using a strong cryptographic hash.\n\n
+    <string name="about_text">SuperGenPass is a different kind of password manager: instead of randomly generating and storing passwords, it combines a Web site’s domain and your master password to generate a unique password for each Web site you visit using a strong cryptographic hash.\n\n
  
-In addition to launching it directly, in the Browser activity, go to: Menu → More → Share Page or just Menu → Share Page depending on your Android version.\n\n
+In addition to launching it directly, in Chrome go to: Menu → Share Page → SuperGenPass.\n\n
 
-To use on your computer, please see the parent project: SuperGenPass.com. This has both a handy bookmarklet as well as a stand-alone Javascript page. The author of Android SuperGenPass highly recommends finding a plugin for your browser instead of the bookmarklet as it\'s more secure.\n\n
+To use on your computer, please see the parent project: SuperGenPass.com. This has both a handy bookmarklet as well as a stand-alone Javascript page. The author of Android SuperGenPass highly recommends finding a plugin for your browser instead of the bookmarklet as it’s more secure.\n\n
 
-This app also includes a strong PIN generation algorithm. It\'s a slightly modified version of RFC4226 HOTP (modified to work with domains instead of numerical counters) and is designed to never generate easily-guessable pins, such as 1234, 0000, 1985, 8675309, or 0007. See the source code for more details.\n\n
+This app also includes a strong PIN generation algorithm. It’s a slightly modified version of RFC4226 HOTP (modified to work with domains instead of numerical counters) and is designed to never generate easily-guessable pins, such as 1234, 0000, 1985, 8675309, or 0007. See the source code for more details.\n\n
 
 This project is Free Software/Open Source and is licensed under the GNU GPL Version 3. You can get the source for this application from http://staticfree.info/projects/sgp/\n\n
 
-Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you\'re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, \"When on Earth, do as the humans do?\" becomes \"W0EdatHd\".</string>
+Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you’re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, “When on Earth, do as the humans do?” becomes “W0EdatHd”.</string>
     <string name="err_no_hash">Your device does not support the needed hash algorithms for this application</string>
 
 </resources>
