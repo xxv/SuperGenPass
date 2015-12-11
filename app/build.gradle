@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
     compile 'com.android.support:support-annotations:23.1.1'
+    compile 'commons-codec:commons-codec:1.8'
     compile 'com.google.zxing:android-integration:3.2.1'
 }
