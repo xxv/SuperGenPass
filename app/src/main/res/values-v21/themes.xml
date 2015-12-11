@@ -8,9 +8,4 @@
     <style name="ShareTheme" parent="android:Theme.Material.Light.Dialog">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
     </style>
-
-    <style name="TabWidget">
-        <!-- use the default -->
-    </style>
-
 </resources>

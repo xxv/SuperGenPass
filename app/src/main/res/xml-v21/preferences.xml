@@ -1,12 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <PreferenceCategory android:title="@string/user_preferences">
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="clipboard"
             android:summary="@string/pref_copy_password_summary"
             android:title="@string/pref_copy_password" />
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="domain_autocomplete"
             android:summary="@string/pref_autocomplete_summary"
@@ -18,7 +18,7 @@
             android:summary="@string/pref_clear_remembered_default_summary"
             android:title="@string/pref_clear_remembered_domains" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="false"
             android:key="domain_nocheck"
             android:summary="@string/pref_no_domain_summary"
@@ -32,12 +32,12 @@
             android:summary="@string/pref_pw_clear_timeout_summary"
             android:title="@string/pref_pw_clear_timeout" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="visual_hash"
             android:summary="@string/pref_visual_hash_summary"
             android:title="@string/pref_visual_hash" />
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="show_pin"
             android:summary="@string/pref_pin_summary"
@@ -70,7 +70,7 @@
             android:title="@string/pwgen_type_prompt" />
         <!--
 XXX Due to a bug in Android, this doesn't work:
-        
+
         android:dialogMessage="@string/pwgen_type_description"
 
   See: http://code.google.com/p/android/issues/detail?id=4497
@@ -83,5 +83,4 @@ XXX Due to a bug in Android, this doesn't work:
             android:numeric="integer"
             android:title="@string/pref_pw_length" />
     </PreferenceCategory>
-
 </PreferenceScreen>
