@@ -42,7 +42,7 @@ public class Preferences extends PreferenceFragment {
     public static final String PREF_GENERATE_SALT = "generate_salt";
     public static final String PREF_CLIPBOARD = "clipboard";
     public static final String PREF_REMEMBER_DOMAINS = "domain_autocomplete";
-    public static final String PREF_DOMAIN_NOCHECK = "domain_nocheck";
+    public static final String PREF_DOMAIN_CHECK = "domain_check";
     public static final String PREF_SHOW_GEN_PW = "show_gen_pw";
     public static final String PREF_PW_CLEAR_TIMEOUT = "pw_clear_timeout";
     public static final String PREF_CLEAR_REMEMBERED = "clear_remembered";

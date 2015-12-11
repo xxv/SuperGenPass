@@ -100,7 +100,7 @@ public class Super_Gen_Pass extends Activity
     private String mPwSalt;
     private boolean mCopyToClipboard;
     private boolean mRememberDomains;
-    private boolean mNoDomainCheck;
+    private boolean mDomainCheck = true;
 
     private GeneratedPasswordView mGenPwView;
     private AutoCompleteTextView mDomainEdit;
@@ -347,7 +347,7 @@ public class Super_Gen_Pass extends Activity
     private String generateAndDisplay() throws PasswordGenerationException {
         String domain = getDomain();
 
-        if (!mNoDomainCheck) {
+        if (mDomainCheck) {
             domain = extractDomain(domain);
         }
         final String masterPw = getMasterPassword() + mPwSalt;
@@ -497,7 +497,8 @@ public class Super_Gen_Pass extends Activity
         switch (item.getItemId()) {
             case R.id.settings:
 
-                final Intent preferencesIntent = new Intent().setClass(this, SgpPreferencesActivity.class);
+                final Intent preferencesIntent =
+                        new Intent().setClass(this, SgpPreferencesActivity.class);
                 startActivityForResult(preferencesIntent, REQUEST_CODE_PREFERENCES);
 
                 return true;
@@ -583,7 +584,15 @@ public class Super_Gen_Pass extends Activity
         mPwSalt = prefs.getString(Preferences.PREF_PW_SALT, "");
         mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
         mRememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true);
-        mNoDomainCheck = prefs.getBoolean(Preferences.PREF_DOMAIN_NOCHECK, false);
+
+        if (prefs.contains("domain_nocheck")) {
+            // Double negatives are so confusing
+            final boolean domainCheckDefault = !prefs.getBoolean("domain_nocheck", false);
+            prefs.edit().remove("domain_nocheck")
+                    .putBoolean(Preferences.PREF_DOMAIN_CHECK, domainCheckDefault).apply();
+        }
+
+        mDomainCheck = prefs.getBoolean(Preferences.PREF_DOMAIN_CHECK, true);
         mPwClearTimeout =
                 Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_CLEAR_TIMEOUT, 2);
 
@@ -626,15 +635,15 @@ public class Super_Gen_Pass extends Activity
             finish();
         }
 
-        mDomainBasedHash.setCheckDomain(!mNoDomainCheck);
+        mDomainBasedHash.setCheckDomain(mDomainCheck);
         if (mPinGen != null) {
-            mPinGen.setCheckDomain(!mNoDomainCheck);
+            mPinGen.setCheckDomain(mDomainCheck);
         }
 
-        if (mNoDomainCheck) {
-            mDomainEdit.setHint(R.string.domain_hint_no_checking);
-        } else {
+        if (mDomainCheck) {
             mDomainEdit.setHint(R.string.domain_hint);
+        } else {
+            mDomainEdit.setHint(R.string.domain_hint_no_checking);
         }
 
         mMasterPwEdit.setShowVisualHash(prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true));

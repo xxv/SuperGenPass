@@ -72,8 +72,9 @@
 
     <!-- displayed in the zxing scan window -->
     <string name="pref_scan_qr_code_to_load_zxing_message">Scan a QR code to load as your salt.</string>
-    <string name="pref_no_domain">Disable domain checking</string>
-    <string name="pref_no_domain_summary">Use any lowercase keywords instead of a domain name</string>
+    <string name="pref_domain_check">Domain checking</string>
+    <string name="pref_domain_check_on">Sub-domains will be stripped</string>
+    <string name="pref_domain_check_off">Use any lowercase keywords or domain name</string>
     <string name="domain_hint_no_checking">site\'s domain or keyword</string>
     <string name="pref_err_not_number">Not updating preference: new value isn\'t a number.</string>
     <string name="dialog_verify_title">Verify master password</string>

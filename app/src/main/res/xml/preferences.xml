@@ -19,10 +19,11 @@
             android:title="@string/pref_clear_remembered_domains" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="domain_nocheck"
-            android:summary="@string/pref_no_domain_summary"
-            android:title="@string/pref_no_domain" />
+            android:defaultValue="true"
+            android:key="domain_check"
+            android:summaryOn="@string/pref_domain_check_on"
+            android:summaryOff="@string/pref_domain_check_off"
+            android:title="@string/pref_domain_check" />
 
         <EditTextPreference
             android:defaultValue="2"
