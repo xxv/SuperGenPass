@@ -3,20 +3,19 @@ package info.staticfree.SuperGenPass;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -69,15 +68,33 @@ public class Preferences extends PreferenceFragment {
                     return true;
                 }
             };
-    @Nullable
-    private ShowDomainCountTask mDomainCountTask;
 
-    private final ContentObserver mObserver = new ContentObserver(new Handler()) {
-        @Override
-        public void onChange(final boolean selfChange) {
-            showDomainCount();
-        }
-    };
+    private final LoaderManager.LoaderCallbacks<Cursor> mDomainCountLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<Cursor>() {
+
+                @Override
+                public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
+                    return new CursorLoader(getActivity(), Domain.CONTENT_URI, new String[] {},
+                            null, null, null);
+                }
+
+                @Override
+                public void onLoadFinished(final Loader<Cursor> loader, final Cursor data) {
+                    final int domainCount = data.getCount();
+                    if (isResumed() && !isRemoving()) {
+                        final Preference clear = findPreference(PREF_CLEAR_REMEMBERED);
+                        clear.setEnabled(domainCount > 0);
+                        clear.setSummary(getResources()
+                                .getQuantityString(R.plurals.pref_autocomplete_count, domainCount,
+                                        domainCount));
+                    }
+                }
+
+                @Override
+                public void onLoaderReset(final Loader<Cursor> loader) {
+
+                }
+            };
 
     public boolean isInteger(final Object newValue) {
         try {
@@ -98,7 +115,8 @@ public class Preferences extends PreferenceFragment {
         findPreference(PREF_PW_LENGTH).setOnPreferenceChangeListener(integerConformCheck);
 
         findPreference(PREF_SCAN_SALT).setOnPreferenceClickListener(mOnPreferenceClickListener);
-        findPreference(PREF_CLEAR_REMEMBERED).setOnPreferenceClickListener(mOnPreferenceClickListener);
+        findPreference(PREF_CLEAR_REMEMBERED)
+                .setOnPreferenceClickListener(mOnPreferenceClickListener);
         findPreference(PREF_GENERATE_SALT).setOnPreferenceClickListener(mOnPreferenceClickListener);
     }
 
@@ -106,31 +124,12 @@ public class Preferences extends PreferenceFragment {
     public void onResume() {
         super.onResume();
 
-        showDomainCount();
-
-        getActivity().getContentResolver()
-                .registerContentObserver(Domain.CONTENT_URI, true, mObserver);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        getActivity().getContentResolver().unregisterContentObserver(mObserver);
-    }
-
-
-    private void showDomainCount() {
-        if (mDomainCountTask == null) {
-            mDomainCountTask = new ShowDomainCountTask();
-            mDomainCountTask.execute();
-        }
+        getLoaderManager().restartLoader(0, null, mDomainCountLoaderCallbacks);
     }
 
     public void scanSalt() {
         final IntentIntegrator qr = new IntentIntegrator(getActivity());
-        qr.addExtra("PROMPT_MESSAGE",
-                getString(R.string.pref_scan_qr_code_to_load_zxing_message));
+        qr.addExtra("PROMPT_MESSAGE", getString(R.string.pref_scan_qr_code_to_load_zxing_message));
         qr.addExtra("SAVE_HISTORY", false);
         qr.initiateScan(IntentIntegrator.QR_CODE_TYPES);
     }
@@ -166,64 +165,34 @@ public class Preferences extends PreferenceFragment {
         return retval;
     }
 
-    private class ShowDomainCountTask extends AsyncTask<Void, Void, Integer> {
+    private final Preference.OnPreferenceClickListener mOnPreferenceClickListener =
+            new Preference.OnPreferenceClickListener() {
 
-        @Override
-        protected Integer doInBackground(final Void... arg0) {
-            final Cursor c = getActivity().getContentResolver()
-                    .query(Domain.CONTENT_URI, new String[] {}, null, null, null);
-            final int domains;
+                @Override
+                public boolean onPreferenceClick(final Preference preference) {
+                    switch (preference.getKey()) {
+                        case PREF_SCAN_SALT:
+                            scanSalt();
+                            return true;
+                        case PREF_GENERATE_SALT:
+                            new Preferences.SaltFragment().show(getFragmentManager(), "salt");
+                            return true;
+                        case PREF_CLEAR_REMEMBERED:
+                            getActivity().getContentResolver()
+                                    .delete(Domain.CONTENT_URI, null, null);
+                            return true;
+                    }
 
-            if (c != null) {
-                domains = c.getCount();
-                c.close();
-            } else {
-                domains = 0;
-            }
-
-            return domains;
-        }
-
-        @Override
-        protected void onPostExecute(final Integer domains) {
-
-            final Preference clear = findPreference(PREF_CLEAR_REMEMBERED);
-            clear.setEnabled(domains > 0);
-            clear.setSummary(getResources()
-                    .getQuantityString(R.plurals.pref_autocomplete_count, domains, domains));
-
-            mDomainCountTask = null;
-        }
-    }
-
-    private Preference.OnPreferenceClickListener mOnPreferenceClickListener = new Preference.OnPreferenceClickListener() {
-
-
-        @Override
-        public boolean onPreferenceClick(final Preference preference) {
-            switch (preference.getKey()) {
-                case PREF_SCAN_SALT:
-                    scanSalt();
-                    return true;
-                case PREF_GENERATE_SALT:
-                    new Preferences.SaltFragment().show(getFragmentManager(), "salt");
-                    return true;
-                case PREF_CLEAR_REMEMBERED:
-                    getActivity().getContentResolver().delete(Domain.CONTENT_URI, null, null);
-                    return true;
-            }
-
-            return false;
-        }
-    };
+                    return false;
+                }
+            };
 
     public static class SaltFragment extends DialogFragment {
         /**
          * The size of the salt, in bytes.
          */
-        public static final int SALT_SIZE_BYTES = 512;
-        private static final Pattern PATTERN_WHITESPACE =
-                Pattern.compile("\\s");
+        private static final int SALT_SIZE_BYTES = 512;
+        private static final Pattern PATTERN_WHITESPACE = Pattern.compile("\\s");
 
         @Override
         public Dialog onCreateDialog(final Bundle savedInstanceState) {
@@ -253,9 +222,10 @@ public class Preferences extends PreferenceFragment {
             final SecureRandom sr = new SecureRandom();
             final byte[] salt = new byte[SALT_SIZE_BYTES];
             sr.nextBytes(salt);
-            final String saltb64 =
-                    PATTERN_WHITESPACE.matcher(new String(Base64.encodeBase64(salt))).replaceAll("");
-            ((Preferences)getFragmentManager().findFragmentById(R.id.preferences)).setSaltPref(saltb64);
+            final String saltb64 = PATTERN_WHITESPACE.matcher(new String(Base64.encodeBase64(salt)))
+                    .replaceAll("");
+            ((Preferences) getFragmentManager().findFragmentById(R.id.preferences))
+                    .setSaltPref(saltb64);
             qr.addExtra("SHOW_CONTENTS", false);
             qr.shareText(saltb64);
         }

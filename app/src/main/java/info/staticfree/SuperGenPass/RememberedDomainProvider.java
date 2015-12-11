@@ -84,14 +84,25 @@ public class RememberedDomainProvider extends ContentProvider {
 
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
+        final Uri newUri;
+
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
                 final long id = db.insert(RememberedDBHelper.DB_DOMAINS_TABLE, null, values);
-                return ContentUris.withAppendedId(Domain.CONTENT_URI, id);
+                newUri = ContentUris.withAppendedId(Domain.CONTENT_URI, id);
+                break;
 
             default:
                 throw new IllegalArgumentException();
         }
+
+        final Context context = getContext();
+        if (context != null) {
+            final ContentResolver cr = context.getContentResolver();
+            cr.notifyChange(uri, null);
+        }
+
+        return newUri;
     }
 
     @Override
@@ -103,19 +114,30 @@ public class RememberedDomainProvider extends ContentProvider {
 
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
+        final Cursor cursor;
+
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
-                return db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection, selection,
+                cursor = db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection, selection,
                         selectionArgs, null, null, null);
+                break;
 
             case MATCHER_DOMAIN_ITEM:
-                return db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection,
+                cursor = db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection,
                         ProviderUtils.addExtraWhere(selection, Domain._ID + "=?"),
                         ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
                         null, null, null);
+                break;
             default:
                 throw new IllegalArgumentException();
         }
+        final Context context = getContext();
+        if (context != null) {
+            final ContentResolver cr = context.getContentResolver();
+            cursor.setNotificationUri(cr, uri);
+        }
+
+        return cursor;
     }
 
     @Override
@@ -127,18 +149,31 @@ public class RememberedDomainProvider extends ContentProvider {
 
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
+        final int changeCount;
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
-                return db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values, selection,
+                changeCount = db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values, selection,
                         selectionArgs);
+                break;
 
             case MATCHER_DOMAIN_ITEM:
-                return db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values,
+                changeCount = db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values,
                         ProviderUtils.addExtraWhere(selection, Domain._ID + "=?"),
                         ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
+                break;
             default:
                 throw new IllegalArgumentException();
         }
+
+        if (changeCount != 0) {
+            final Context context = getContext();
+            if (context != null) {
+                final ContentResolver cr = context.getContentResolver();
+                cr.notifyChange(uri, null);
+            }
+        }
+
+        return changeCount;
     }
 
     @Override
@@ -150,18 +185,32 @@ public class RememberedDomainProvider extends ContentProvider {
 
         final SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
+        final int changeCount;
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
-                return db.delete(RememberedDBHelper.DB_DOMAINS_TABLE, selection, selectionArgs);
+                changeCount =
+                        db.delete(RememberedDBHelper.DB_DOMAINS_TABLE, selection, selectionArgs);
+                break;
 
             case MATCHER_DOMAIN_ITEM:
-                return db.delete(RememberedDBHelper.DB_DOMAINS_TABLE,
+                changeCount = db.delete(RememberedDBHelper.DB_DOMAINS_TABLE,
                         ProviderUtils.addExtraWhere(selection, Domain._ID + "=?"),
                         ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
+                break;
 
             default:
                 throw new IllegalArgumentException("delete not supported for the given uri");
         }
+
+        if (changeCount != 0) {
+            final Context context = getContext();
+            if (context != null) {
+                final ContentResolver cr = context.getContentResolver();
+                cr.notifyChange(uri, null);
+            }
+        }
+
+        return changeCount;
     }
 
     @NonNull
