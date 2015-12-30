@@ -82,9 +82,10 @@
     <string name="master_pw_verify_description">Retype your master password below to verify that you typed it correctly.</string>
     <string name="toast_verify_success">Master password matches!</string>
     <string name="menu_about">About</string>
+    <string name="menu_copy_generated_password">Copy Generated Password</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_verify">Verify</string>
-    <string name="menu_copy_generated_password">Copy Generated Password</string>
+    <string name="menu_write_nfc">Write NFC Tag</string>
     <string name="about_title">About SuperGenPass</string>
     <string name="about_text">SuperGenPass is a different kind of password manager: instead of randomly generating and storing passwords, it combines a Web site’s domain and your master password to generate a unique password for each Web site you visit using a strong cryptographic hash.\n\n
  
@@ -98,5 +99,15 @@ This project is Free Software/Open Source and is licensed under the GNU GPL Vers
 
 Final word of caution: while SGP generates strong passwords, if a malicious Web site knows that you’re using SGP and has access to the plain-text of your password for their site, they could potentially brute-force your master password. Therefore it is recommended to make sure your master password is also strong or that you use a salt. One great technique for such a password is to use the first letters of a favorite phrase. For example, “When on Earth, do as the humans do?” becomes “W0EdatHd”.</string>
     <string name="err_no_hash">Your device does not support the needed hash algorithms for this application</string>
+    <string name="nfc_write_tag_message">Tap a writable NFC tag now to store the currently-entered master password on it in plain text.\n\nWhen you scan the tag from the main screen, it will be added to the end of the master password form. You can use this just like the password salt: store part of the master password in your head and part on the tag (or all on the tag if you prefer). Additionally, you can scan the tag at any time to bring up the app with the password pre-filled.\n\n<b>NOTE</b>: This will overwrite any existing information stored on this tag.</string>
+    <string name="nfc_error_no_ndef">Tag doesn’t support NDEF</string>
+    <string name="nfc_error_not_writable">Cannot write to tag. Tag is read-only.</string>
+    <string name="nfc_error_no_adapter">NFC is not supported on this device</string>
+    <string name="nfc_enable_message">NFC is currently disabled. This feature lets you store master passwords (or parts of master passwords) to a writable NFC tag to make it easier to type them in. To use this feature, please turn NFC on first.</string>
+    <string name="nfc_enable_dialog_go_to_settings">Go to Settings</string>
+    <string name="nfc_error_not_enough_space_format">Could not write to tag: not enough space. Password requires %1$d bytes, but tag can only store %2$d bytes.</string>
+    <string name="nfc_error_write_error">Error writing NFC tag</string>
+    <string name="nfc_error_write_error_format">Error writing NFC tag: %1$s</string>
+    <string name="nfc_message_write_success">Password successfully written to tag.</string>
 
 </resources>

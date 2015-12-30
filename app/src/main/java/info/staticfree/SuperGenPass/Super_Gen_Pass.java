@@ -34,6 +34,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -76,6 +78,8 @@ import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
 import info.staticfree.SuperGenPass.hashes.HotpPin;
 import info.staticfree.SuperGenPass.hashes.PasswordComposer;
 import info.staticfree.SuperGenPass.hashes.SuperGenPass;
+import info.staticfree.SuperGenPass.nfc.NfcFragment;
+import info.staticfree.SuperGenPass.nfc.NfcWriteFragment;
 
 // TODO Wipe generated password from clipboard after delay.
 
@@ -138,6 +142,10 @@ public class Super_Gen_Pass extends Activity
     };
 
     private boolean mClearDomain = true;
+    @Nullable
+    private NfcFragment mNfcFragment;
+    private boolean mScreenOffReceiverRegistered;
+    private boolean mHasNfc;
 
     /**
      * Called when the activity is first created.
@@ -164,6 +172,8 @@ public class Super_Gen_Pass extends Activity
         bindTextWatchers();
         initMasterPasswordHide();
 
+        initNfc();
+
         loadFromPreferences();
 
         // sometimes the domain doesn't have focus when first started. Perhaps because of the tabs?
@@ -188,6 +198,21 @@ public class Super_Gen_Pass extends Activity
                     Log.e(TAG, "Could not find valid URI in shared text", e);
                     Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
+            }
+        }
+    }
+
+    private void initNfc() {
+        final NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        if (nfcAdapter != null) {
+            mHasNfc = true;
+            mNfcFragment = (NfcFragment) getFragmentManager()
+                    .findFragmentByTag(NfcFragment.class.getName());
+            if (mNfcFragment == null) {
+                mNfcFragment = new NfcFragmentImpl();
+                getFragmentManager().beginTransaction()
+                        .add(mNfcFragment, NfcFragment.class.getName()).commit();
             }
         }
     }
@@ -269,19 +294,34 @@ public class Super_Gen_Pass extends Activity
     }
 
     @Override
-    protected void onPause() {
+    protected void onStart() {
+        super.onStart();
 
         // listen for a screen off event and clear everything if received.
         if (mShowingPassword) {
             registerReceiver(mScreenOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+            mScreenOffReceiverRegistered = true;
         }
+    }
 
+    @Override
+    protected void onPause() {
         super.onPause();
 
         // this is overly cautious to avoid memory leaks
         mHandler.removeMessages(MSG_UPDATE_PW_VIEW);
 
         mLastStoppedTime = SystemClock.elapsedRealtime();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mScreenOffReceiverRegistered) {
+            unregisterReceiver(mScreenOffReceiver);
+            mScreenOffReceiverRegistered = false;
+        }
     }
 
     @Override
@@ -296,6 +336,15 @@ public class Super_Gen_Pass extends Activity
             clearEditTexts();
         }
         mClearDomain = true;
+    }
+
+    @Override
+    protected void onNewIntent(final Intent intent) {
+        super.onNewIntent(intent);
+
+        if (mNfcFragment != null) {
+            mNfcFragment.handleNfcIntent(intent);
+        }
     }
 
     private void clearEditTexts() {
@@ -489,6 +538,12 @@ public class Super_Gen_Pass extends Activity
         verify.setEnabled(getMasterPassword().length() != 0);
         menu.findItem(R.id.copy).setEnabled(mShowingPassword);
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || !mHasNfc) {
+            menu.findItem(R.id.write_nfc).setVisible(false);
+        } else {
+            menu.findItem(R.id.write_nfc).setEnabled(mMasterPwEdit.getText().length() > 0);
+        }
+
         return true;
     }
 
@@ -519,8 +574,23 @@ public class Super_Gen_Pass extends Activity
                 postGenerate(true);
                 return true;
 
+            case R.id.write_nfc:
+                writeNfc();
+                return true;
+
             default:
                 return false;
+        }
+    }
+
+    private void writeNfc() {
+        final NfcWriteFragment writeNfc = (NfcWriteFragment) getFragmentManager()
+                .findFragmentByTag(NfcWriteFragment.class.getName());
+
+        if (writeNfc == null) {
+            getFragmentManager().beginTransaction()
+                    .add(NfcWriteFragment.newInstance(mMasterPwEdit.getText().toString()),
+                            NfcWriteFragment.class.getName()).commit();
         }
     }
 
@@ -784,6 +854,13 @@ public class Super_Gen_Pass extends Activity
                 }
             });
             return builder.create();
+        }
+    }
+
+    public static class NfcFragmentImpl extends NfcFragment {
+        @Override
+        public void onNfcPasswordTag(@NonNull final CharSequence password) {
+            ((Super_Gen_Pass) getActivity()).mMasterPwEdit.append(password);
         }
     }
 }

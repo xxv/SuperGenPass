@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="info.staticfree.SuperGenPass"
+<manifest
+    package="info.staticfree.SuperGenPass"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -16,6 +17,11 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.NFC" />
 
     <application
         android:allowBackup="true"
@@ -43,10 +49,13 @@
             <!-- integrate in the browser so it can be shared to -->
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/xxv.so.sgp" />
             </intent-filter>
         </activity>
         <activity
