@@ -78,8 +78,6 @@ import info.staticfree.SuperGenPass.hashes.SuperGenPass;
 import info.staticfree.SuperGenPass.nfc.NfcFragment;
 import info.staticfree.SuperGenPass.nfc.NfcWriteFragment;
 
-// TODO Wipe generated password from clipboard after delay.
-
 public class Super_Gen_Pass extends Activity
         implements OnClickListener, OnLongClickListener, OnCheckedChangeListener,
         OnEditorActionListener, FilterQueryProvider {
