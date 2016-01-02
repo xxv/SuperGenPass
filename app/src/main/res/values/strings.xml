@@ -2,7 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">SuperGenPass</string>
-    <string name="domain_hint">site\'s domain</string>
+    <string name="domain_hint">site’s domain</string>
     <string name="done">Done</string>
     <string name="password_hint">master password</string>
     <string name="genpw_shown">abc1</string>
@@ -38,7 +38,7 @@
     <string name="advanced_preferences">Advanced Preferences</string>
     <string name="pwgen_type_prompt">Password generator type</string>
     <string name="pwgen_type_summary">Pick a password generating algorithm other than SuperGenPass</string>
-    <string name="pref_copy_password">Copy gen\'d password</string>
+    <string name="pref_copy_password">Copy gen’d password</string>
     <string name="pref_copy_password_summary">Copy the generated password when enter is pressed on the keyboard</string>
     <string name="pref_pw_clear_timeout">Clear password timeout</string>
     <string name="pref_pw_clear_timeout_summary">Clear generated and master passwords after this many minutes of inactivity. Does not clear the clipboard.</string>
@@ -48,7 +48,7 @@
     <string name="pref_pw_length">Generated password length</string>
     <string name="pref_pw_length_description">This should be value between 4 and 24. A value of 10 for SGP and 8 for PWC is highly recommended for compatibility with the other implementations.</string>
     <string name="pref_autocomplete">Autocomplete domains</string>
-    <string name="pref_autocomplete_summary">Remember any domains you\'ve used</string>
+    <string name="pref_autocomplete_summary">Remember any domains you’ve used</string>
     <string name="pref_clear_remembered_domains">Clear remembered domains</string>
     <string name="pref_clear_remembered_default_summary">…</string>
 
@@ -75,8 +75,8 @@
     <string name="pref_domain_check">Domain checking</string>
     <string name="pref_domain_check_on">Sub-domains will be stripped</string>
     <string name="pref_domain_check_off">Use any lowercase keywords or domain name</string>
-    <string name="domain_hint_no_checking">site\'s domain or keyword</string>
-    <string name="pref_err_not_number">Not updating preference: new value isn\'t a number.</string>
+    <string name="domain_hint_no_checking">site’s domain or keyword</string>
+    <string name="pref_err_not_number">Not updating preference: new value isn’t a number.</string>
     <string name="dialog_verify_title">Verify master password</string>
     <string name="dialog_verify_hint">retype master password</string>
     <string name="master_pw_verify_description">Retype your master password below to verify that you typed it correctly.</string>
