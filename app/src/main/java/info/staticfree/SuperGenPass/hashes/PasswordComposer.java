@@ -27,6 +27,11 @@ import java.security.NoSuchAlgorithmException;
 import info.staticfree.SuperGenPass.IllegalDomainException;
 import info.staticfree.SuperGenPass.PasswordGenerationException;
 
+/**
+ * Generates a domain password based on the PasswordComposer algorithm.
+ *
+ * @see <a href="http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/">Password Composer</a>
+ */
 public final class PasswordComposer extends DomainBasedHash {
     public static final String TYPE = "pwc";
 
@@ -58,7 +63,7 @@ public final class PasswordComposer extends DomainBasedHash {
      * @param masterPass master password
      * @param domain un-filtered domain (eg. www.example.org)
      * @return generated password
-     * @see http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/
+     * @see <a href="http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/">Password Composer</a>
      */
     @NonNull
     @Override

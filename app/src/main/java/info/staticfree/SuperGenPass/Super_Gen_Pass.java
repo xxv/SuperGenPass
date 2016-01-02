@@ -264,7 +264,6 @@ public class Super_Gen_Pass extends Activity
         masterPasswordHide.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
-                Log.d(TAG, "toggle master password hide");
                 final int selStart = mMasterPwEdit.getSelectionStart();
                 final int selEnd = mMasterPwEdit.getSelectionEnd();
                 mMasterPwEdit
@@ -679,7 +678,7 @@ public class Super_Gen_Pass extends Activity
         } catch (@NonNull final IOException e) {
             Toast.makeText(this, getString(R.string.err_json_load, e.getLocalizedMessage()),
                     Toast.LENGTH_LONG).show();
-            Log.d(TAG, getString(R.string.err_json_load), e);
+            Log.e(TAG, getString(R.string.err_json_load), e);
             finish();
         }
 

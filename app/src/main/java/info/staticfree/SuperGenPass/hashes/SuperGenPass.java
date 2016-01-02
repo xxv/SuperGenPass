@@ -31,6 +31,11 @@ import java.util.regex.Pattern;
 import info.staticfree.SuperGenPass.IllegalDomainException;
 import info.staticfree.SuperGenPass.PasswordGenerationException;
 
+/**
+ * Generates a domain password based on the SuperGenPass algorithm.
+ *
+ * @see <a href="http://supergenpass.com/">supergenpass.com</a>
+ */
 public final class SuperGenPass extends DomainBasedHash {
     public static final String TYPE = "sgp";
     public static final String TYPE_SHA_512 = "sgp-sha-512";
@@ -94,7 +99,7 @@ public final class SuperGenPass extends DomainBasedHash {
      * @param domain pre-filtered domain (eg. example.org)
      * @param length generated password length; an integer between 4 and 24, inclusive.
      * @return generated password
-     * @see http://supergenpass.com/
+     * @see <a href="http://supergenpass.com/">supergenpass.com</a>
      */
     @NonNull
     @Override

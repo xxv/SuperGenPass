@@ -14,24 +14,26 @@ import info.staticfree.SuperGenPass.PasswordGenerationException;
 
 /**
  * <p> This generates strong Personal Identification Numbers (PINs). </p>
- * <p/>
  * <p> PINs generated with this can be used for bank accounts, phone lock screens, ATMs, etc. The
  * generator avoids common bad PINs ("1234", "0000", "0007", etc.) detected using a variety of
- * techniques. </p>
- * <p/>
- * <p> The generation algorithm is a modified version of <a href="http://tools.ietf
- * .org/html/rfc4226">HOTP</a> which uses the master password for the HMAC secret and the domain
- * instead of the moving factor. If a bad PIN is detected, the text " 1" is added to the end of the
- * domain and it's recomputed. If a bad PIN is still generated, it suffixes " 2" instead and will
- * continue in this way until a good PIN comes out. </p>
+ * techniques.</p>
+ * <p> The generation algorithm is a modified version of
+ * <a href="http://tools.ietf.org/html/rfc4226">HOTP</a> which uses the master password for the
+ * HMAC secret and the domain instead of the moving factor. If a bad PIN is detected,
+ * the text " 1" is added to the end of the domain and it's recomputed. If a bad PIN is still
+ * generated, it suffixes " 2" instead and will continue in this way until a good PIN comes out.
+ * </p>
  *
  * @author <a href="mailto:steve@staticfree.info">Steve Pomeroy</a>
  * @see OneTimePasswordAlgorithm#generateOTPFromText(byte[], byte[], int, boolean, int)
  */
 public final class HotpPin extends DomainBasedHash {
-
     private static final String TAG = HotpPin.class.getSimpleName();
 
+    /**
+     * @param context application context
+     * @throws IOException on read errors
+     */
     public HotpPin(@NonNull final Context context) throws IOException {
         super(context);
     }

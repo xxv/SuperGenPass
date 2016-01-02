@@ -52,6 +52,10 @@ public abstract class DomainBasedHash {
     @NonNull
     private final Context mContext;
 
+    /**
+     * @param context application context
+     * @throws IOException on disk errors
+     */
     public DomainBasedHash(@NonNull final Context context) throws IOException {
         mContext = context;
         loadDomains();
