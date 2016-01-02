@@ -19,7 +19,6 @@ package info.staticfree.SuperGenPass;
 
  */
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -37,8 +36,6 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -83,9 +80,6 @@ import info.staticfree.SuperGenPass.nfc.NfcWriteFragment;
 
 // TODO Wipe generated password from clipboard after delay.
 
-// the check below is a nice reminder, however this activity uses no delayed messages,
-// so nothing should be holding onto references past this activity's lifetime.
-@SuppressLint("HandlerLeak")
 public class Super_Gen_Pass extends Activity
         implements OnClickListener, OnLongClickListener, OnCheckedChangeListener,
         OnEditorActionListener, FilterQueryProvider {
@@ -116,17 +110,6 @@ public class Super_Gen_Pass extends Activity
     private static final int MSG_UPDATE_PW_VIEW = 100;
 
     private static final int MIN_PIN_LENGTH = 3;
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull final Message msg) {
-            switch (msg.what) {
-                case MSG_UPDATE_PW_VIEW:
-                    generateIfValid();
-                    break;
-            }
-        }
-    };
-
     private CompoundButton mShowGenPassword;
 
     private GeneratedPasswordView mGenPinView;
@@ -307,9 +290,6 @@ public class Super_Gen_Pass extends Activity
     @Override
     protected void onPause() {
         super.onPause();
-
-        // this is overly cautious to avoid memory leaks
-        mHandler.removeMessages(MSG_UPDATE_PW_VIEW);
 
         mLastStoppedTime = SystemClock.elapsedRealtime();
     }
@@ -619,7 +599,7 @@ public class Super_Gen_Pass extends Activity
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before,
                     final int count) {
-                mHandler.sendEmptyMessage(MSG_UPDATE_PW_VIEW);
+                generateIfValid();
             }
         });
 
@@ -628,7 +608,7 @@ public class Super_Gen_Pass extends Activity
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before,
                     final int count) {
-                mHandler.sendEmptyMessage(MSG_UPDATE_PW_VIEW);
+                generateIfValid();
             }
 
             @Override
