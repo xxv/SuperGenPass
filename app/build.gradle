@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId "info.staticfree.SuperGenPass"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 27
         versionName '3.0.0'
         versionCode 22
 
