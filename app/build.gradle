@@ -8,8 +8,8 @@ android {
         applicationId "info.staticfree.SuperGenPass"
         minSdkVersion 15
         targetSdkVersion 27
-        versionName '3.0.0'
-        versionCode 22
+        versionName '3.1.0'
+        versionCode 23
 
         testApplicationId "info.staticfree.SuperGenPass.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
