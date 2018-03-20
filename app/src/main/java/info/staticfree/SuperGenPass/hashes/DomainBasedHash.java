@@ -101,22 +101,24 @@ public abstract class DomainBasedHash {
      */
     @NonNull
     public String getDomain(@NonNull String hostname) throws PasswordGenerationException {
-        hostname = hostname.toLowerCase();
+        String hostnameLower = hostname.toLowerCase();
 
         if (!checkDomain) {
-            return hostname;
+            return hostnameLower;
         }
 
         // IP addresses should be composed based on the full address.
-        if (PATTERN_IP_ADDRESS.matcher(hostname).matches()) {
-            return hostname;
+        if (PATTERN_IP_ADDRESS.matcher(hostnameLower).matches()) {
+            return hostnameLower;
         }
 
         // for single-level TLDs, we only want the TLD and the 2nd level domain
-        final String[] hostParts = hostname.split("\\.");
+        String[] hostParts = hostnameLower.split("\\.");
+
         if (hostParts.length < 2) {
             throw new IllegalDomainException("Invalid domain: '" + hostname + '\'');
         }
+
         String domain = hostParts[hostParts.length - 2] + '.' + hostParts[hostParts.length - 1];
 
         // do a slow search of all the possible multi-level TLDs and

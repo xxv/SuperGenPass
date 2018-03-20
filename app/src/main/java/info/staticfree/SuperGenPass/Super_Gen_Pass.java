@@ -168,7 +168,6 @@ public class Super_Gen_Pass extends Activity
                 try {
                     // populate the URL and give the password entry focus
                     Uri uri = Uri.parse(maybeUrl);
-
                     String host = uri.getHost();
 
                     if (host != null) {
@@ -461,7 +460,7 @@ public class Super_Gen_Pass extends Activity
         try {
             Uri uri = Uri.parse(maybeUrl);
             String host = uri.getHost();
-            return mDomainBasedHash.getDomain(host != null ? uri.getHost() : "");
+            return mDomainBasedHash.getDomain(host != null ? host : "");
         } catch (@NonNull PasswordGenerationException e) {
             return maybeUrl;
         }

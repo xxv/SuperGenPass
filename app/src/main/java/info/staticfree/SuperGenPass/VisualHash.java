@@ -116,7 +116,7 @@ public class VisualHash extends Drawable {
     private static final int BYTES_PER_SHAPE = 2;
 
     // the shape type
-    private static final int TYPE_OFFSET = 0, TYPE_MAX = 0x7, TYPE_MASK = TYPE_MAX << TYPE_OFFSET;
+    private static final int TYPE_MAX = 0x7, TYPE_MASK = TYPE_MAX;
 
     // this creates a grid of 4x4 potential shapes.
     private static final int X_OFFSET = 3, X_MAX = 0x7, X_MASK = X_MAX << X_OFFSET;
@@ -247,11 +247,11 @@ public class VisualHash extends Drawable {
 
         // go through all the bytes in the hash and draw them as shapes.
         for (int offset = 0; offset < mHash.length; offset += BYTES_PER_SHAPE) {
-            final int dat = (0xff & mHash[offset]) | (0xff00 & (mHash[offset + 1] << 8));
+            int dat = (0xff & mHash[offset]) | (0xff00 & (mHash[offset + 1] << 8));
 
-            final int type = (dat & TYPE_MASK) >> TYPE_OFFSET;
-            final int x = (dat & X_MASK) >> X_OFFSET;
-            final int y = (dat & Y_MASK) >> Y_OFFSET;
+            int type = dat & TYPE_MASK;
+            int x = (dat & X_MASK) >> X_OFFSET;
+            int y = (dat & Y_MASK) >> Y_OFFSET;
 
             // TODO use this bit for something
             // final int a = (dat & A_MASK) >> A_OFFSET;
