@@ -52,6 +52,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -166,9 +167,14 @@ public class Super_Gen_Pass extends Activity
             if (maybeUrl != null) {
                 try {
                     // populate the URL and give the password entry focus
-                    final Uri uri = Uri.parse(maybeUrl);
+                    Uri uri = Uri.parse(maybeUrl);
 
-                    mDomainEdit.setText(mDomainBasedHash.getDomain(uri.getHost()));
+                    String host = uri.getHost();
+
+                    if (host != null) {
+                        mDomainEdit.setText(mDomainBasedHash.getDomain(host));
+                    }
+
                     mMasterPwEdit.requestFocus();
                     mClearDomain = false;
                 } catch (@NonNull PasswordGenerationException e) {
@@ -783,7 +789,11 @@ public class Super_Gen_Pass extends Activity
             Dialog d = builder.create();
             // This is added below to ensure that the soft input doesn't get hidden if it's
             // showing, which seems to be the default for dialogs.
-            d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
+            Window window = d.getWindow();
+
+            if (window != null) {
+                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
+            }
 
             return d;
         }

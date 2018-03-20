@@ -115,8 +115,12 @@ public class GeneratedPasswordView extends TextView
 
         ClipboardManager clipMan =
                 (ClipboardManager) getContext().getSystemService(Application.CLIPBOARD_SERVICE);
-        clipMan.setPrimaryClip(ClipData.newPlainText(getContext().getText(
-                R.string.generated_password), genPw));
+
+        if (clipMan != null) {
+            clipMan.setPrimaryClip(ClipData.newPlainText(getContext().getText(
+                    R.string.generated_password), genPw));
+        }
+
         if (genPw.length() > 0) {
             if (domain != null) {
                 Toast.makeText(getContext(),
