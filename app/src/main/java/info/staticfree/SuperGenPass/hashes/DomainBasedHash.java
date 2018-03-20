@@ -86,6 +86,7 @@ public abstract class DomainBasedHash {
         } catch (@NonNull IOException | JSONException e) {
             IOException ioe = new IOException("Unable to load domains");
             ioe.initCause(e);
+            throw ioe;
         }
 
         Assert.assertTrue("Domains did not seem to load", domains.size() > 100);
