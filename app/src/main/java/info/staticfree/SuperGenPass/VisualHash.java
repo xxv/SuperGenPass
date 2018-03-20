@@ -45,7 +45,6 @@ import java.security.NoSuchAlgorithmException;
  */
 @SuppressWarnings("MagicNumber")
 public class VisualHash extends Drawable {
-    private static final String TAG = VisualHash.class.getSimpleName();
     @NonNull
     private final MessageDigest mMessageDigest;
     @Nullable
@@ -66,7 +65,7 @@ public class VisualHash extends Drawable {
      * @param hashFunction the name of the hash function, eg. "SHA-1"
      * @throws NoSuchAlgorithmException if the specified hash algorithm can't be found.
      */
-    public VisualHash(@NonNull final String hashFunction) throws NoSuchAlgorithmException {
+    public VisualHash(@NonNull String hashFunction) throws NoSuchAlgorithmException {
         mMessageDigest = MessageDigest.getInstance(hashFunction);
 
         init();
@@ -75,6 +74,7 @@ public class VisualHash extends Drawable {
     /**
      * Creates a new {@link VisualHash} using SHA-1. This will draw 10 shapes, though some may be
      * obscured by others.
+     *
      * @throws NoSuchAlgorithmException if SHA-1 can't be found.
      */
     public VisualHash() throws NoSuchAlgorithmException {
@@ -93,7 +93,7 @@ public class VisualHash extends Drawable {
      * @param input the data to be hashed. This value is discarded immediately after computing the
      * hash.
      */
-    public void setData(@NonNull final byte[] input) {
+    public void setData(@NonNull byte[] input) {
         if (input.length == 0) {
             mHash = null;
         } else {
@@ -226,17 +226,17 @@ public class VisualHash extends Drawable {
     }
 
     @Override
-    protected void onBoundsChange(@NonNull final Rect bounds) {
+    protected void onBoundsChange(@NonNull Rect bounds) {
         super.onBoundsChange(bounds);
 
-        final int width = bounds.width();
-        final int height = bounds.height();
+        int width = bounds.width();
+        int height = bounds.height();
         mScaleX = width / (float) PRESCALE_WIDTH;
         mScaleY = height / (float) PRESCALE_HEIGHT;
     }
 
     @Override
-    public void draw(@NonNull final Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
 
         canvas.scale(mScaleX, mScaleY);
 
@@ -260,8 +260,8 @@ public class VisualHash extends Drawable {
                     scaleInt(G_MAX, (dat & G_MASK) >> G_OFFSET, 255),
                     scaleInt(B_MAX, (dat & B_MASK) >> B_OFFSET, 255));
 
-            final float xCenterScaled = ORIGIN_OFFSET + scale(X_MAX, x, PRESCALE_CENTER_WIDTH);
-            final float yCenterScaled = ORIGIN_OFFSET + scale(Y_MAX, y, PRESCALE_CENTER_WIDTH);
+            float xCenterScaled = ORIGIN_OFFSET + scale(X_MAX, x, PRESCALE_CENTER_WIDTH);
+            float yCenterScaled = ORIGIN_OFFSET + scale(Y_MAX, y, PRESCALE_CENTER_WIDTH);
 
             canvas.save();
             canvas.translate(xCenterScaled, yCenterScaled);
@@ -311,7 +311,7 @@ public class VisualHash extends Drawable {
      * @param max the maximum output value
      * @return the scaled value as an int
      */
-    private static int scaleInt(final int valueMax, final int value, final int max) {
+    private static int scaleInt(int valueMax, int value, int max) {
         return (int) ((value / (float) valueMax) * max);
     }
 
@@ -323,7 +323,7 @@ public class VisualHash extends Drawable {
      * @param max the maximum output value
      * @return the scaled value as a float
      */
-    private static float scale(final int valueMax, final int value, final int max) {
+    private static float scale(int valueMax, int value, int max) {
         return (value / (float) valueMax) * max;
     }
 
@@ -333,12 +333,12 @@ public class VisualHash extends Drawable {
     }
 
     @Override
-    public void setAlpha(final int alpha) {
+    public void setAlpha(int alpha) {
         // do nothing
     }
 
     @Override
-    public void setColorFilter(final ColorFilter arg0) {
+    public void setColorFilter(ColorFilter arg0) {
         // do nothing
     }
 

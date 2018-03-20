@@ -7,17 +7,17 @@ import android.support.annotation.NonNull;
 
 public class SgpPreferencesActivity extends Activity {
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.preference_activity);
     }
 
     @Override
-    protected void onNewIntent(@NonNull final Intent intent) {
-        final String action = intent.getAction();
+    protected void onNewIntent(@NonNull Intent intent) {
+        String action = intent.getAction();
 
-        final Preferences preferences =
+        Preferences preferences =
                 (Preferences) getFragmentManager().findFragmentByTag(Preferences.class.getName());
 
         if (Preferences.ACTION_SCAN_SALT.equals(action)) {

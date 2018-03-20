@@ -12,54 +12,53 @@ import java.security.NoSuchAlgorithmException;
 
 public class VisualHashEditText extends EditText {
     private boolean mShowVisualHash;
-    @NonNull
+    @Nullable
     private final VisualHash mVh;
 
-    public VisualHashEditText(@NonNull final Context context, final AttributeSet attrs,
-            final int defStyle) {
+    public VisualHashEditText(@NonNull Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         try {
             mVh = new VisualHash();
-        } catch (@NonNull final NoSuchAlgorithmException e) {
+        } catch (@NonNull NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
 
         init(context, attrs);
     }
 
-    public VisualHashEditText(@NonNull final Context context, final AttributeSet attrs) {
+    public VisualHashEditText(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
 
         try {
             mVh = new VisualHash();
-        } catch (@NonNull final NoSuchAlgorithmException e) {
+        } catch (@NonNull NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
 
         init(context, attrs);
     }
 
-    public VisualHashEditText(@NonNull final Context context) {
+    public VisualHashEditText(@NonNull Context context) {
         super(context);
 
         try {
             mVh = new VisualHash();
-        } catch (@NonNull final NoSuchAlgorithmException e) {
+        } catch (@NonNull NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
 
         init(context, null);
     }
 
-    private void init(@NonNull final Context context, final AttributeSet attrs) {
-        final int h, w;
+    private void init(@NonNull Context context, AttributeSet attrs) {
+        int h, w;
 
         if (isInEditMode()) {
             h = 45;
             w = 45;
         } else {
-            final TypedArray ta =
+            TypedArray ta =
                     context.obtainStyledAttributes(attrs, R.styleable.VisualHashEditText);
 
             mShowVisualHash = ta.getBoolean(R.styleable.VisualHashEditText_showVisualHash, true);
@@ -71,12 +70,14 @@ public class VisualHashEditText extends EditText {
         }
 
         // this number is based on what looks good with standard edit boxes.
-        mVh.setBounds(0, 0, h, w);
+        if (mVh != null) {
+            mVh.setBounds(0, 0, h, w);
+        }
 
         refreshVisualHash();
     }
 
-    public void setShowVisualHash(final boolean showVisualHash) {
+    public void setShowVisualHash(boolean showVisualHash) {
         mShowVisualHash = showVisualHash;
         refreshVisualHash();
     }
@@ -90,8 +91,8 @@ public class VisualHashEditText extends EditText {
     }
 
     @Override
-    protected void onTextChanged(@Nullable final CharSequence text, final int start,
-            final int lengthBefore, final int lengthAfter) {
+    protected void onTextChanged(@Nullable CharSequence text, int start, int lengthBefore,
+            int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
         if (text != null && mVh != null) {
@@ -100,7 +101,7 @@ public class VisualHashEditText extends EditText {
     }
 
     @Override
-    public void setError(@Nullable final CharSequence error, final Drawable icon) {
+    public void setError(@Nullable CharSequence error, Drawable icon) {
         super.setError(error, icon);
 
         if (error == null) {

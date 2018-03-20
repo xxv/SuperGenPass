@@ -30,16 +30,16 @@ public class GeneratedPasswordView extends TextView
     private OnClickListener mOnClickListener;
     private CharSequence domain;
 
-    public GeneratedPasswordView(final Context context) {
+    public GeneratedPasswordView(Context context) {
         this(context, null);
     }
 
-    public GeneratedPasswordView(final Context context, final AttributeSet attrs) {
+    public GeneratedPasswordView(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.generatedPasswordViewStyle);
     }
 
-    public GeneratedPasswordView(final Context context, final AttributeSet attrs,
-            final int defStyle) {
+    public GeneratedPasswordView(Context context, AttributeSet attrs,
+            int defStyle) {
         super(context, attrs, defStyle);
 
         super.setOnClickListener(this);
@@ -59,12 +59,12 @@ public class GeneratedPasswordView extends TextView
     }
 
     @Override
-    public void setOnClickListener(final OnClickListener onClickListener) {
+    public void setOnClickListener(OnClickListener onClickListener) {
         mOnClickListener = onClickListener;
     }
 
     @Override
-    public void onClick(final View v) {
+    public void onClick(View v) {
         Log.d("gpwv", "click!");
 
         // propagate the click
@@ -74,14 +74,14 @@ public class GeneratedPasswordView extends TextView
     }
 
     @Override
-    protected void onCreateContextMenu(@NonNull final ContextMenu menu) {
+    protected void onCreateContextMenu(@NonNull ContextMenu menu) {
         menu.add(Menu.NONE, MENU_ID_COPY, Menu.NONE, android.R.string.copy)
                 .setOnMenuItemClickListener(this);
         menu.setHeaderTitle(R.string.generated_password);
     }
 
     @Override
-    public boolean onTextContextMenuItem(final int id) {
+    public boolean onTextContextMenuItem(int id) {
         switch (id) {
             case MENU_ID_COPY:
                 copyToClipboard();
@@ -97,23 +97,23 @@ public class GeneratedPasswordView extends TextView
      *
      * @param domainName the domain to show in the Toast
      */
-    public void setDomainName(final CharSequence domainName) {
+    public void setDomainName(CharSequence domainName) {
         domain = domainName;
     }
 
     @Override
-    public void setText(@Nullable final CharSequence text, final BufferType type) {
+    public void setText(@Nullable CharSequence text, BufferType type) {
         super.setText(text, type);
         setEnabled(text != null ? text.length() > 0 : false);
     }
 
     public void copyToClipboard() {
-        final CharSequence genPw = getText();
+        CharSequence genPw = getText();
         if (genPw == null) {
             return;
         }
 
-        final ClipboardManager clipMan =
+        ClipboardManager clipMan =
                 (ClipboardManager) getContext().getSystemService(Application.CLIPBOARD_SERVICE);
         clipMan.setPrimaryClip(ClipData.newPlainText(getContext().getText(
                 R.string.generated_password), genPw));
@@ -130,7 +130,7 @@ public class GeneratedPasswordView extends TextView
         }
     }
 
-    public void setHidePassword(final boolean hidePassword) {
+    public void setHidePassword(boolean hidePassword) {
         if (hidePassword) {
             setTransformationMethod(PasswordTransformationMethod.getInstance());
         } else {
@@ -143,7 +143,7 @@ public class GeneratedPasswordView extends TextView
     }
 
     @Override
-    public boolean onMenuItemClick(@NonNull final MenuItem item) {
+    public boolean onMenuItemClick(@NonNull MenuItem item) {
         return onTextContextMenuItem(item.getItemId());
     }
 
@@ -166,13 +166,13 @@ public class GeneratedPasswordView extends TextView
      */
 
     @Override
-    public void onRestoreInstanceState(final Parcelable state) {
+    public void onRestoreInstanceState(Parcelable state) {
         if (!(state instanceof SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
 
-        final SavedState ss = (SavedState) state;
+        SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         if (ss.text != null) {
@@ -183,9 +183,9 @@ public class GeneratedPasswordView extends TextView
     @NonNull
     @Override
     public Parcelable onSaveInstanceState() {
-        final Parcelable superState = super.onSaveInstanceState();
+        Parcelable superState = super.onSaveInstanceState();
 
-        final SavedState ss = new SavedState(superState);
+        SavedState ss = new SavedState(superState);
         ss.text = getText();
 
         return ss;
@@ -195,12 +195,12 @@ public class GeneratedPasswordView extends TextView
 
         CharSequence text;
 
-        public SavedState(final Parcelable superState) {
+        public SavedState(Parcelable superState) {
             super(superState);
         }
 
         @Override
-        public void writeToParcel(final Parcel dest, final int flags) {
+        public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
 
             TextUtils.writeToParcel(text, dest, flags);
@@ -210,18 +210,18 @@ public class GeneratedPasswordView extends TextView
                 new Parcelable.Creator<SavedState>() {
                     @NonNull
                     @Override
-                    public SavedState createFromParcel(final Parcel in) {
+                    public SavedState createFromParcel(Parcel in) {
                         return new SavedState(in);
                     }
 
                     @NonNull
                     @Override
-                    public SavedState[] newArray(final int size) {
+                    public SavedState[] newArray(int size) {
                         return new SavedState[size];
                     }
                 };
 
-        private SavedState(final Parcel in) {
+        private SavedState(Parcel in) {
             super(in);
             text = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
         }

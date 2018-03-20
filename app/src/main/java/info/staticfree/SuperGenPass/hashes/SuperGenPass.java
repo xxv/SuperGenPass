@@ -52,7 +52,7 @@ public final class SuperGenPass extends DomainBasedHash {
      * @throws NoSuchAlgorithmException if the provided hashAlgorithm doesn't exist
      * @throws IOException if there's an issue loading the domain list
      */
-    public SuperGenPass(@NonNull final Context context, @NonNull final String hashAlgorithm)
+    public SuperGenPass(@NonNull Context context, @NonNull String hashAlgorithm)
             throws NoSuchAlgorithmException, IOException {
         super(context);
         mHasher = MessageDigest.getInstance(hashAlgorithm);
@@ -66,7 +66,7 @@ public final class SuperGenPass extends DomainBasedHash {
      * @return base64-encoded string of the hash of the data
      */
     @NonNull
-    private String hashBase64(@NonNull final byte[] data) {
+    private String hashBase64(@NonNull byte[] data) {
 
         String b64 = new String(Base64.encodeBase64(mHasher.digest(data)));
         // SuperGenPass-specific quirk so that these don't end up in the password.
@@ -103,8 +103,8 @@ public final class SuperGenPass extends DomainBasedHash {
      */
     @NonNull
     @Override
-    public String generateWithFilteredDomain(@NonNull final String masterPass,
-            @NonNull final String domain, final int length) throws PasswordGenerationException {
+    public String generateWithFilteredDomain(@NonNull String masterPass,
+            @NonNull String domain, int length) throws PasswordGenerationException {
         if (length < 4 || length > 24) {
             throw new PasswordGenerationException(
                     "Requested length out of range. Expecting value between 4 and 24 inclusive.");

@@ -34,14 +34,14 @@ public final class HotpPin extends DomainBasedHash {
      * @param context application context
      * @throws IOException on read errors
      */
-    public HotpPin(@NonNull final Context context) throws IOException {
+    public HotpPin(@NonNull Context context) throws IOException {
         super(context);
     }
 
     @NonNull
     @Override
-    protected String generateWithFilteredDomain(@NonNull final String masterPass,
-            @NonNull final String domain, final int length) throws PasswordGenerationException {
+    protected String generateWithFilteredDomain(@NonNull String masterPass, @NonNull String domain,
+            int length) throws PasswordGenerationException {
 
         if (length < 3 || length > 8) {
             throw new PasswordGenerationException("length must be >= 3 and <= 8");
@@ -67,7 +67,7 @@ public final class HotpPin extends DomainBasedHash {
             int loopOverrun = 0;
 
             while (isBadPin(pin)) {
-                final String suffixedDomain = domain + ' ' + suffix;
+                String suffixedDomain = domain + ' ' + suffix;
                 pin = OneTimePasswordAlgorithm
                         .generateOTPFromText(masterPass.getBytes(), suffixedDomain.getBytes(),
                                 length, false, -1);
@@ -80,7 +80,7 @@ public final class HotpPin extends DomainBasedHash {
                 }
             }
             return pin;
-        } catch (@NonNull final InvalidKeyException | NoSuchAlgorithmException e) {
+        } catch (@NonNull InvalidKeyException | NoSuchAlgorithmException e) {
             Log.e(TAG, "HotpPin generation error", e);
             throw new PasswordGenerationException("Error generating PIN", e);
         }
@@ -93,17 +93,17 @@ public final class HotpPin extends DomainBasedHash {
      * @param pin the PIN to test
      * @return true if the string is a numeric run
      */
-    public boolean isNumericalRun(@NonNull final String pin) {
-        final int len = pin.length();
+    public boolean isNumericalRun(@NonNull String pin) {
+        int len = pin.length();
         // int[] diff = new int[len - 1];
         int prevDigit = Character.digit(pin.charAt(0), 10);
         int prevDiff = Integer.MAX_VALUE;
         boolean isRun = true; // assume it's true...
 
         for (int i = 1; isRun && i < len; i++) {
-            final int digit = Character.digit(pin.charAt(i), 10);
+            int digit = Character.digit(pin.charAt(i), 10);
 
-            final int diff = digit - prevDigit;
+            int diff = digit - prevDigit;
             if (prevDiff != Integer.MAX_VALUE && diff != prevDiff) {
                 isRun = false; // ... and prove it's false
             }
@@ -121,12 +121,12 @@ public final class HotpPin extends DomainBasedHash {
      * @param pin the PIN to check
      * @return true if it contains a partial run
      */
-    public boolean isIncompleteNumericalRun(@NonNull final String pin) {
-        final int len = pin.length();
+    public boolean isIncompleteNumericalRun(@NonNull String pin) {
+        int len = pin.length();
         int consecutive = 0;
         char last = pin.charAt(0);
         for (int i = 1; i < len; i++) {
-            final char c = pin.charAt(i);
+            char c = pin.charAt(i);
             if (last == c) {
                 consecutive++;
             } else {
@@ -159,13 +159,13 @@ public final class HotpPin extends DomainBasedHash {
      * @param pin the PIN to test
      * @return true if the PIN matches the bad PIN criteria
      */
-    public boolean isBadPin(@NonNull final String pin) {
-        final int len = pin.length();
+    public boolean isBadPin(@NonNull String pin) {
+        int len = pin.length();
 
         // special cases for 4-digit PINs (which are quite common)
         if (len == 4) {
-            final int start = Integer.parseInt(pin.subSequence(0, 2).toString());
-            final int end = Integer.parseInt(pin.subSequence(2, 4).toString());
+            int start = Integer.parseInt(pin.subSequence(0, 2).toString());
+            int end = Integer.parseInt(pin.subSequence(2, 4).toString());
 
             // 19xx pins look like years, so might as well ditch them.
             if (start == 19 || (start == 20 && end < 30)) {
@@ -202,7 +202,7 @@ public final class HotpPin extends DomainBasedHash {
         }
 
         // filter out special numbers
-        for (final String blacklisted : BLACKLISTED_PINS) {
+        for (String blacklisted : BLACKLISTED_PINS) {
             if (blacklisted.equals(pin)) {
                 return true;
             }

@@ -56,7 +56,7 @@ public abstract class DomainBasedHash {
      * @param context application context
      * @throws IOException on disk errors
      */
-    public DomainBasedHash(@NonNull final Context context) throws IOException {
+    public DomainBasedHash(@NonNull Context context) throws IOException {
         mContext = context;
         loadDomains();
     }
@@ -68,23 +68,23 @@ public abstract class DomainBasedHash {
      * @throws IOException on disk errors
      */
     public void loadDomains() throws IOException {
-        final InputStream is = mContext.getResources().openRawResource(R.raw.domains);
+        InputStream is = mContext.getResources().openRawResource(R.raw.domains);
 
-        final StringBuilder jsonString = new StringBuilder();
+        StringBuilder jsonString = new StringBuilder();
         try {
 
-            for (final BufferedReader isReader =
+            for (BufferedReader isReader =
                  new BufferedReader(new InputStreamReader(is), 16000); isReader.ready(); ) {
                 jsonString.append(isReader.readLine());
             }
 
-            final JSONArray domainJson = new JSONArray(jsonString.toString());
+            JSONArray domainJson = new JSONArray(jsonString.toString());
             domains = new ArrayList<>(domainJson.length());
             for (int i = 0; i < domainJson.length(); i++) {
                 domains.add(domainJson.getString(i));
             }
         } catch (@NonNull IOException | JSONException e) {
-            final IOException ioe = new IOException("Unable to load domains");
+            IOException ioe = new IOException("Unable to load domains");
             ioe.initCause(e);
         }
 
@@ -121,7 +121,7 @@ public abstract class DomainBasedHash {
 
         // do a slow search of all the possible multi-level TLDs and
         // see if we need to pull in one level deeper.
-        for (final String tld : domains) {
+        for (String tld : domains) {
             if (domain.equals(tld)) {
                 if (hostParts.length < 3) {
                     throw new IllegalDomainException(
@@ -137,7 +137,7 @@ public abstract class DomainBasedHash {
     /**
      * @param checkDomain if true, sub-domains will be stripped from the hashing
      */
-    public void setCheckDomain(final boolean checkDomain) {
+    public void setCheckDomain(boolean checkDomain) {
         this.checkDomain = checkDomain;
     }
 
@@ -153,8 +153,8 @@ public abstract class DomainBasedHash {
      * Often a length or domain issue.
      */
     @NonNull
-    public String generate(@NonNull final String masterPass, @NonNull final String domain,
-            final int length) throws PasswordGenerationException {
+    public String generate(@NonNull String masterPass, @NonNull String domain,
+            int length) throws PasswordGenerationException {
         return generateWithFilteredDomain(masterPass, getDomain(domain), length);
     }
 

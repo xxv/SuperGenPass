@@ -29,7 +29,7 @@ public class RememberedDomainProvider extends ContentProvider {
     private RememberedDBHelper mDBHelper;
 
     @Override
-    public String getType(@NonNull final Uri uri) {
+    public String getType(@NonNull Uri uri) {
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
                 return TYPE_DOMAINS_DIR;
@@ -47,15 +47,15 @@ public class RememberedDomainProvider extends ContentProvider {
      * @param cr the resolver
      * @param domain the filtered domain name
      */
-    public static void addRememberedDomain(@NonNull final ContentResolver cr, final String domain) {
-        final Cursor existingEntries =
+    public static void addRememberedDomain(@NonNull ContentResolver cr, String domain) {
+        Cursor existingEntries =
                 cr.query(Domain.CONTENT_URI, null, Domain.DOMAIN + "=?", new String[] { domain },
                         null);
 
         if (existingEntries != null) {
             try {
                 if (!existingEntries.moveToFirst()) {
-                    final ContentValues cv = new ContentValues();
+                    ContentValues cv = new ContentValues();
                     cv.put(Domain.DOMAIN, domain);
                     cr.insert(Domain.CONTENT_URI, cv);
                 }
@@ -67,7 +67,7 @@ public class RememberedDomainProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        final Context context = getContext();
+        Context context = getContext();
 
         if (context != null) {
             mDBHelper = new RememberedDBHelper(context);
@@ -77,18 +77,18 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(@NonNull final Uri uri, final ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         if (mDBHelper == null) {
             throw new IllegalStateException("Cannot access database helper");
         }
 
-        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-        final Uri newUri;
+        Uri newUri;
 
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
-                final long id = db.insert(RememberedDBHelper.DB_DOMAINS_TABLE, null, values);
+                long id = db.insert(RememberedDBHelper.DB_DOMAINS_TABLE, null, values);
                 newUri = ContentUris.withAppendedId(Domain.CONTENT_URI, id);
                 break;
 
@@ -96,9 +96,9 @@ public class RememberedDomainProvider extends ContentProvider {
                 throw new IllegalArgumentException();
         }
 
-        final Context context = getContext();
+        Context context = getContext();
         if (context != null) {
-            final ContentResolver cr = context.getContentResolver();
+            ContentResolver cr = context.getContentResolver();
             cr.notifyChange(uri, null);
         }
 
@@ -106,15 +106,15 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(@NonNull final Uri uri, final String[] projection, final String selection,
-            final String[] selectionArgs, final String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
         if (mDBHelper == null) {
             throw new IllegalStateException("Cannot access database helper");
         }
 
-        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-        final Cursor cursor;
+        Cursor cursor;
 
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
@@ -131,9 +131,9 @@ public class RememberedDomainProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException();
         }
-        final Context context = getContext();
+        Context context = getContext();
         if (context != null) {
-            final ContentResolver cr = context.getContentResolver();
+            ContentResolver cr = context.getContentResolver();
             cursor.setNotificationUri(cr, uri);
         }
 
@@ -141,15 +141,15 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull final Uri uri, final ContentValues values, final String selection,
-            final String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
         if (mDBHelper == null) {
             throw new IllegalStateException("Cannot access database helper");
         }
 
-        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-        final int changeCount;
+        int changeCount;
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
                 changeCount = db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values, selection,
@@ -166,9 +166,9 @@ public class RememberedDomainProvider extends ContentProvider {
         }
 
         if (changeCount != 0) {
-            final Context context = getContext();
+            Context context = getContext();
             if (context != null) {
-                final ContentResolver cr = context.getContentResolver();
+                ContentResolver cr = context.getContentResolver();
                 cr.notifyChange(uri, null);
             }
         }
@@ -177,15 +177,14 @@ public class RememberedDomainProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull final Uri uri, final String selection,
-            final String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         if (mDBHelper == null) {
             throw new IllegalStateException("Cannot access database helper");
         }
 
-        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-        final int changeCount;
+        int changeCount;
         switch (mUriMatcher.match(uri)) {
             case MATCHER_DOMAIN_DIR:
                 changeCount =
@@ -203,9 +202,9 @@ public class RememberedDomainProvider extends ContentProvider {
         }
 
         if (changeCount != 0) {
-            final Context context = getContext();
+            Context context = getContext();
             if (context != null) {
-                final ContentResolver cr = context.getContentResolver();
+                ContentResolver cr = context.getContentResolver();
                 cr.notifyChange(uri, null);
             }
         }

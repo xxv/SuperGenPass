@@ -37,7 +37,7 @@ public final class PasswordComposer extends DomainBasedHash {
 
     private final MessageDigest md5;
 
-    public PasswordComposer(@NonNull final Context context)
+    public PasswordComposer(@NonNull Context context)
             throws NoSuchAlgorithmException, IOException {
         super(context);
         md5 = MessageDigest.getInstance("MD5");
@@ -48,10 +48,10 @@ public final class PasswordComposer extends DomainBasedHash {
      *
      * @return hex-encoded string of the md5sum of the data
      */
-    private String md5hex(final byte[] data) {
-        final byte[] md5data = md5.digest(data);
-        final StringBuilder md5hex = new StringBuilder();
-        for (final byte aMd5data : md5data) {
+    private String md5hex(byte[] data) {
+        byte[] md5data = md5.digest(data);
+        StringBuilder md5hex = new StringBuilder();
+        for (byte aMd5data : md5data) {
             md5hex.append(String.format("%02x", aMd5data));
         }
         return md5hex.toString();
@@ -67,8 +67,8 @@ public final class PasswordComposer extends DomainBasedHash {
      */
     @NonNull
     @Override
-    public String generateWithFilteredDomain(@NonNull final String masterPass,
-            @NonNull final String domain, final int length) throws PasswordGenerationException {
+    public String generateWithFilteredDomain(@NonNull String masterPass,
+            @NonNull String domain, int length) throws PasswordGenerationException {
         if (domain.isEmpty()) {
             throw new IllegalDomainException("Missing domain");
         }

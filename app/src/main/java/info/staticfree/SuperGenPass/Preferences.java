@@ -58,8 +58,8 @@ public class Preferences extends PreferenceFragment {
             new OnPreferenceChangeListener() {
 
                 @Override
-                public boolean onPreferenceChange(final Preference preference,
-                        final Object newValue) {
+                public boolean onPreferenceChange(Preference preference,
+                        Object newValue) {
                     if (!isInteger(newValue)) {
                         Toast.makeText(getActivity().getApplicationContext(),
                                 R.string.pref_err_not_number, Toast.LENGTH_LONG).show();
@@ -73,16 +73,16 @@ public class Preferences extends PreferenceFragment {
             new LoaderManager.LoaderCallbacks<Cursor>() {
 
                 @Override
-                public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
+                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
                     return new CursorLoader(getActivity(), Domain.CONTENT_URI, new String[] {},
                             null, null, null);
                 }
 
                 @Override
-                public void onLoadFinished(final Loader<Cursor> loader, final Cursor data) {
-                    final int domainCount = data.getCount();
+                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                    int domainCount = data.getCount();
                     if (isResumed() && !isRemoving()) {
-                        final Preference clear = findPreference(PREF_CLEAR_REMEMBERED);
+                        Preference clear = findPreference(PREF_CLEAR_REMEMBERED);
                         clear.setEnabled(domainCount > 0);
                         clear.setSummary(getResources()
                                 .getQuantityString(R.plurals.pref_autocomplete_count, domainCount,
@@ -91,23 +91,23 @@ public class Preferences extends PreferenceFragment {
                 }
 
                 @Override
-                public void onLoaderReset(final Loader<Cursor> loader) {
+                public void onLoaderReset(Loader<Cursor> loader) {
 
                 }
             };
 
-    public boolean isInteger(final Object newValue) {
+    public boolean isInteger(Object newValue) {
         try {
             //noinspection ResultOfMethodCallIgnored
             Integer.parseInt((String) newValue);
-        } catch (@NonNull final NumberFormatException e) {
+        } catch (@NonNull NumberFormatException e) {
             return false;
         }
         return true;
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
@@ -128,37 +128,37 @@ public class Preferences extends PreferenceFragment {
     }
 
     public void scanSalt() {
-        final IntentIntegrator qr = new IntentIntegrator(getActivity());
+        IntentIntegrator qr = new IntentIntegrator(getActivity());
         qr.addExtra("PROMPT_MESSAGE", getString(R.string.pref_scan_qr_code_to_load_zxing_message));
         qr.addExtra("SAVE_HISTORY", false);
         qr.initiateScan(IntentIntegrator.QR_CODE_TYPES);
     }
 
-    private void setSaltPref(final String salt) {
+    private void setSaltPref(String salt) {
         ((EditTextPreference) findPreference(PREF_PW_SALT)).setText(salt);
     }
 
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode,
-            @NonNull final Intent data) {
-        final IntentResult res =
+    public void onActivityResult(int requestCode, int resultCode,
+            @NonNull Intent data) {
+        IntentResult res =
                 IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
         if (res != null && res.getContents() != null) {
-            final String salt = res.getContents();
+            String salt = res.getContents();
             setSaltPref(salt);
         }
     }
 
-    public static int getStringAsInteger(@NonNull final SharedPreferences prefs, final String key,
-            final int def) {
-        final String defString = Integer.toString(def);
+    public static int getStringAsInteger(@NonNull SharedPreferences prefs, String key,
+            int def) {
+        String defString = Integer.toString(def);
         int retval;
         try {
             retval = Integer.parseInt(prefs.getString(key, defString));
 
             // in case the value ever gets corrupt, reset it to the default instead of freaking out
-        } catch (@NonNull final NumberFormatException e) {
+        } catch (@NonNull NumberFormatException e) {
             prefs.edit().putString(key, defString).apply();
             retval = def;
         }
@@ -169,7 +169,7 @@ public class Preferences extends PreferenceFragment {
             new Preference.OnPreferenceClickListener() {
 
                 @Override
-                public boolean onPreferenceClick(final Preference preference) {
+                public boolean onPreferenceClick(Preference preference) {
                     switch (preference.getKey()) {
                         case PREF_SCAN_SALT:
                             scanSalt();
@@ -195,7 +195,7 @@ public class Preferences extends PreferenceFragment {
         private static final Pattern PATTERN_WHITESPACE = Pattern.compile("\\s");
 
         @Override
-        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.pref_generate_salt_title)
                     .setMessage(R.string.pref_generate_salt_dialog_message)
@@ -203,26 +203,26 @@ public class Preferences extends PreferenceFragment {
                             new DialogInterface.OnClickListener() {
 
                                 @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
+                                public void onClick(DialogInterface dialog, int which) {
                                     generateSalt();
                                 }
                             }).setCancelable(true).setNegativeButton(android.R.string.cancel,
                             new DialogInterface.OnClickListener() {
 
                                 @Override
-                                public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
+                                public void onClick(@NonNull DialogInterface dialog,
+                                        int which) {
                                     dialog.dismiss();
                                 }
                             }).create();
         }
 
         private void generateSalt() {
-            final IntentIntegrator qr = new IntentIntegrator(getActivity());
-            final SecureRandom sr = new SecureRandom();
-            final byte[] salt = new byte[SALT_SIZE_BYTES];
+            IntentIntegrator qr = new IntentIntegrator(getActivity());
+            SecureRandom sr = new SecureRandom();
+            byte[] salt = new byte[SALT_SIZE_BYTES];
             sr.nextBytes(salt);
-            final String saltb64 = PATTERN_WHITESPACE.matcher(new String(Base64.encodeBase64(salt)))
+            String saltb64 = PATTERN_WHITESPACE.matcher(new String(Base64.encodeBase64(salt)))
                     .replaceAll("");
             ((Preferences) getFragmentManager().findFragmentById(R.id.preferences))
                     .setSaltPref(saltb64);

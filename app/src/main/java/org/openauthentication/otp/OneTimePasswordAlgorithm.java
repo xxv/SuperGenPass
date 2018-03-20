@@ -104,15 +104,15 @@ public final class OneTimePasswordAlgorithm {
      */
 
     @NonNull
-    public static byte[] hmac_sha1(@NonNull final byte[] keyBytes, @NonNull final byte[] text)
+    public static byte[] hmac_sha1(@NonNull byte[] keyBytes, @NonNull byte[] text)
             throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmacSha1;
         try {
             hmacSha1 = Mac.getInstance("HmacSHA1");
-        } catch (@NonNull final NoSuchAlgorithmException nsae) {
+        } catch (@NonNull NoSuchAlgorithmException nsae) {
             hmacSha1 = Mac.getInstance("HMAC-SHA-1");
         }
-        final SecretKeySpec macKey = new SecretKeySpec(keyBytes, "RAW");
+        SecretKeySpec macKey = new SecretKeySpec(keyBytes, "RAW");
         hmacSha1.init(macKey);
         return hmacSha1.doFinal(text);
     }
@@ -147,11 +147,11 @@ public final class OneTimePasswordAlgorithm {
      *         checksum digit if requested.
      */
     @NonNull
-    public static String generateOTP(@NonNull final byte[] secret, long movingFactor,
-            final int codeDigits, final boolean addChecksum, final int truncationOffset)
+    public static String generateOTP(@NonNull byte[] secret, long movingFactor,
+            int codeDigits, boolean addChecksum, int truncationOffset)
             throws NoSuchAlgorithmException, InvalidKeyException {
         // put movingFactor value into text byte array
-        final byte[] text = new byte[8];
+        byte[] text = new byte[8];
         for (int i = text.length - 1; i >= 0; i--) {
             text[i] = (byte) (movingFactor & 0xff);
             movingFactor >>= 8;
@@ -187,20 +187,20 @@ public final class OneTimePasswordAlgorithm {
      *         checksum digit if requested.
      */
     @NonNull
-    public static String generateOTPFromText(@NonNull final byte[] secret, @NonNull
-    final byte[] text, final int codeDigits, final boolean addChecksum, final int truncationOffset)
+    public static String generateOTPFromText(@NonNull byte[] secret, @NonNull byte[] text,
+            int codeDigits, boolean addChecksum, int truncationOffset)
             throws InvalidKeyException, NoSuchAlgorithmException {
-        final StringBuilder result = new StringBuilder();
-        final int digits = addChecksum ? (codeDigits + 1) : codeDigits;
+        StringBuilder result = new StringBuilder();
+        int digits = addChecksum ? (codeDigits + 1) : codeDigits;
         // compute hmac hash
-        final byte[] hash = hmac_sha1(secret, text);
+        byte[] hash = hmac_sha1(secret, text);
 
         // put selected bytes into result int
         int offset = hash[hash.length - 1] & 0xf;
         if ((0 <= truncationOffset) && (truncationOffset < (hash.length - 4))) {
             offset = truncationOffset;
         }
-        final int binary = ((hash[offset] & 0x7f) << 24) | ((hash[offset + 1] & 0xff) << 16)
+        int binary = ((hash[offset] & 0x7f) << 24) | ((hash[offset + 1] & 0xff) << 16)
                 | ((hash[offset + 2] & 0xff) << 8) | (hash[offset + 3] & 0xff);
 
         int otp = binary % DIGITS_POWER[codeDigits];
