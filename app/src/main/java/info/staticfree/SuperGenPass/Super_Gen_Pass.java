@@ -117,7 +117,11 @@ public class Super_Gen_Pass extends Activity
         @Override
         public void onReceive(Context context, Intent intent) {
             clearEditTexts();
-            unregisterReceiver(this);
+            try {
+                unregisterReceiver(this);
+            } catch (IllegalArgumentException ignored) {
+                // this has happened a few times, but this is just a clean-up so we can ignore this.
+            }
         }
     };
 
