@@ -15,6 +15,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="@string/dialog_verify_hint"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:importantForAccessibility="no" />
 
 </LinearLayout>
