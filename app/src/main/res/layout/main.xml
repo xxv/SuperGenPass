@@ -39,6 +39,7 @@
         android:imeActionLabel="@string/done"
         android:imeOptions="actionDone"
         android:inputType="textPassword"
+        android:importantForAccessibility="no"
         android:singleLine="true"
         app:showVisualHash="true"
         app:visualHashHeight="45dip"
