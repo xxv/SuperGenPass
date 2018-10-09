@@ -17,6 +17,7 @@ numerical counters) and is designed to never generate easily-guessable pins, suc
 ## Download Binary Release
 
   * [Android SuperGenPass on Google Play](https://play.google.com/store/apps/details?id=info.staticfree.SuperGenPass)
+  * [Android SuperGenPass on F-Droid](https://f-droid.org/packages/info.staticfree.SuperGenPass/)
   * [Android SuperGenPass apk](SuperGenPass.apk)
 
 <img src="extra/screenshot02.png" width="120" height="200" />
