@@ -3,13 +3,16 @@ package info.staticfree.SuperGenPass.nfc;
 import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Parcelable;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * A non-layout fragment for handling NFC tag reading interactions. If NFC is disabled or not
@@ -18,12 +21,13 @@ import android.support.annotation.NonNull;
 public abstract class NfcFragment extends Fragment {
     private static final IntentFilter[] SGP_PASSWORD_INTENT_FILTER =
             { new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED) };
+    private static final String TAG = NfcFragment.class.getName();
 
     static {
         try {
             SGP_PASSWORD_INTENT_FILTER[0].addDataType(ClipDescription.MIMETYPE_TEXT_PLAIN);
             SGP_PASSWORD_INTENT_FILTER[0].addDataType(NdefUtils.SGP_NFC_MIME_TYPE);
-        } catch (final IntentFilter.MalformedMimeTypeException e) {
+        } catch (IntentFilter.MalformedMimeTypeException e) {
             throw new RuntimeException(e);
         }
     }
@@ -34,7 +38,7 @@ public abstract class NfcFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        final NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 
         if (nfcAdapter != null && mShouldDisableForegroundDispatch) {
             nfcAdapter.disableForegroundDispatch(getActivity());
@@ -45,10 +49,10 @@ public abstract class NfcFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        final NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 
         if (nfcAdapter != null && nfcAdapter.isEnabled()) {
-            final PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0,
+            PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0,
                     new Intent(getActivity(), getActivity().getClass())
                             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
@@ -65,15 +69,23 @@ public abstract class NfcFragment extends Fragment {
      *
      * @param intent the intent delivered from Android
      */
-    public void handleNfcIntent(@NonNull final Intent intent) {
+    public void handleNfcIntent(@NonNull Intent intent) {
+        PowerManager powerManager =
+                (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
+
+        if (powerManager != null && !powerManager.isScreenOn()) {
+            Log.d(TAG, "Screen wasn't on, so not handling intent.");
+            return;
+        }
+
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            final Parcelable[] messages =
+            Parcelable[] messages =
                     intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
             if (messages != null && messages.length > 0) {
-                for (final Parcelable messageParcelable : messages) {
-                    for (final NdefRecord record : ((NdefMessage) messageParcelable).getRecords()) {
-                        final String type = NdefUtils.getMimeType(record);
+                for (Parcelable messageParcelable : messages) {
+                    for (NdefRecord record : ((NdefMessage) messageParcelable).getRecords()) {
+                        String type = NdefUtils.getMimeType(record);
 
                         if (type == null) {
                             return;
@@ -100,5 +112,5 @@ public abstract class NfcFragment extends Fragment {
      *
      * @param password the password stored in the tag
      */
-    public abstract void onNfcPasswordTag(@NonNull final CharSequence password);
+    public abstract void onNfcPasswordTag(@NonNull CharSequence password);
 }
