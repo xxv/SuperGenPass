@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass;
+package info.staticfree.supergenpass;
 
 /*
  Android SuperGenPass
@@ -72,12 +72,12 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
-import info.staticfree.SuperGenPass.hashes.HotpPin;
-import info.staticfree.SuperGenPass.hashes.PasswordComposer;
-import info.staticfree.SuperGenPass.hashes.SuperGenPass;
-import info.staticfree.SuperGenPass.nfc.NfcFragment;
-import info.staticfree.SuperGenPass.nfc.NfcWriteFragment;
+import info.staticfree.supergenpass.hashes.DomainBasedHash;
+import info.staticfree.supergenpass.hashes.HotpPin;
+import info.staticfree.supergenpass.hashes.PasswordComposer;
+import info.staticfree.supergenpass.hashes.SuperGenPass;
+import info.staticfree.supergenpass.nfc.NfcFragment;
+import info.staticfree.supergenpass.nfc.NfcWriteFragment;
 
 public class Super_Gen_Pass extends Activity
         implements OnClickListener, OnLongClickListener, OnCheckedChangeListener,

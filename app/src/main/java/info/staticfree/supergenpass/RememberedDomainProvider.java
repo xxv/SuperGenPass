@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass;
+package info.staticfree.supergenpass;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;

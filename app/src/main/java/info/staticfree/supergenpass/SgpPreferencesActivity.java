@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass;
+package info.staticfree.supergenpass;
 
 import android.app.Activity;
 import android.content.Intent;

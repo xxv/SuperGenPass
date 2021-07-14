@@ -28,7 +28,7 @@
         android:textOff="@string/genpw_hidden"
         android:textOn="@string/genpw_shown" />
 
-    <info.staticfree.SuperGenPass.VisualHashEditText
+    <info.staticfree.supergenpass.VisualHashEditText
         android:id="@+id/password_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
             android:text="@string/tab_password"
             android:textAllCaps="true" />
 
-        <info.staticfree.SuperGenPass.GeneratedPasswordView
+        <info.staticfree.supergenpass.GeneratedPasswordView
             android:id="@+id/password_output"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
             android:text="@string/tab_pin"
             android:textAllCaps="true" />
 
-        <info.staticfree.SuperGenPass.GeneratedPasswordView
+        <info.staticfree.supergenpass.GeneratedPasswordView
             android:id="@+id/pin_output"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

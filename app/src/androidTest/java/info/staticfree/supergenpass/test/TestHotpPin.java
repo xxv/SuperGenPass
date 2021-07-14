@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.test;
+package info.staticfree.supergenpass.test;
 
 import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
@@ -6,8 +6,8 @@ import android.test.suitebuilder.annotation.LargeTest;
 
 import java.io.IOException;
 
-import info.staticfree.SuperGenPass.PasswordGenerationException;
-import info.staticfree.SuperGenPass.hashes.HotpPin;
+import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.hashes.HotpPin;
 
 public class TestHotpPin extends AndroidTestCase {
 

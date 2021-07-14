@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.test;
+package info.staticfree.supergenpass.test;
 
 import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
@@ -7,8 +7,8 @@ import android.test.suitebuilder.annotation.LargeTest;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-import info.staticfree.SuperGenPass.PasswordGenerationException;
-import info.staticfree.SuperGenPass.hashes.SuperGenPass;
+import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.hashes.SuperGenPass;
 
 public class SuperGenPassTest extends AndroidTestCase {
 

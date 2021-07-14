@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.nfc;
+package info.staticfree.supergenpass.nfc;
 
 import android.annotation.TargetApi;
 import android.content.ClipDescription;

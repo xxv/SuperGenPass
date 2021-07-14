@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.nfc;
+package info.staticfree.supergenpass.nfc;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -24,7 +24,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import info.staticfree.SuperGenPass.R;
+import info.staticfree.supergenpass.R;
 
 /**
  * A dialog box that prompts the user to tap an NFC tag and then writes it.

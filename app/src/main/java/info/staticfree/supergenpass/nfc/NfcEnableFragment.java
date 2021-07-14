@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.nfc;
+package info.staticfree.supergenpass.nfc;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 
-import info.staticfree.SuperGenPass.R;
+import info.staticfree.supergenpass.R;
 
 /**
  * A simple dialog to prompt the user to turn on NFC if it's off.

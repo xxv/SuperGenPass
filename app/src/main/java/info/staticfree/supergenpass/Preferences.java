@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass;
+package info.staticfree.supergenpass;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.hashes;
+package info.staticfree.supergenpass.hashes;
 
 /*
  * Copyright (C) 2010-2013 Steve Pomeroy
@@ -33,9 +33,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import info.staticfree.SuperGenPass.IllegalDomainException;
-import info.staticfree.SuperGenPass.PasswordGenerationException;
-import info.staticfree.SuperGenPass.R;
+import info.staticfree.supergenpass.IllegalDomainException;
+import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.R;
 
 /**
  * A password hash that takes a password and a domain. Domains are optionally checked against a

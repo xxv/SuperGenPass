@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass;
+package info.staticfree.supergenpass;
 
 public class IllegalDomainException extends PasswordGenerationException {
 

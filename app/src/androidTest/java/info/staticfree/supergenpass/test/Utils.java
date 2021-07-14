@@ -1,11 +1,11 @@
-package info.staticfree.SuperGenPass.test;
+package info.staticfree.supergenpass.test;
 
 import android.support.annotation.NonNull;
 
 import junit.framework.TestCase;
 
-import info.staticfree.SuperGenPass.PasswordGenerationException;
-import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
+import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.hashes.DomainBasedHash;
 
 public final class Utils {
 

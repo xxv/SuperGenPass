@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.hashes;
+package info.staticfree.supergenpass.hashes;
 /*
  * Copyright (C) 2010 Steve Pomeroy
  *
@@ -28,8 +28,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import info.staticfree.SuperGenPass.IllegalDomainException;
-import info.staticfree.SuperGenPass.PasswordGenerationException;
+import info.staticfree.supergenpass.IllegalDomainException;
+import info.staticfree.supergenpass.PasswordGenerationException;
 
 /**
  * Generates a domain password based on the SuperGenPass algorithm.

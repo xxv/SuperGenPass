@@ -1,4 +1,4 @@
-package info.staticfree.SuperGenPass.hashes;
+package info.staticfree.supergenpass.hashes;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import info.staticfree.SuperGenPass.PasswordGenerationException;
+import info.staticfree.supergenpass.PasswordGenerationException;
 
 /**
  * <p> This generates strong Personal Identification Numbers (PINs). </p>
