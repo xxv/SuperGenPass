@@ -1,6 +1,6 @@
 package info.staticfree.supergenpass.test;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import junit.framework.TestCase;
 

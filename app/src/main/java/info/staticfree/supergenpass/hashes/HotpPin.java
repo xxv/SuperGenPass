@@ -1,8 +1,9 @@
 package info.staticfree.supergenpass.hashes;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import org.openauthentication.otp.OneTimePasswordAlgorithm;
 

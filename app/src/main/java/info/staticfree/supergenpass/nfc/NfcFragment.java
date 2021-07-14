@@ -11,8 +11,9 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Parcelable;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 /**
  * A non-layout fragment for handling NFC tag reading interactions. If NFC is disabled or not

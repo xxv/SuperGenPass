@@ -3,7 +3,8 @@ package info.staticfree.supergenpass;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 public class RememberedDBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "autocomplete_domains";
