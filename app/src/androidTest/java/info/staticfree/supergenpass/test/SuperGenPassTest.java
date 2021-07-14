@@ -1,8 +1,12 @@
 package info.staticfree.supergenpass.test;
 
-import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.LargeTest;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -10,12 +14,18 @@ import java.security.NoSuchAlgorithmException;
 import info.staticfree.supergenpass.PasswordGenerationException;
 import info.staticfree.supergenpass.hashes.SuperGenPass;
 
-public class SuperGenPassTest extends AndroidTestCase {
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+@RunWith(AndroidJUnit4.class)
+public class SuperGenPassTest {
+
+    @Test
     public void testKnownGoods()
             throws NoSuchAlgorithmException, IOException, PasswordGenerationException {
 
-        SuperGenPass sgp = new SuperGenPass(mContext, "md5");
+        SuperGenPass sgp = new SuperGenPass(getApplicationContext(), "md5");
         sgp.setCheckDomain(true);
 
         // these were generated using SGP's javascript itself by hand.
@@ -50,73 +60,78 @@ public class SuperGenPassTest extends AndroidTestCase {
         }
     }
 
+    @Test
     public void testInvalidOptions_algorithm() throws Exception {
         boolean caught = false;
         try {
             //noinspection ResultOfObjectAllocationIgnored
-            new SuperGenPass(mContext, "kittens");
-        } catch (@NonNull NoSuchAlgorithmException e) {
+            new SuperGenPass(getApplicationContext(), "kittens");
+        } catch (NoSuchAlgorithmException e) {
             caught = true;
         }
 
         assertTrue("exception thrown", caught);
     }
 
+    @Test
     public void testInvalidOptions_checkDomain() throws Exception {
-        SuperGenPass sgp = new SuperGenPass(mContext, "md5");
+        SuperGenPass sgp = new SuperGenPass(getApplicationContext(), "md5");
         sgp.setCheckDomain(true);
 
         // bad domain
         boolean caught = false;
         try {
             sgp.generate("12345", "bad domain", 10);
-        } catch (@NonNull PasswordGenerationException e) {
+        } catch (PasswordGenerationException e) {
             caught = true;
         }
         assertTrue("exception thrown", caught);
     }
 
+    @Test
     public void testInvalidOptions_tooShort() throws Exception {
-        SuperGenPass sgp = new SuperGenPass(mContext, "md5");
+        SuperGenPass sgp = new SuperGenPass(getApplicationContext(), "md5");
         sgp.setCheckDomain(true);
         boolean caught = false;
         try {
             sgp.generate("12345", "example.org", 0);
-        } catch (@NonNull PasswordGenerationException e) {
+        } catch (PasswordGenerationException e) {
             caught = true;
         }
         assertTrue("exception thrown", caught);
     }
 
+    @Test
     public void testInvalidOptions_tooLong() throws Exception {
-        SuperGenPass sgp = new SuperGenPass(mContext, "md5");
+        SuperGenPass sgp = new SuperGenPass(getApplicationContext(), "md5");
         sgp.setCheckDomain(true);
         // too long length
         boolean caught = false;
         try {
             sgp.generate("12345", "example.org", 100);
-        } catch (@NonNull PasswordGenerationException e) {
+        } catch (PasswordGenerationException e) {
             caught = true;
         }
         assertTrue("exception thrown", caught);
     }
 
+    @Test
     public void testSha1() throws NoSuchAlgorithmException, IOException {
-        SuperGenPass sgp = new SuperGenPass(mContext, "sha1");
+        SuperGenPass sgp = new SuperGenPass(getApplicationContext(), "sha1");
         sgp.setCheckDomain(true);
     }
 
-    @LargeTest
+    @Test
     public void testATonOfPasswordsSha1()
             throws PasswordGenerationException, IOException, NoSuchAlgorithmException {
-        SuperGenPass sgp = new SuperGenPass(mContext, "sha1");
+        SuperGenPass sgp = new SuperGenPass(getApplicationContext(), "sha1");
         Utils.testATonOfPasswords(sgp, 4, 10);
     }
 
-    @LargeTest
+    @Test
     public void testATonOfPasswordsMd5()
             throws PasswordGenerationException, IOException, NoSuchAlgorithmException {
-        SuperGenPass sgp = new SuperGenPass(mContext, "md5");
+        SuperGenPass sgp = new SuperGenPass(getApplicationContext(), "md5");
         Utils.testATonOfPasswords(sgp, 4, 10);
     }
 }
