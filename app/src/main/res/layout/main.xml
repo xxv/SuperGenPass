@@ -35,7 +35,7 @@
         android:layout_below="@id/domain_edit"
         android:layout_toLeftOf="@id/hide_master_password"
         android:hint="@string/password_hint"
-        android:imeActionId="@+id/go"
+        android:imeActionId="@integer/ime_go"
         android:imeActionLabel="@string/done"
         android:imeOptions="actionDone"
         android:inputType="textPassword"

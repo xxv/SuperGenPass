@@ -473,7 +473,7 @@ public class Super_Gen_Pass extends Activity
     @Override
     public void onClick(@NonNull View v) {
         switch (v.getId()) {
-            case R.id.go:
+            case R.integer.ime_go:
                 go();
                 break;
         }
@@ -545,7 +545,7 @@ public class Super_Gen_Pass extends Activity
                 VerifyFragment.showVerifyFragment(getFragmentManager(), getMasterPassword());
                 return true;
 
-            case R.id.go:
+            case R.integer.ime_go:
                 go();
                 return true;
 
@@ -689,9 +689,9 @@ public class Super_Gen_Pass extends Activity
         mMasterPwEdit.setShowVisualHash(prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true));
 
         if (mCopyToClipboard) {
-            mMasterPwEdit.setImeActionLabel(getText(android.R.string.copy), R.id.go);
+            mMasterPwEdit.setImeActionLabel(getText(android.R.string.copy), R.integer.ime_go);
         } else {
-            mMasterPwEdit.setImeActionLabel(getText(R.string.done), R.id.go);
+            mMasterPwEdit.setImeActionLabel(getText(R.string.done), R.integer.ime_go);
         }
 
         boolean showPassword = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false);
