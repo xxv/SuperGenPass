@@ -1,4 +1,8 @@
-package edu.mit.mobile.android.utils;
+package edu.mit.mobile.android.utils
+
+import android.text.TextUtils
+import java.util.*
+
 /*
  * Copyright (C) 2010-2011 MIT Mobile Experience Lab
  *
@@ -15,33 +19,19 @@ package edu.mit.mobile.android.utils;
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
-import android.text.TextUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public final class ProviderUtils {
-
-    private ProviderUtils() {
-        // This class cannot be instantiated
-    }
-
+ */   object ProviderUtils {
     /**
      * Adds extra where clauses
      * @param where
      * @param extraWhere
      * @return
      */
-    @NonNull
-    public static String addExtraWhere(@Nullable final String where, final String ... extraWhere){
-        final String extraWhereJoined = '(' + TextUtils.join(") AND (", Arrays.asList(extraWhere))
-                + ')';
-            return extraWhereJoined + (where != null && where.length() > 0 ? " AND ("+where+ ')' :"");
+    @JvmStatic
+    fun addExtraWhere(where: String?, vararg extraWhere: String?): String {
+        val extraWhereJoined =
+            ('('.toString() + TextUtils.join(") AND (", listOf(*extraWhere))
+                    + ')')
+        return extraWhereJoined + if (where != null && where.isNotEmpty()) " AND ($where)" else ""
     }
 
     /**
@@ -50,12 +40,13 @@ public final class ProviderUtils {
      * @param extraArgs Extra arguments needed for the query.
      * @return
      */
-    public static String[] addExtraWhereArgs(@Nullable final String[] whereArgs, final String...extraArgs){
-            final List<String> whereArgs2 = new ArrayList<>();
-            if (whereArgs != null){
-                    whereArgs2.addAll(Arrays.asList(whereArgs));
-            }
-            whereArgs2.addAll(0, Arrays.asList(extraArgs));
-            return whereArgs2.toArray(new String[whereArgs2.size()]);
+    @JvmStatic
+    fun addExtraWhereArgs(whereArgs: Array<String>?, vararg extraArgs: String): Array<String> {
+        val whereArgs2: MutableList<String> = ArrayList()
+        if (whereArgs != null) {
+            whereArgs2.addAll(listOf(*whereArgs))
+        }
+        whereArgs2.addAll(0, listOf(*extraArgs))
+        return whereArgs2.toTypedArray()
     }
 }
