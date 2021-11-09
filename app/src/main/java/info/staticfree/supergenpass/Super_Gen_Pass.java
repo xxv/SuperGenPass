@@ -74,6 +74,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import info.staticfree.supergenpass.hashes.DomainBasedHash;
+import info.staticfree.supergenpass.hashes.HashAlgorithm;
 import info.staticfree.supergenpass.hashes.HotpPin;
 import info.staticfree.supergenpass.hashes.PasswordComposer;
 import info.staticfree.supergenpass.hashes.SuperGenPass;
@@ -645,11 +646,11 @@ public class Super_Gen_Pass extends Activity
         try {
             switch (pwType) {
                 case SuperGenPass.TYPE:
-                    mDomainBasedHash = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                    mDomainBasedHash = new SuperGenPass(this, HashAlgorithm.MD5);
 
                     break;
                 case SuperGenPass.TYPE_SHA_512:
-                    mDomainBasedHash = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_SHA512);
+                    mDomainBasedHash = new SuperGenPass(this, HashAlgorithm.SHA512);
 
                     break;
                 case PasswordComposer.TYPE:
@@ -657,7 +658,7 @@ public class Super_Gen_Pass extends Activity
 
                     break;
                 default:
-                    mDomainBasedHash = new SuperGenPass(this, SuperGenPass.HASH_ALGORITHM_MD5);
+                    mDomainBasedHash = new SuperGenPass(this, HashAlgorithm.MD5);
                     Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
                     break;
             }

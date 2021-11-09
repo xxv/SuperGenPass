@@ -6,7 +6,6 @@ import info.staticfree.supergenpass.PasswordGenerationException
 import info.staticfree.supergenpass.IllegalDomainException
 import org.apache.commons.codec.binary.Base64
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.regex.Pattern
 
 /*
@@ -32,10 +31,15 @@ import java.util.regex.Pattern
  *
  * @see [supergenpass.com](http://supergenpass.com/)
  */
+
+enum class HashAlgorithm(val str: String) {
+    MD5("MD5"),
+    SHA1("SHA1"),
+    SHA512("SHA-512"),
+}
 class SuperGenPass
-@Throws(NoSuchAlgorithmException::class)
-constructor(context: Context, hashAlgorithm: String) : DomainBasedHash(context) {
-    private val digest: MessageDigest = MessageDigest.getInstance(hashAlgorithm)
+constructor(context: Context, hashAlgorithm: HashAlgorithm) : DomainBasedHash(context) {
+    private val digest: MessageDigest = MessageDigest.getInstance(hashAlgorithm.str)
 
     /**
      * Returns a base64-encoded string of the digest of the data. Caution: SuperGenPass-specific!

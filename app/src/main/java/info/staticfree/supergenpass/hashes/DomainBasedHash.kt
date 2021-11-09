@@ -7,7 +7,6 @@ import org.json.JSONArray
 import org.json.JSONException
 import info.staticfree.supergenpass.PasswordGenerationException
 import info.staticfree.supergenpass.IllegalDomainException
-import junit.framework.Assert
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
