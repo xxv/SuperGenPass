@@ -171,13 +171,13 @@ public class Super_Gen_Pass extends Activity
 
             String maybeUrl = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (maybeUrl != null) {
-                try {
+                /*try {
                     // populate the URL and give the password entry focus
                     Uri uri = Uri.parse(maybeUrl);
                     String host = uri.getHost();
 
                     if (host != null) {
-                        mDomainEdit.setText(mDomainBasedHash.getDomain(host));
+                        // XXX TODO mDomainEdit.setText(mDomainBasedHash.getDomain(host, true));
                     }
 
                     mMasterPwEdit.requestFocus();
@@ -188,6 +188,7 @@ public class Super_Gen_Pass extends Activity
                     Log.e(TAG, "Could not find valid URI in shared text", e);
                     Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
+                 */
             }
         }
     }
@@ -463,13 +464,14 @@ public class Super_Gen_Pass extends Activity
      * @return the hostname portion of maybeUrl, or null if maybeUrl was null.
      */
     String extractDomain(@NonNull String maybeUrl) {
-        try {
+        //try {
             Uri uri = Uri.parse(maybeUrl);
             String host = uri.getHost();
-            return mDomainBasedHash.getDomain(host != null ? host : "");
-        } catch (@NonNull PasswordGenerationException e) {
+            return host;// XXX TODO mDomainBasedHash.getDomain(host != null ? host : "");
+        /*} catch (@NonNull PasswordGenerationException e) {
             return maybeUrl;
         }
+         */
     }
 
     @Override
@@ -646,24 +648,24 @@ public class Super_Gen_Pass extends Activity
         try {
             switch (pwType) {
                 case SuperGenPass.TYPE:
-                    mDomainBasedHash = new SuperGenPass(this, HashAlgorithm.MD5);
+                    mDomainBasedHash = new SuperGenPass(new DomainNormalizer(), HashAlgorithm.MD5);
 
                     break;
                 case SuperGenPass.TYPE_SHA_512:
-                    mDomainBasedHash = new SuperGenPass(this, HashAlgorithm.SHA512);
+                    mDomainBasedHash = new SuperGenPass(new DomainNormalizer(), HashAlgorithm.SHA512);
 
                     break;
                 case PasswordComposer.TYPE:
-                    mDomainBasedHash = new PasswordComposer(this);
+                    mDomainBasedHash = new PasswordComposer(new DomainNormalizer());
 
                     break;
                 default:
-                    mDomainBasedHash = new SuperGenPass(this, HashAlgorithm.MD5);
+                    mDomainBasedHash = new SuperGenPass(new DomainNormalizer(), HashAlgorithm.MD5);
                     Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
                     break;
             }
 
-            mPinGen = new HotpPin(this);
+            mPinGen = new HotpPin(new DomainNormalizer());
         } catch (@NonNull NoSuchAlgorithmException e) {
             Log.e(TAG, "could not find MD5", e);
             Toast.makeText(getApplicationContext(),

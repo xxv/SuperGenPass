@@ -1,6 +1,10 @@
 package info.staticfree.supergenpass.hashes
 
 import android.content.Context
+import android.content.res.Resources
+import android.util.JsonReader
+import androidx.annotation.WorkerThread
+import info.staticfree.supergenpass.DomainNormalizer
 import kotlin.Throws
 import info.staticfree.supergenpass.R
 import org.json.JSONArray
@@ -15,7 +19,7 @@ import java.util.*
 import java.util.regex.Pattern
 
 /*
- * Copyright (C) 2010-2013 Steve Pomeroy
+ * Copyright (C) 2010-2021 Steve Pomeroy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,88 +43,8 @@ import java.util.regex.Pattern
  *
  * @author Steve Pomeroy
  */
-abstract class DomainBasedHash(private val context: Context) {
+abstract class DomainBasedHash(private val normalizer: DomainNormalizer) {
     private var checkDomain = false
-    private var domains: ArrayList<String> = ArrayList()
-
-    init {
-        loadDomains()
-    }
-
-    /**
-     * This list should remain the same and in sync with the canonical SGP, so that passwords
-     * generated in one place are the same as others.
-     *
-     * @throws IOException on disk errors
-     */
-    @Throws(IOException::class)
-    fun loadDomains() {
-        val inputStream = context.resources.openRawResource(R.raw.domains)
-        val jsonString = StringBuilder()
-        try {
-            val isReader = BufferedReader(InputStreamReader(inputStream), 16000)
-            while (isReader.ready()) {
-                jsonString.append(isReader.readLine())
-            }
-            val domainJson = JSONArray(jsonString.toString())
-            domains = ArrayList(domainJson.length())
-
-            for (i in 0 until domainJson.length()) {
-                domains.add(domainJson.getString(i))
-            }
-        } catch (e: IOException) {
-            val ioe = IOException("Unable to load domains")
-            ioe.initCause(e)
-            throw ioe
-        } catch (e: JSONException) {
-            val ioe = IOException("Unable to load domains")
-            ioe.initCause(e)
-            throw ioe
-        }
-    }
-
-    /**
-     * Computes the site's domain, based on the provided hostname. This takes into account things
-     * like "co.uk" and other such multi-level TLDs.
-     *
-     * @param hostname the full hostname
-     * @return the domain of the URI
-     * @throws PasswordGenerationException if there is an error generating the password
-     */
-    @Throws(PasswordGenerationException::class)
-    fun getDomain(hostname: String): String {
-        val hostnameLower = hostname.lowercase(Locale.US)
-        if (!checkDomain) {
-            return hostnameLower
-        }
-
-        // IP addresses should be composed based on the full address.
-        if (PATTERN_IP_ADDRESS.matcher(hostnameLower).matches()) {
-            return hostnameLower
-        }
-
-        // for single-level TLDs, we only want the TLD and the 2nd level domain
-        val hostParts = hostnameLower.split(".").toTypedArray()
-        if (hostParts.size < 2) {
-            throw IllegalDomainException("Invalid domain: '$hostname'")
-        }
-        var domain = hostParts[hostParts.size - 2] + '.' + hostParts[hostParts.size - 1]
-
-        // do a slow search of all the possible multi-level TLDs and
-        // see if we need to pull in one level deeper.
-        for (tld in domains) {
-            if (domain == tld) {
-                if (hostParts.size < 3) {
-                    throw IllegalDomainException(
-                        "Invalid domain. '$domain' seems to be a TLD."
-                    )
-                }
-                domain = hostParts[hostParts.size - 3] + '.' + domain
-                break
-            }
-        }
-        return domain
-    }
 
     /**
      * @param checkDomain if true, sub-domains will be stripped from the hashing
@@ -145,7 +69,11 @@ abstract class DomainBasedHash(private val context: Context) {
         masterPass: String, domain: String,
         length: Int
     ): String {
-        return generateWithFilteredDomain(masterPass, getDomain(domain), length)
+        return generateWithFilteredDomain(
+            masterPass,
+            normalizer.getDomain(domain, checkDomain),
+            length
+        )
     }
 
     /**
@@ -165,10 +93,4 @@ abstract class DomainBasedHash(private val context: Context) {
         domain: String,
         length: Int
     ): String
-
-    companion object {
-        private val PATTERN_IP_ADDRESS =
-            Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")
-    }
-
 }

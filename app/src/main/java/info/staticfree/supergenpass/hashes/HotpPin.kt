@@ -2,6 +2,7 @@ package info.staticfree.supergenpass.hashes
 
 import android.content.Context
 import android.util.Log
+import info.staticfree.supergenpass.DomainNormalizer
 import info.staticfree.supergenpass.hashes.DomainBasedHash
 import kotlin.Throws
 import info.staticfree.supergenpass.PasswordGenerationException
@@ -29,7 +30,7 @@ import java.security.NoSuchAlgorithmException
  * @author [Steve Pomeroy](mailto:steve@staticfree.info)
  * @see OneTimePasswordAlgorithm.generateOTPFromText
  */
-class HotpPin(context: Context) : DomainBasedHash(context) {
+class HotpPin(domainNormalizer: DomainNormalizer) : DomainBasedHash(domainNormalizer) {
     @Throws(PasswordGenerationException::class)
     override fun generateWithFilteredDomain(
         masterPass: String,

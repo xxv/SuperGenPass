@@ -1,6 +1,6 @@
 package info.staticfree.supergenpass.hashes
 
-import android.content.Context
+import info.staticfree.supergenpass.DomainNormalizer
 import kotlin.Throws
 import info.staticfree.supergenpass.PasswordGenerationException
 import info.staticfree.supergenpass.IllegalDomainException
@@ -38,7 +38,7 @@ enum class HashAlgorithm(val str: String) {
     SHA512("SHA-512"),
 }
 class SuperGenPass
-constructor(context: Context, hashAlgorithm: HashAlgorithm) : DomainBasedHash(context) {
+constructor(normalizer: DomainNormalizer, hashAlgorithm: HashAlgorithm) : DomainBasedHash(normalizer) {
     private val digest: MessageDigest = MessageDigest.getInstance(hashAlgorithm.str)
 
     /**

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import info.staticfree.supergenpass.DomainNormalizer;
 import info.staticfree.supergenpass.IllegalDomainException;
 import info.staticfree.supergenpass.PasswordGenerationException;
 
@@ -33,14 +34,15 @@ import info.staticfree.supergenpass.PasswordGenerationException;
  *
  * @see <a href="http://www.xs4all.nl/~jlpoutre/BoT/Javascript/PasswordComposer/">Password Composer</a>
  */
+@Deprecated
 public final class PasswordComposer extends DomainBasedHash {
     public static final String TYPE = "pwc";
 
     private final MessageDigest md5;
 
-    public PasswordComposer(@NonNull Context context)
+    public PasswordComposer(DomainNormalizer domainNormalizer)
             throws NoSuchAlgorithmException, IOException {
-        super(context);
+        super(domainNormalizer);
         md5 = MessageDigest.getInstance("MD5");
     }
 
