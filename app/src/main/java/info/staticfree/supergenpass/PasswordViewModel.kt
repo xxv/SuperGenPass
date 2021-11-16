@@ -1,6 +1,7 @@
 package info.staticfree.supergenpass
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ class PasswordViewModel : ViewModel() {
     private val repository = HashRepository()
 
     val generatedPassword = MutableLiveData<String>()
+    val showOutput = repository.getShowOutput()
 
     fun load(context: Context) {
         viewModelScope.launch {
@@ -31,6 +33,10 @@ class PasswordViewModel : ViewModel() {
         this.mainPassword = password
 
         generatePassword()
+    }
+
+    fun setShowOutput(showOutput: Boolean) {
+        repository.setShowOutput(showOutput)
     }
 
     fun onConfirmed(context: Context) {

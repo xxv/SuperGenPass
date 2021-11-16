@@ -45,10 +45,34 @@ class SGPFragment : Fragment() {
 
         viewBinding.domainEdit.requestFocus()
 
-        model.generatedPassword.observe(viewLifecycleOwner, {
-            viewBinding.passwordOutput.text = it
-        })
+        registerShowOutput()
+        registerDomainEdit()
+        registerPasswordEdit()
+        registerHidePassword()
+    }
 
+    private fun registerHidePassword() {
+        viewBinding.hideMasterPassword.setOnCheckedChangeListener { _, isChecked ->
+            val edit = viewBinding.passwordEdit
+            val selStart: Int = edit.selectionStart
+            val selEnd: Int = edit.selectionEnd
+            viewBinding.passwordEdit.transformationMethod =
+                if (isChecked) null else PasswordTransformationMethod()
+            edit.setSelection(selStart, selEnd)
+        }
+    }
+
+    private fun registerPasswordEdit() {
+        viewBinding.passwordEdit.apply {
+            addTextChangedListener {
+                model.setMainPassword(it.toString())
+            }
+
+            setOnEditorActionListener { _, _, _ -> go() }
+        }
+    }
+
+    private fun registerDomainEdit() {
         viewBinding.domainEdit.apply {
             addTextChangedListener {
                 model.setDomain(it.toString())
@@ -72,27 +96,21 @@ class SGPFragment : Fragment() {
 
             setOnItemClickListener { _, _, _, _ -> viewBinding.passwordEdit.requestFocus() }
         }
+    }
 
-        viewBinding.passwordEdit.apply {
-            addTextChangedListener {
-                model.setMainPassword(it.toString())
-            }
-
-            setOnEditorActionListener { _, _, _ -> go() }
-        }
-
-        viewBinding.hideMasterPassword.setOnCheckedChangeListener { _, isChecked ->
-            val edit = viewBinding.passwordEdit
-            val selStart: Int = edit.selectionStart
-            val selEnd: Int = edit.selectionEnd
-            viewBinding.passwordEdit.transformationMethod =
-                if (isChecked) null else PasswordTransformationMethod()
-            edit.setSelection(selStart, selEnd)
-        }
+    private fun registerShowOutput() {
+        model.generatedPassword.observe(viewLifecycleOwner, {
+            viewBinding.passwordOutput.text = it
+        })
 
         viewBinding.showGenPassword.setOnCheckedChangeListener { _, isChecked ->
             viewBinding.passwordOutput.hidePassword = !isChecked
+            model.setShowOutput(isChecked)
         }
+
+        model.showOutput.observe(viewLifecycleOwner, {
+            viewBinding.showGenPassword.isChecked = it
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -4,6 +4,9 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import androidx.core.content.edit
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import info.staticfree.supergenpass.hashes.DomainBasedHash
 import info.staticfree.supergenpass.hashes.HashAlgorithm
@@ -19,12 +22,17 @@ class HashRepository() {
     private var pinDigits = 4
     private var rememberDomains = true
 
+    private val showPassword = MutableLiveData<Boolean>()
+    private val showOutput = MutableLiveData<Boolean>()
+
+    private lateinit var prefs: SharedPreferences
+
     suspend fun loadDomains(resources: Resources) {
         normalizer.loadDomains(resources)
     }
 
     fun loadFromPreferences(context: Context) {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         prefs.registerOnSharedPreferenceChangeListener(onSharedPrefsChange)
         loadFromPreferences(prefs)
     }
@@ -47,6 +55,14 @@ class HashRepository() {
         pinDigits = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4)
 
         rememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true)
+
+        showOutput.value = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false)
+    }
+
+    fun getShowOutput(): LiveData<Boolean> = showOutput
+
+    fun setShowOutput(showOutput: Boolean) {
+        prefs.edit { putBoolean(Preferences.PREF_SHOW_GEN_PW, showOutput) }
     }
 
     private val onSharedPrefsChange =

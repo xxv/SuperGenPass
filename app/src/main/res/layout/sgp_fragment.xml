@@ -15,8 +15,7 @@
         android:imeOptions="actionNext"
         android:inputType="textUri"
         android:singleLine="true"
-        app:layout_constraintTop_toTopOf="parent">
-    </AutoCompleteTextView>
+        app:layout_constraintTop_toTopOf="parent"></AutoCompleteTextView>
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/hide_master_password"
@@ -69,6 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/password_output"
         android:layout_alignBottom="@+id/password_output"
+        android:checked="true"
         app:layout_constraintBottom_toBottomOf="@id/password_output"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/password_output" />
@@ -87,21 +87,21 @@
         android:id="@+id/pin_output"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/label_pin"
-        app:layout_constraintRight_toLeftOf="@id/pin_length"
+        android:inputType="text"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:inputType="text" />
+        app:layout_constraintRight_toLeftOf="@id/pin_length"
+        app:layout_constraintTop_toBottomOf="@id/label_pin" />
 
     <Spinner
         android:id="@+id/pin_length"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/pin_output"
-        app:layout_constraintBottom_toBottomOf="@id/pin_output"
-        app:layout_constraintRight_toRightOf="parent"
         android:entries="@array/pin_lengths"
         android:gravity="center"
         android:prompt="@string/pin_length"
         android:spinnerMode="dialog"
-        android:textAppearance="@android:style/TextAppearance.Large" />
+        android:textAppearance="@android:style/TextAppearance.Large"
+        app:layout_constraintBottom_toBottomOf="@id/pin_output"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pin_output" />
 </androidx.constraintlayout.widget.ConstraintLayout>
