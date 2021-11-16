@@ -20,14 +20,8 @@ package info.staticfree.supergenpass;
  */
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -43,14 +37,11 @@ import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -59,7 +50,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
@@ -621,9 +611,10 @@ public class Super_Gen_Pass extends Activity
      */
     protected void loadFromPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
 
         // when adding items here, make sure default values are in sync with the xml file
-        String pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE);
+        String pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE_MD5);
         mPwLength = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10);
         mPwSalt = prefs.getString(Preferences.PREF_PW_SALT, "");
         mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
@@ -647,7 +638,7 @@ public class Super_Gen_Pass extends Activity
 
         try {
             switch (pwType) {
-                case SuperGenPass.TYPE:
+                case SuperGenPass.TYPE_MD5:
                     mDomainBasedHash = new SuperGenPass(new DomainNormalizer(), HashAlgorithm.MD5);
 
                     break;
@@ -723,112 +714,6 @@ public class Super_Gen_Pass extends Activity
         }
 
         return c;
-    }
-
-    /**
-     * A Dialog that verifies that the master password was typed correctly.
-     */
-    public static class VerifyFragment extends DialogFragment {
-        private static final String ARG_PASSWORD = "password";
-        @NonNull
-        private String mPasswordToCheck = "";
-
-        /**
-         * Shows the password verification dialog
-         *
-         * @param fragmentManager Activity's fragment manager
-         * @param passwordToVerify the password that must be entered to dismiss the dialog
-         */
-        public static void showVerifyFragment(@NonNull FragmentManager fragmentManager,
-                @NonNull String passwordToVerify) {
-            VerifyFragment vf = new VerifyFragment();
-            Bundle args = new Bundle();
-            args.putString(ARG_PASSWORD, passwordToVerify);
-            vf.setArguments(args);
-            vf.show(fragmentManager, VerifyFragment.class.getSimpleName());
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            mPasswordToCheck = getArguments().getString(ARG_PASSWORD, "");
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.dialog_verify_title);
-            builder.setCancelable(true);
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
-            View pwVerifyLayout =
-                    inflater.inflate(R.layout.master_pw_verify, (ViewGroup) getView());
-            EditText pwVerify = pwVerifyLayout.findViewById(R.id.verify);
-
-            builder.setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull DialogInterface dialog,
-                                int which) {
-                            dialog.cancel();
-                        }
-                    });
-
-            pwVerify.addTextChangedListener(new TextWatcher() {
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) { }
-
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-                @Override
-                public void afterTextChanged(@NonNull Editable s) {
-                    if (mPasswordToCheck.length() > 0 && mPasswordToCheck.equals(s.toString())) {
-                        getDialog().dismiss();
-                        Toast.makeText(getActivity().getApplicationContext(),
-                                R.string.toast_verify_success, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            builder.setView(pwVerifyLayout);
-            Dialog d = builder.create();
-            // This is added below to ensure that the soft input doesn't get hidden if it's
-            // showing, which seems to be the default for dialogs.
-            Window window = d.getWindow();
-
-            if (window != null) {
-                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
-            }
-
-            return d;
-        }
-    }
-
-    /**
-     * The about dialog
-     */
-    public static class AboutFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            Builder builder = new AlertDialog.Builder(getActivity());
-
-            builder.setTitle(R.string.about_title);
-            builder.setIcon(R.drawable.icon);
-
-            // using this instead of setMessage lets us have clickable links.
-            LayoutInflater factory = LayoutInflater.from(getActivity());
-            builder.setView(factory.inflate(R.layout.about, (ViewGroup) getView()));
-
-            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    getDialog().dismiss();
-                }
-            });
-            return builder.create();
-        }
     }
 
     public static class NfcFragmentImpl extends NfcFragment {

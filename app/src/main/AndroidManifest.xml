@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="info.staticfree.supergenpass"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="info.staticfree.supergenpass">
 
     <supports-screens
         android:anyDensity="true"
@@ -30,9 +29,10 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="info.staticfree.supergenpass.Super_Gen_Pass"
+            android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateVisible">
+            android:windowSoftInputMode="stateVisible"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,26 +40,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="info.staticfree.supergenpass.SuperGenPassShare"
+            android:name=".SuperGenPassShare"
             android:label="@string/app_name"
             android:theme="@style/ShareTheme"
             android:windowSoftInputMode="stateVisible"
-            tools:ignore="ExportedActivity">
+            tools:ignore="ExportedActivity"
+            android:exported="true">
 
             <!-- integrate in the browser so it can be shared to -->
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="application/xxv.so.sgp" />
             </intent-filter>
         </activity>
         <activity
-            android:name="info.staticfree.supergenpass.SgpPreferencesActivity"
+            android:name=".SgpPreferencesActivity"
             android:exported="false"
             android:label="@string/preferences"
             android:launchMode="singleTop">
@@ -73,11 +78,10 @@
         </activity>
 
         <provider
-            android:name="info.staticfree.supergenpass.RememberedDomainProvider"
+            android:name=".RememberedDomainProvider"
             android:authorities="${applicationId}"
             android:readPermission="${applicationId}.permission.ACCESS_DOMAINS"
             android:writePermission="${applicationId}.permission.ACCESS_DOMAINS" />
-
     </application>
 
 </manifest>

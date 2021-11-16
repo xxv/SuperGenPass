@@ -96,7 +96,7 @@ constructor(normalizer: DomainNormalizer, hashAlgorithm: HashAlgorithm) : Domain
     }
 
     companion object {
-        const val TYPE = "sgp"
+        const val TYPE_MD5 = "sgp"
         const val TYPE_SHA_512 = "sgp-sha-512"
         const val HASH_ALGORITHM_MD5 = "MD5"
         const val HASH_ALGORITHM_SHA512 = "SHA-512"

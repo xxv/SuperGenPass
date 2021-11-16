@@ -3,6 +3,9 @@ package info.staticfree.supergenpass
 import android.content.res.Resources
 import android.util.JsonReader
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import java.io.IOException
 import java.io.InputStreamReader
@@ -22,30 +25,30 @@ class DomainNormalizer {
      *
      * @throws IOException on disk errors
      */
-    @Throws(IOException::class)
-    @WorkerThread
-    fun loadDomains(resources: Resources) {
-        val inputStream = resources.openRawResource(R.raw.domains)
-        val jsonReader = JsonReader(InputStreamReader(inputStream))
+    suspend fun loadDomains(resources: Resources) {
+        withContext(Dispatchers.IO) {
+            val inputStream = resources.openRawResource(R.raw.domains)
+            val jsonReader = JsonReader(InputStreamReader(inputStream))
 
-        try {
-            domains.clear()
-            jsonReader.beginArray()
+            try {
+                domains.clear()
+                jsonReader.beginArray()
 
-            while (jsonReader.hasNext()) {
-                domains.add(jsonReader.nextString())
+                while (jsonReader.hasNext()) {
+                    domains.add(jsonReader.nextString())
+                }
+                jsonReader.endArray()
+                jsonReader.close()
+
+            } catch (e: IOException) {
+                val ioe = IOException("Unable to load domains")
+                ioe.initCause(e)
+                throw ioe
+            } catch (e: JSONException) {
+                val ioe = IOException("Unable to load domains")
+                ioe.initCause(e)
+                throw ioe
             }
-            jsonReader.endArray()
-            jsonReader.close()
-
-        } catch (e: IOException) {
-            val ioe = IOException("Unable to load domains")
-            ioe.initCause(e)
-            throw ioe
-        } catch (e: JSONException) {
-            val ioe = IOException("Unable to load domains")
-            ioe.initCause(e)
-            throw ioe
         }
     }
 

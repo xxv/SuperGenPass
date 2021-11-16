@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <AutoCompleteTextView
+        android:id="@+id/domain_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:hint="@string/domain_hint"
+        android:imeOptions="actionNext"
+        android:inputType="textUri"
+        android:singleLine="true"
+        app:layout_constraintTop_toTopOf="parent">
+    </AutoCompleteTextView>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/hide_master_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/password_edit"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/domain_edit" />
+
+    <info.staticfree.supergenpass.VisualHashEditText
+        android:id="@+id/password_edit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/password_hint"
+        android:imeActionId="@integer/ime_go"
+        android:imeActionLabel="@string/done"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
+        android:singleLine="true"
+        app:layout_constraintEnd_toStartOf="@+id/hide_master_password"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/hide_master_password"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/domain_edit"
+        app:showVisualHash="true"
+        app:visualHashHeight="45dip"
+        app:visualHashWidth="45dip" />
+
+    <TextView
+        android:id="@+id/label_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/tab_password"
+        android:textAllCaps="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/password_edit" />
+
+    <info.staticfree.supergenpass.GeneratedPasswordView
+        android:id="@+id/password_output"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/show_gen_password"
+        app:layout_constraintTop_toBottomOf="@id/label_password" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/show_gen_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/password_output"
+        android:layout_alignBottom="@+id/password_output"
+        app:layout_constraintBottom_toBottomOf="@id/password_output"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/password_output" />
+
+    <TextView
+        android:id="@+id/label_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/tab_pin"
+        android:textAllCaps="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/password_output" />
+
+    <info.staticfree.supergenpass.GeneratedPasswordView
+        android:id="@+id/pin_output"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/label_pin"
+        app:layout_constraintRight_toLeftOf="@id/pin_length"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:inputType="text" />
+
+    <Spinner
+        android:id="@+id/pin_length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/pin_output"
+        app:layout_constraintBottom_toBottomOf="@id/pin_output"
+        app:layout_constraintRight_toRightOf="parent"
+        android:entries="@array/pin_lengths"
+        android:gravity="center"
+        android:prompt="@string/pin_length"
+        android:spinnerMode="dialog"
+        android:textAppearance="@android:style/TextAppearance.Large" />
+</androidx.constraintlayout.widget.ConstraintLayout>
