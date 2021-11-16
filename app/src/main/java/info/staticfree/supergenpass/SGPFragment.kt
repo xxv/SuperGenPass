@@ -137,7 +137,7 @@ class SGPFragment : Fragment() {
                 true
             }
             R.id.verify -> {
-                // TODO VerifyFragment.showVerifyFragment(fragmentManager, viewBinding.passwordEdit.text.toString())
+                VerifyFragment.showVerifyFragment(childFragmentManager, viewBinding.passwordEdit.text.toString())
                 true
             }
             R.integer.ime_go -> {

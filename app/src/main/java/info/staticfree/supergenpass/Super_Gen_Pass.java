@@ -536,7 +536,7 @@ public class Super_Gen_Pass extends Activity
                 return true;
 
             case R.id.verify:
-                VerifyFragment.showVerifyFragment(getFragmentManager(), getMasterPassword());
+                //VerifyFragment.showVerifyFragment(getFragmentManager(), getMasterPassword());
                 return true;
 
             case R.integer.ime_go:
