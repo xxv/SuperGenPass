@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.provider.BaseColumns
 import android.text.method.PasswordTransformationMethod
 import android.view.*
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.CursorAdapter
 import android.widget.FilterQueryProvider
 import android.widget.SimpleCursorAdapter
@@ -45,10 +47,12 @@ class SGPFragment : Fragment() {
 
         viewBinding.domainEdit.requestFocus()
 
+        registerOutputs()
         registerShowOutput()
         registerDomainEdit()
         registerPasswordEdit()
         registerHidePassword()
+        registerPinDigits()
     }
 
     private fun registerHidePassword() {
@@ -98,19 +102,51 @@ class SGPFragment : Fragment() {
         }
     }
 
-    private fun registerShowOutput() {
+    private fun registerOutputs() {
         model.generatedPassword.observe(viewLifecycleOwner, {
             viewBinding.passwordOutput.text = it
         })
 
+        model.generatedPin.observe(viewLifecycleOwner, {
+            viewBinding.pinOutput.text = it
+        })
+    }
+
+    private fun registerShowOutput() {
         viewBinding.showGenPassword.setOnCheckedChangeListener { _, isChecked ->
             viewBinding.passwordOutput.hidePassword = !isChecked
+            viewBinding.pinOutput.hidePassword = !isChecked
             model.setShowOutput(isChecked)
         }
 
         model.showOutput.observe(viewLifecycleOwner, {
             viewBinding.showGenPassword.isChecked = it
         })
+    }
+
+    private fun registerPinDigits() {
+        model.pinDigits.observe(viewLifecycleOwner, {
+            viewBinding.pinLength.apply {
+                val first = getItemAtPosition(0) as String
+                setSelection(it - first.toInt())
+            }
+        })
+
+        viewBinding.pinLength.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val selected = parent?.getItemAtPosition(position) as String
+                model.setPinDigits(selected.toInt())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // empty body
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -121,7 +157,7 @@ class SGPFragment : Fragment() {
         val verify = menu.findItem(R.id.verify)
         verify.isEnabled = viewBinding.passwordEdit.length() > 0
         menu.findItem(R.id.copy).isEnabled = viewBinding.passwordOutput.text.isNotBlank()
-        //menu.findItem(R.id.write_nfc).isEnabled = mMasterPwEdit.getText().length > 0
+        // TODO menu.findItem(R.id.write_nfc).isEnabled = mMasterPwEdit.getText().length > 0
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -137,7 +173,10 @@ class SGPFragment : Fragment() {
                 true
             }
             R.id.verify -> {
-                VerifyFragment.showVerifyFragment(childFragmentManager, viewBinding.passwordEdit.text.toString())
+                VerifyFragment.showVerifyFragment(
+                    childFragmentManager,
+                    viewBinding.passwordEdit.text.toString()
+                )
                 true
             }
             R.integer.ime_go -> {
@@ -211,5 +250,4 @@ class SGPFragment : Fragment() {
             const val DOMAIN_COLUMN = 0
         }
     }
-
 }

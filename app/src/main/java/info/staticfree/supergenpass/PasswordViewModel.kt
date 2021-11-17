@@ -1,7 +1,6 @@
 package info.staticfree.supergenpass
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +13,9 @@ class PasswordViewModel : ViewModel() {
     private val repository = HashRepository()
 
     val generatedPassword = MutableLiveData<String>()
+    val generatedPin = MutableLiveData<String>()
     val showOutput = repository.getShowOutput()
+    val pinDigits = repository.getPinDigits()
 
     fun load(context: Context) {
         viewModelScope.launch {
@@ -26,13 +27,13 @@ class PasswordViewModel : ViewModel() {
     fun setDomain(domain: String) {
         this.domain = domain
 
-        generatePassword()
+        generatePasswordAndPin()
     }
 
     fun setMainPassword(password: String) {
         this.mainPassword = password
 
-        generatePassword()
+        generatePasswordAndPin()
     }
 
     fun setShowOutput(showOutput: Boolean) {
@@ -43,14 +44,22 @@ class PasswordViewModel : ViewModel() {
         repository.saveDomainIfEnabled(context.contentResolver, domain)
     }
 
-    private fun generatePassword() {
+    fun setPinDigits(pinDigits: Int) {
+        repository.setPinDigits(pinDigits)
+        generatePasswordAndPin()
+    }
+
+    private fun generatePasswordAndPin() {
         if (domain.isBlank() || mainPassword.isBlank()) {
             generatedPassword.value = ""
+            generatedPin.value = ""
         } else {
             try {
                 generatedPassword.value = repository.generate(mainPassword, domain)
+                generatedPin.value = repository.generatePin(mainPassword, domain)
             } catch (e: PasswordGenerationException) {
                 generatedPassword.value = ""
+                generatedPin.value = ""
             }
         }
     }

@@ -19,10 +19,9 @@ class HashRepository() {
     private var pinHash = HotpPin(normalizer)
     private var length = 10
     private var salt = ""
-    private var pinDigits = 4
     private var rememberDomains = true
 
-    private val showPassword = MutableLiveData<Boolean>()
+    private var pinDigits = MutableLiveData<Int>()
     private val showOutput = MutableLiveData<Boolean>()
 
     private lateinit var prefs: SharedPreferences
@@ -35,6 +34,32 @@ class HashRepository() {
         prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         prefs.registerOnSharedPreferenceChangeListener(onSharedPrefsChange)
         loadFromPreferences(prefs)
+    }
+
+    fun generate(masterPass: String, domain: String) =
+        hash.generate(masterPass + salt, domain, length)
+
+    fun generatePin(masterPassword: String, domain: String) =
+        pinDigits.value?.let { pinHash.generate(masterPassword + salt, domain, it) }
+
+    fun saveDomainIfEnabled(contentResolver: ContentResolver, domain: String) {
+        if (rememberDomains) {
+            RememberedDomainProvider.addRememberedDomain(contentResolver, domain)
+        }
+    }
+
+    fun getShowOutput(): LiveData<Boolean> = showOutput
+
+    fun setShowOutput(showOutput: Boolean) {
+        prefs.edit { putBoolean(Preferences.PREF_SHOW_GEN_PW, showOutput) }
+    }
+
+    fun getPinDigits(): LiveData<Int> = pinDigits
+
+    fun setPinDigits(pinDigits: Int) {
+        prefs.edit() {
+            putInt(Preferences.PREF_PIN_DIGITS, pinDigits)
+        }
     }
 
     private fun loadFromPreferences(prefs: SharedPreferences) {
@@ -52,17 +77,11 @@ class HashRepository() {
 
         salt = prefs.getString(Preferences.PREF_PW_SALT, "") ?: ""
 
-        pinDigits = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4)
+        pinDigits.value = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4)
 
         rememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true)
 
         showOutput.value = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false)
-    }
-
-    fun getShowOutput(): LiveData<Boolean> = showOutput
-
-    fun setShowOutput(showOutput: Boolean) {
-        prefs.edit { putBoolean(Preferences.PREF_SHOW_GEN_PW, showOutput) }
     }
 
     private val onSharedPrefsChange =
@@ -72,15 +91,4 @@ class HashRepository() {
         hash = SuperGenPass(normalizer, algorithm)
     }
 
-    fun generate(masterPass: String, domain: String) =
-        hash.generate(masterPass + salt, domain, length)
-
-    fun generatePin(masterPassword: String, domain: String) =
-        pinHash.generate(masterPassword + salt, domain, pinDigits)
-
-    fun saveDomainIfEnabled(contentResolver: ContentResolver, domain: String) {
-        if (rememberDomains) {
-            RememberedDomainProvider.addRememberedDomain(contentResolver, domain)
-        }
-    }
 }
