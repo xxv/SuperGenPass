@@ -1,16 +1,12 @@
 package info.staticfree.supergenpass
 
-import android.content.ContentResolver
 import android.content.Intent
-import android.database.Cursor
 import android.os.Bundle
-import android.provider.BaseColumns
 import android.text.method.PasswordTransformationMethod
 import android.view.*
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.CursorAdapter
-import android.widget.FilterQueryProvider
 import android.widget.SimpleCursorAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -210,35 +206,4 @@ class SGPFragment : Fragment() {
         }
     }
 
-    private class DomainQueryProvider(val contentResolver: ContentResolver) : FilterQueryProvider {
-        override fun runQuery(constraint: CharSequence?): Cursor? {
-            val c: Cursor? = if (constraint == null || constraint.isEmpty()) {
-                contentResolver
-                    .query(
-                        Domain.CONTENT_URI,
-                        PROJECTION,
-                        null,
-                        null,
-                        Domain.SORT_ORDER
-                    )
-            } else {
-                contentResolver
-                    .query(
-                        Domain.CONTENT_URI,
-                        PROJECTION,
-                        Domain.DOMAIN + " GLOB ?",
-                        arrayOf(
-                            "$constraint*"
-                        ),
-                        Domain.SORT_ORDER
-                    )
-            }
-            return c
-        }
-
-        companion object {
-            val PROJECTION = arrayOf(Domain.DOMAIN, BaseColumns._ID)
-            const val DOMAIN_COLUMN = 0
-        }
-    }
 }
