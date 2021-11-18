@@ -93,6 +93,15 @@ class SGPFragment : Fragment() {
 
             setOnItemClickListener { _, _, _, _ -> viewBinding.passwordEdit.requestFocus() }
         }
+
+        model.checkDomain.observe(viewLifecycleOwner, {
+            viewBinding.domainEdit.setHint(
+                when (it) {
+                    true -> R.string.domain_hint
+                    false -> R.string.domain_hint_no_checking
+                }
+            )
+        })
     }
 
     private fun registerOutputs() {

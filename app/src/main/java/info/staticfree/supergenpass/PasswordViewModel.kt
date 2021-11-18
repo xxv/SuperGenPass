@@ -17,6 +17,7 @@ class PasswordViewModel : ViewModel() {
     val showOutput = repository.getShowOutput()
     val pinDigits = repository.getPinDigits()
     val copyToClipboard = repository.getCopyToClipboard()
+    val checkDomain = repository.getCheckDomain()
 
     fun load(context: Context) {
         viewModelScope.launch {

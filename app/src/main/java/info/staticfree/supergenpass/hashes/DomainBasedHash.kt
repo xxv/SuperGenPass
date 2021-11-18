@@ -1,22 +1,8 @@
 package info.staticfree.supergenpass.hashes
 
-import android.content.Context
-import android.content.res.Resources
-import android.util.JsonReader
-import androidx.annotation.WorkerThread
 import info.staticfree.supergenpass.DomainNormalizer
 import kotlin.Throws
-import info.staticfree.supergenpass.R
-import org.json.JSONArray
-import org.json.JSONException
 import info.staticfree.supergenpass.PasswordGenerationException
-import info.staticfree.supergenpass.IllegalDomainException
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.lang.StringBuilder
-import java.util.*
-import java.util.regex.Pattern
 
 /*
  * Copyright (C) 2010-2021 Steve Pomeroy
@@ -44,14 +30,7 @@ import java.util.regex.Pattern
  * @author Steve Pomeroy
  */
 abstract class DomainBasedHash(private val normalizer: DomainNormalizer) {
-    private var checkDomain = false
-
-    /**
-     * @param checkDomain if true, sub-domains will be stripped from the hashing
-     */
-    fun setCheckDomain(checkDomain: Boolean) {
-        this.checkDomain = checkDomain
-    }
+    var checkDomain = false
 
     /**
      * Generates a password based on the given domain and a master password. Each time the method is

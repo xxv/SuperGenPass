@@ -24,6 +24,7 @@ class HashRepository() {
     private var pinDigits = MutableLiveData<Int>()
     private val showOutput = MutableLiveData<Boolean>()
     private val copyToClipboard = MutableLiveData<Boolean>()
+    private val checkDomain = MutableLiveData<Boolean>()
 
     private lateinit var prefs: SharedPreferences
 
@@ -63,22 +64,27 @@ class HashRepository() {
         }
     }
 
+    fun getCheckDomain(): LiveData<Boolean> = checkDomain
+
     fun getCopyToClipboard(): LiveData<Boolean> = copyToClipboard
 
     private fun loadFromPreferences(prefs: SharedPreferences) {
         // when adding items here, make sure default values are in sync with the xml file
-        val pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE_MD5)
         setAlgorithm(
-            when (pwType) {
+            when (prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE_MD5)) {
                 SuperGenPass.TYPE_MD5 -> HashAlgorithm.MD5
                 SuperGenPass.TYPE_SHA_512 -> HashAlgorithm.SHA512
                 else -> HashAlgorithm.MD5
             }
         )
-        hash.setCheckDomain(prefs.getBoolean(Preferences.PREF_DOMAIN_CHECK, true))
         length = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10)
         salt = prefs.getString(Preferences.PREF_PW_SALT, "") ?: ""
         rememberDomains = prefs.getBoolean(Preferences.PREF_REMEMBER_DOMAINS, true)
+
+        val checkDomainPref = prefs.getBoolean(Preferences.PREF_DOMAIN_CHECK, true)
+        checkDomain.value = checkDomainPref
+        hash.checkDomain = checkDomainPref
+        pinHash.checkDomain = checkDomainPref
 
         pinDigits.value = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4)
         showOutput.value = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false)
@@ -91,5 +97,4 @@ class HashRepository() {
     private fun setAlgorithm(algorithm: HashAlgorithm) {
         hash = SuperGenPass(normalizer, algorithm)
     }
-
 }
