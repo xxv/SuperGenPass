@@ -15,7 +15,7 @@
         android:imeOptions="actionNext"
         android:inputType="textUri"
         android:singleLine="true"
-        app:layout_constraintTop_toTopOf="parent"></AutoCompleteTextView>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/hide_master_password"

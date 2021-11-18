@@ -151,18 +151,17 @@ class SGPFragment : Fragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        val verify = menu.findItem(R.id.verify)
-        verify.isEnabled = viewBinding.passwordEdit.length() > 0
-        menu.findItem(R.id.copy).isEnabled = viewBinding.passwordOutput.text.isNotBlank()
-        // TODO menu.findItem(R.id.write_nfc).isEnabled = mMasterPwEdit.getText().length > 0
+        menu.apply {
+            findItem(R.id.verify).isEnabled = viewBinding.passwordEdit.text.isNotBlank()
+            findItem(R.id.copy).isEnabled = viewBinding.passwordOutput.text.isNotBlank()
+            // TODO menu.findItem(R.id.write_nfc).isEnabled = mMasterPwEdit.getText().length > 0
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.settings -> {
-                val preferencesIntent =
-                    Intent().setClass(requireContext(), SgpPreferencesActivity::class.java)
-                startActivity(preferencesIntent)
+                startActivity(Intent(requireContext(), SgpPreferencesActivity::class.java))
                 true
             }
             R.id.about -> {
