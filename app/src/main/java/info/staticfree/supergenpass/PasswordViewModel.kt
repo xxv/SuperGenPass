@@ -16,6 +16,7 @@ class PasswordViewModel : ViewModel() {
     val generatedPin = MutableLiveData<String>()
     val showOutput = repository.getShowOutput()
     val pinDigits = repository.getPinDigits()
+    val copyToClipboard = repository.getCopyToClipboard()
 
     fun load(context: Context) {
         viewModelScope.launch {

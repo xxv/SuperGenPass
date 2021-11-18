@@ -15,20 +15,17 @@ import android.widget.SimpleCursorAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.preference.PreferenceManager
 import info.staticfree.supergenpass.databinding.SgpFragmentBinding
 
 class SGPFragment : Fragment() {
     private val model: PasswordViewModel by viewModels()
 
     private lateinit var viewBinding: SgpFragmentBinding
-    private var copyToClipboard = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         model.load(requireContext())
-        loadFromPreferences()
         setHasOptionsMenu(true)
     }
 
@@ -195,13 +192,8 @@ class SGPFragment : Fragment() {
         }
     }
 
-    private fun loadFromPreferences() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        copyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true)
-    }
-
     private fun go(): Boolean {
-        postGenerate(copyToClipboard)
+        postGenerate(model.copyToClipboard.value == true)
 
         return true
     }
