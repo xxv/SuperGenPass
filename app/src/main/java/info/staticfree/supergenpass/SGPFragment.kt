@@ -39,7 +39,6 @@ class SGPFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         registerOutputs()
         registerShowOutput()
         registerDomainEdit()
@@ -48,6 +47,7 @@ class SGPFragment : Fragment() {
         registerPinDigits()
 
         val shareIntentDomain = getDomainFromShareIntent(requireActivity().intent)
+
         if (shareIntentDomain != null) {
             viewBinding.domainEdit.setText(shareIntentDomain)
             viewBinding.passwordEdit.requestFocus()
@@ -61,17 +61,17 @@ class SGPFragment : Fragment() {
             val edit = viewBinding.passwordEdit
             val selStart: Int = edit.selectionStart
             val selEnd: Int = edit.selectionEnd
+
             viewBinding.passwordEdit.transformationMethod =
                 if (isChecked) null else PasswordTransformationMethod()
+
             edit.setSelection(selStart, selEnd)
         }
     }
 
     private fun registerPasswordEdit() {
         viewBinding.passwordEdit.apply {
-            addTextChangedListener {
-                model.setMainPassword(it.toString())
-            }
+            addTextChangedListener { model.setMainPassword(it.toString()) }
 
             setOnEditorActionListener { _, _, _ -> go() }
         }
@@ -79,23 +79,19 @@ class SGPFragment : Fragment() {
 
     private fun registerDomainEdit() {
         viewBinding.domainEdit.apply {
-            addTextChangedListener {
-                model.setDomain(it.toString())
-            }
+            addTextChangedListener { model.setDomain(it.toString()) }
 
             val adapter = SimpleCursorAdapter(
                 requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
                 null,
                 arrayOf(Domain.DOMAIN),
-                intArrayOf(
-                    android.R.id.text1
-                ),
+                intArrayOf(android.R.id.text1),
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
-            )
-
-            adapter.filterQueryProvider = DomainQueryProvider(requireContext().contentResolver)
-            adapter.stringConversionColumn = DomainQueryProvider.DOMAIN_COLUMN
+            ).apply {
+                filterQueryProvider = DomainQueryProvider(requireContext().contentResolver)
+                stringConversionColumn = DomainQueryProvider.DOMAIN_COLUMN
+            }
 
             setAdapter(adapter)
 
@@ -205,8 +201,7 @@ class SGPFragment : Fragment() {
     }
 
     private fun go(): Boolean {
-        postGenerate(model.copyToClipboard.value == true)
-
+        postGenerate(model.copyToClipboard.value ?: true)
         return true
     }
 
