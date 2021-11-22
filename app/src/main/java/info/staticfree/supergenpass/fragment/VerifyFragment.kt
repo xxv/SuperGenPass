@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.fragment
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -12,6 +12,7 @@ import android.widget.Toast
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import info.staticfree.supergenpass.R
 import java.math.BigInteger
 import java.security.MessageDigest
 

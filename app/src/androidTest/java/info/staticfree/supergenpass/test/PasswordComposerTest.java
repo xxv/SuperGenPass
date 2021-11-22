@@ -1,14 +1,13 @@
 package info.staticfree.supergenpass.test;
 
 import androidx.annotation.NonNull;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.hashes.PasswordGenerationException;
 import info.staticfree.supergenpass.hashes.PasswordComposer;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;

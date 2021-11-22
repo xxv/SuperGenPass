@@ -29,11 +29,11 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".AboutActivity"
+            android:name=".activity.AboutActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".activity.MainActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateVisible">
@@ -44,7 +44,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SuperGenPassShare"
+            android:name=".activity.SuperGenPassShare"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/ShareTheme"
@@ -68,7 +68,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SgpPreferencesActivity"
+            android:name=".activity.SgpPreferencesActivity"
             android:exported="false"
             android:label="@string/preferences"
             android:launchMode="singleTop">
@@ -82,7 +82,7 @@
         </activity>
 
         <provider
-            android:name=".RememberedDomainProvider"
+            android:name=".db.RememberedDomainProvider"
             android:authorities="${applicationId}"
             android:readPermission="${applicationId}.permission.ACCESS_DOMAINS"
             android:writePermission="${applicationId}.permission.ACCESS_DOMAINS" />

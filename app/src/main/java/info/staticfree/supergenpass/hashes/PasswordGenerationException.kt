@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.hashes
 
 /**
  * An exception raised if there was a problem generating a password with the given criteria.

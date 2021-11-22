@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import junit.framework.TestCase;
 
-import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.hashes.PasswordGenerationException;
 import info.staticfree.supergenpass.hashes.DomainBasedHash;
 
 public final class Utils {

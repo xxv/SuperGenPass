@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass;
+package info.staticfree.supergenpass.db;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import edu.mit.mobile.android.utils.ProviderUtils;
+import info.staticfree.supergenpass.BuildConfig;
 
 public class RememberedDomainProvider extends ContentProvider {
 

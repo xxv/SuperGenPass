@@ -1,8 +1,6 @@
 package info.staticfree.supergenpass.hashes
 
-import info.staticfree.supergenpass.DomainNormalizer
 import kotlin.Throws
-import info.staticfree.supergenpass.PasswordGenerationException
 
 /*
  * Copyright (C) 2010-2021 Steve Pomeroy

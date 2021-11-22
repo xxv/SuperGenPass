@@ -1,9 +1,6 @@
 package info.staticfree.supergenpass.hashes
 
-import info.staticfree.supergenpass.DomainNormalizer
 import kotlin.Throws
-import info.staticfree.supergenpass.PasswordGenerationException
-import info.staticfree.supergenpass.IllegalDomainException
 import org.apache.commons.codec.binary.Base64
 import java.security.MessageDigest
 import java.util.regex.Pattern

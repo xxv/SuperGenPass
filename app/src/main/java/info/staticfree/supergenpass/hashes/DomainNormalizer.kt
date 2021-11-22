@@ -1,10 +1,9 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.hashes
 
 import android.content.res.Resources
 import android.util.JsonReader
-import androidx.annotation.WorkerThread
+import info.staticfree.supergenpass.R
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONException
 import java.io.IOException

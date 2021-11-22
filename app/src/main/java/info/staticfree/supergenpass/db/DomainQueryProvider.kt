@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.db
 
 import android.content.ContentResolver
 import android.database.Cursor

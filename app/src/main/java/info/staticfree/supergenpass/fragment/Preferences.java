@@ -1,11 +1,7 @@
-package info.staticfree.supergenpass;
+package info.staticfree.supergenpass.fragment;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -22,10 +18,8 @@ import androidx.annotation.NonNull;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import org.apache.commons.codec.binary.Base64;
-
-import java.security.SecureRandom;
-import java.util.regex.Pattern;
+import info.staticfree.supergenpass.db.Domain;
+import info.staticfree.supergenpass.R;
 
 public class Preferences extends PreferenceFragment {
 
@@ -176,7 +170,7 @@ public class Preferences extends PreferenceFragment {
                             scanSalt();
                             return true;
                         case PREF_GENERATE_SALT:
-                            new Preferences.SaltFragment().show(getFragmentManager(), "salt");
+                            new SaltFragment().show(getFragmentManager(), "salt");
                             return true;
                         case PREF_CLEAR_REMEMBERED:
                             getActivity().getContentResolver()
@@ -188,47 +182,4 @@ public class Preferences extends PreferenceFragment {
                 }
             };
 
-    public static class SaltFragment extends DialogFragment {
-        /**
-         * The size of the salt, in bytes.
-         */
-        private static final int SALT_SIZE_BYTES = 512;
-        private static final Pattern PATTERN_WHITESPACE = Pattern.compile("\\s");
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.pref_generate_salt_title)
-                    .setMessage(R.string.pref_generate_salt_dialog_message)
-                    .setPositiveButton(R.string.pref_generate_salt_and_set,
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    generateSalt();
-                                }
-                            }).setCancelable(true).setNegativeButton(android.R.string.cancel,
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(@NonNull DialogInterface dialog,
-                                        int which) {
-                                    dialog.dismiss();
-                                }
-                            }).create();
-        }
-
-        private void generateSalt() {
-            IntentIntegrator qr = new IntentIntegrator(getActivity());
-            SecureRandom sr = new SecureRandom();
-            byte[] salt = new byte[SALT_SIZE_BYTES];
-            sr.nextBytes(salt);
-            String saltb64 = PATTERN_WHITESPACE.matcher(new String(Base64.encodeBase64(salt)))
-                    .replaceAll("");
-            ((Preferences) getFragmentManager().findFragmentById(R.id.preferences))
-                    .setSaltPref(saltb64);
-            qr.addExtra("SHOW_CONTENTS", false);
-            qr.shareText(saltb64);
-        }
-    }
 }

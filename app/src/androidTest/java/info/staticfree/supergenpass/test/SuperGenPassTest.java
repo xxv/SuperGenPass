@@ -1,7 +1,6 @@
 package info.staticfree.supergenpass.test;
 
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 
@@ -11,7 +10,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.hashes.PasswordGenerationException;
 import info.staticfree.supergenpass.hashes.HashAlgorithm;
 import info.staticfree.supergenpass.hashes.SuperGenPass;
 

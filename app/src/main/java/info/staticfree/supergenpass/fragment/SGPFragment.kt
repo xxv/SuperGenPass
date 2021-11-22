@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.fragment
 
 import android.content.Intent
 import android.net.Uri
@@ -12,7 +12,13 @@ import android.widget.SimpleCursorAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import info.staticfree.supergenpass.*
+import info.staticfree.supergenpass.activity.AboutActivity
+import info.staticfree.supergenpass.activity.SgpPreferencesActivity
 import info.staticfree.supergenpass.databinding.SgpFragmentBinding
+import info.staticfree.supergenpass.db.Domain
+import info.staticfree.supergenpass.db.DomainQueryProvider
+import info.staticfree.supergenpass.viewmodel.PasswordViewModel
 
 class SGPFragment : Fragment() {
     private val model: PasswordViewModel by viewModels()

@@ -1,13 +1,8 @@
 package info.staticfree.supergenpass.hashes
 
-import android.content.Context
 import android.util.Log
-import info.staticfree.supergenpass.DomainNormalizer
-import info.staticfree.supergenpass.hashes.DomainBasedHash
 import kotlin.Throws
-import info.staticfree.supergenpass.PasswordGenerationException
 import org.openauthentication.otp.OneTimePasswordAlgorithm
-import info.staticfree.supergenpass.hashes.HotpPin
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 

@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass;
+package info.staticfree.supergenpass.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.security.NoSuchAlgorithmException;
+
+import info.staticfree.supergenpass.R;
+import info.staticfree.supergenpass.drawable.VisualHash;
 
 public class VisualHashEditText extends EditText {
     private boolean mShowVisualHash;

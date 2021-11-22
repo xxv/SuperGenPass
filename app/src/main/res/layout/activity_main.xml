@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/sgp_fragment"
-        android:name="info.staticfree.supergenpass.SGPFragment"
+        android:name="info.staticfree.supergenpass.fragment.SGPFragment"
         android:layout_margin="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

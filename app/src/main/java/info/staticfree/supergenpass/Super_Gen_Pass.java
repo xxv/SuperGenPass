@@ -63,13 +63,22 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
+import info.staticfree.supergenpass.activity.SgpPreferencesActivity;
+import info.staticfree.supergenpass.db.Domain;
+import info.staticfree.supergenpass.db.RememberedDomainProvider;
+import info.staticfree.supergenpass.fragment.Preferences;
 import info.staticfree.supergenpass.hashes.DomainBasedHash;
+import info.staticfree.supergenpass.hashes.DomainNormalizer;
 import info.staticfree.supergenpass.hashes.HashAlgorithm;
 import info.staticfree.supergenpass.hashes.HotpPin;
+import info.staticfree.supergenpass.hashes.IllegalDomainException;
 import info.staticfree.supergenpass.hashes.PasswordComposer;
+import info.staticfree.supergenpass.hashes.PasswordGenerationException;
 import info.staticfree.supergenpass.hashes.SuperGenPass;
 import info.staticfree.supergenpass.nfc.NfcFragment;
 import info.staticfree.supergenpass.nfc.NfcWriteFragment;
+import info.staticfree.supergenpass.view.GeneratedPasswordView;
+import info.staticfree.supergenpass.view.VisualHashEditText;
 
 public class Super_Gen_Pass extends Activity
         implements OnClickListener, OnLongClickListener, OnCheckedChangeListener,

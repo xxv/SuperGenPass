@@ -17,17 +17,11 @@ package info.staticfree.supergenpass.hashes;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import info.staticfree.supergenpass.DomainNormalizer;
-import info.staticfree.supergenpass.IllegalDomainException;
-import info.staticfree.supergenpass.PasswordGenerationException;
 
 /**
  * Generates a domain password based on the PasswordComposer algorithm.

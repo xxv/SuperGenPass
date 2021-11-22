@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.repository
 
 import android.content.ContentResolver
 import android.content.Context
@@ -8,6 +8,9 @@ import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
+import info.staticfree.supergenpass.hashes.DomainNormalizer
+import info.staticfree.supergenpass.fragment.Preferences
+import info.staticfree.supergenpass.db.RememberedDomainProvider
 import info.staticfree.supergenpass.hashes.DomainBasedHash
 import info.staticfree.supergenpass.hashes.HashAlgorithm
 import info.staticfree.supergenpass.hashes.HotpPin

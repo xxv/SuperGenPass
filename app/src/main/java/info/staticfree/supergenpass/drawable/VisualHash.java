@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass;
+package info.staticfree.supergenpass.drawable;
 
 /*
  Visual Hash (SHA-1)

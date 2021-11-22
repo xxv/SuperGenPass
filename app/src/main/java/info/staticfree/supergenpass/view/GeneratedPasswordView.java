@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass;
+package info.staticfree.supergenpass.view;
 
 import android.app.Application;
 import android.content.ClipData;
@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import info.staticfree.supergenpass.R;
 
 public class GeneratedPasswordView extends TextView
         implements OnClickListener, OnMenuItemClickListener {

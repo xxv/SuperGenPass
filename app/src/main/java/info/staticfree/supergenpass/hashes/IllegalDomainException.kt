@@ -1,4 +1,4 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.hashes
 
 class IllegalDomainException(string: String?) : PasswordGenerationException(string) {
     companion object {

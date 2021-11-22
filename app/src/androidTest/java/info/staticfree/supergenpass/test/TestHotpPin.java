@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import info.staticfree.supergenpass.PasswordGenerationException;
+import info.staticfree.supergenpass.hashes.PasswordGenerationException;
 import info.staticfree.supergenpass.hashes.HotpPin;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;

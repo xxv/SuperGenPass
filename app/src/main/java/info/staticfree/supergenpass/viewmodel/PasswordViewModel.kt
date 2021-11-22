@@ -1,9 +1,11 @@
-package info.staticfree.supergenpass
+package info.staticfree.supergenpass.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import info.staticfree.supergenpass.hashes.PasswordGenerationException
+import info.staticfree.supergenpass.repository.HashRepository
 import kotlinx.coroutines.launch
 
 class PasswordViewModel : ViewModel() {
