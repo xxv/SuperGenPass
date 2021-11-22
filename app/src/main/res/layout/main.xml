@@ -19,14 +19,13 @@
         <requestFocus />
     </AutoCompleteTextView>
 
-    <ToggleButton
+    <Switch
         android:id="@+id/hide_master_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/password_edit"
         android:layout_alignParentRight="true"
-        android:textOff="@string/genpw_hidden"
-        android:textOn="@string/genpw_shown" />
+        android:layout_below="@id/domain_edit" />
 
     <info.staticfree.supergenpass.VisualHashEditText
         android:id="@+id/password_edit"
@@ -66,14 +65,13 @@
             android:layout_below="@id/label_password"
             android:layout_toLeftOf="@+id/show_gen_password" />
 
-        <ToggleButton
+        <Switch
             android:id="@+id/show_gen_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/password_output"
             android:layout_alignParentRight="true"
-            android:textOff="@string/genpw_hidden"
-            android:textOn="@string/genpw_shown" />
+            android:layout_alignTop="@+id/password_output" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -110,6 +108,7 @@
             android:prompt="@string/pin_length"
             android:spinnerMode="dialog"
             android:textAppearance="@android:style/TextAppearance.Large" />
+
     </RelativeLayout>
 
 </RelativeLayout>
