@@ -4,7 +4,7 @@
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
     </style>
 
-    <style name="ShareTheme" parent="Theme.MaterialComponents.Light.Dialog">
+    <style name="ShareTheme" parent="Theme.MaterialComponents.DayNight.Dialog.MinWidth">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
     </style>
 </resources>

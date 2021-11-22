@@ -1,6 +1,7 @@
 package info.staticfree.supergenpass
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.view.*
@@ -38,7 +39,6 @@ class SGPFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewBinding.domainEdit.requestFocus()
 
         registerOutputs()
         registerShowOutput()
@@ -46,6 +46,14 @@ class SGPFragment : Fragment() {
         registerPasswordEdit()
         registerHidePassword()
         registerPinDigits()
+
+        val shareIntentDomain = getDomainFromShareIntent(requireActivity().intent)
+        if (shareIntentDomain != null) {
+            viewBinding.domainEdit.setText(shareIntentDomain)
+            viewBinding.passwordEdit.requestFocus()
+        } else {
+            viewBinding.domainEdit.requestFocus()
+        }
     }
 
     private fun registerHidePassword() {
@@ -202,17 +210,20 @@ class SGPFragment : Fragment() {
         return true
     }
 
+    private fun getDomainFromShareIntent(intent: Intent): String? =
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { Uri.parse(it).host }
+
+    private fun isFromShareIntent(): Boolean =
+        Intent.ACTION_SEND == requireActivity().intent.action
+
     private fun postGenerate(copyToClipboard: Boolean) {
         model.onConfirmed(requireActivity())
 
         if (copyToClipboard) {
             viewBinding.passwordOutput.copyToClipboard()
-            /*TODO if (Intent.ACTION_SEND == getIntent().getAction() &&
-                mGenPwView.getHidePassword()
-            ) {
-                finish()
-            }*/
+            if (isFromShareIntent() && viewBinding.passwordOutput.hidePassword) {
+                activity?.finish()
+            }
         }
     }
-
 }
