@@ -532,7 +532,7 @@ public class Super_Gen_Pass extends Activity
                 return true;
 
             case R.id.about:
-                new AboutFragment().show(getFragmentManager(), "about");
+                //new AboutFragment().show(getFragmentManager(), "about");
                 return true;
 
             case R.id.verify:

@@ -29,10 +29,14 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateVisible"
-            android:exported="true">
+            android:windowSoftInputMode="stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,11 +45,11 @@
         </activity>
         <activity
             android:name=".SuperGenPassShare"
+            android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/ShareTheme"
             android:windowSoftInputMode="stateVisible"
-            tools:ignore="ExportedActivity"
-            android:exported="true">
+            tools:ignore="ExportedActivity">
 
             <!-- integrate in the browser so it can be shared to -->
             <intent-filter android:label="@string/app_name">

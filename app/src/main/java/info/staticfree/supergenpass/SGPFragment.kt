@@ -170,7 +170,7 @@ class SGPFragment : Fragment() {
                 true
             }
             R.id.about -> {
-                //TODO AboutFragment().show(supportFragmentManager, "about")
+                startActivity(Intent(requireContext(), AboutActivity::class.java))
                 true
             }
             R.id.verify -> {

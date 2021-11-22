@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
     </style>
 
-    <style name="ShareTheme" parent="@android:style/Theme.DeviceDefault.Dialog">
+    <style name="ShareTheme" parent="Theme.MaterialComponents.Light.Dialog">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
     </style>
 </resources>
