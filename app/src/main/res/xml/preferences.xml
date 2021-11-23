@@ -21,15 +21,14 @@
         <SwitchPreference
             android:defaultValue="true"
             android:key="domain_check"
-            android:summaryOn="@string/pref_domain_check_on"
             android:summaryOff="@string/pref_domain_check_off"
+            android:summaryOn="@string/pref_domain_check_on"
             android:title="@string/pref_domain_check" />
 
         <EditTextPreference
             android:defaultValue="2"
             android:dialogMessage="@string/pref_pw_clear_timeout_description"
             android:key="pw_clear_timeout"
-            android:numeric="integer"
             android:summary="@string/pref_pw_clear_timeout_summary"
             android:title="@string/pref_pw_clear_timeout" />
 
@@ -47,8 +46,8 @@
     <PreferenceCategory android:title="@string/pref_pw_salt_category">
         <EditTextPreference
             android:dialogMessage="@string/pref_pw_salt_description"
+            android:inputType="textPassword"
             android:key="pw_salt"
-            android:password="true"
             android:summary="@string/pref_pw_salt_summary"
             android:title="@string/pref_pw_salt_title" />
 
@@ -81,7 +80,6 @@ XXX Due to a bug in Android, this doesn't work:
             android:defaultValue="10"
             android:dialogMessage="@string/pref_pw_length_description"
             android:key="pw_length"
-            android:numeric="integer"
             android:title="@string/pref_pw_length" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -40,7 +40,7 @@
     <string name="pwgen_type_summary">Pick a password generating algorithm other than SuperGenPass</string>
     <string name="pref_copy_password">Copy gen’d password</string>
     <string name="pref_copy_password_summary">Copy the generated password when enter is pressed on the keyboard</string>
-    <string name="pref_pw_clear_timeout">Clear password timeout</string>
+    <string name="pref_pw_clear_timeout">Password clear timeout</string>
     <string name="pref_pw_clear_timeout_summary">Clear generated and master passwords after this many minutes of inactivity. Does not clear the clipboard.</string>
     <string name="pref_pw_clear_timeout_description">Timeout in minutes. Enter 0 to clear immediately.</string>
     <string name="pref_visual_hash">Show visual hash</string>
@@ -51,6 +51,8 @@
     <string name="pref_autocomplete_summary">Remember any domains you’ve used</string>
     <string name="pref_clear_remembered_domains">Clear remembered domains</string>
     <string name="pref_clear_remembered_default_summary">…</string>
+    <string name="pref_clear_domain_confirm_message">Do you want to erase all remembered domains?</string>
+    <string name="dialog_button_clear">Clear</string>
 
     <plurals name="pref_autocomplete_count">
         <item quantity="one">1 domain</item>

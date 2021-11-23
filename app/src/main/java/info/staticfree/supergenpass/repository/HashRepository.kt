@@ -62,7 +62,7 @@ class HashRepository() {
     fun getPinDigits(): LiveData<Int> = pinDigits
 
     fun setPinDigits(pinDigits: Int) {
-        prefs.edit() {
+        prefs.edit {
             putInt(Preferences.PREF_PIN_DIGITS, pinDigits)
         }
     }
@@ -99,5 +99,11 @@ class HashRepository() {
 
     private fun setAlgorithm(algorithm: HashAlgorithm) {
         hash = SuperGenPass(normalizer, algorithm)
+    }
+
+    fun setSalt(salt: String) {
+        prefs.edit {
+            putString(Preferences.PREF_PW_SALT, salt)
+        }
     }
 }
