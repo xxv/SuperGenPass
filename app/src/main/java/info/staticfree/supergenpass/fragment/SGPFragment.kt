@@ -167,8 +167,8 @@ class SGPFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.apply {
-            findItem(R.id.verify).isEnabled = viewBinding.passwordEdit.text.isNotBlank()
-            findItem(R.id.copy).isEnabled = viewBinding.passwordOutput.text.isNotBlank()
+            findItem(R.id.verify).isEnabled = viewBinding.passwordEdit.text?.isNotBlank() ?: false
+            findItem(R.id.copy).isEnabled = viewBinding.passwordOutput.text?.isNotBlank() ?: false
             // TODO menu.findItem(R.id.write_nfc).isEnabled = mMasterPwEdit.getText().length > 0
         }
     }
