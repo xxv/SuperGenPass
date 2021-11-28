@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import info.staticfree.supergenpass.hashes.HashType
 import info.staticfree.supergenpass.hashes.PasswordGenerationException
 import info.staticfree.supergenpass.repository.HashRepository
 import kotlinx.coroutines.launch
@@ -20,6 +21,7 @@ class PasswordViewModel : ViewModel() {
     val pinDigits = repository.getPinDigits()
     val copyToClipboard = repository.getCopyToClipboard()
     val checkDomain = repository.getCheckDomain()
+    val hashType = repository.getHashType()
 
     fun load(context: Context) {
         viewModelScope.launch {
@@ -42,6 +44,11 @@ class PasswordViewModel : ViewModel() {
 
     fun setShowOutput(showOutput: Boolean) {
         repository.setShowOutput(showOutput)
+    }
+
+    fun setHashType(hashType: HashType) {
+        repository.setHashType(hashType)
+        generatePasswordAndPin()
     }
 
     fun onConfirmed(context: Context) {

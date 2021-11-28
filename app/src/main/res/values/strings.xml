@@ -9,7 +9,7 @@
     <string name="genpw_hidden">•••••</string>
     <string name="sgp_type" translatable="false">SuperGenPass (MD5)</string>
     <string name="sgp_type_sha_512" translatable="false">SuperGenPass (SHA-512)</string>
-    <string name="pwc_type" translatable="false">Password Composer</string>
+    <string name="pwc_type" translatable="false">Password Composer (deprecated)</string>
     <string name="app_description">Password hashing tool.</string>
     <string name="err_no_md5">Error finding MD5 implementation: %1$s</string>
     <string name="err_json_load">Error loading domain names from JSON file: %s</string>
@@ -31,6 +31,17 @@
         <item>6</item>
         <item>7</item>
         <item>8</item>
+    </string-array>
+
+    <string-array name="hash_types_identifiers">
+        <item>sgp</item>
+        <item>sgp-sha-512</item>
+        <item>pwc</item>
+    </string-array>
+    <string-array name="hash_types">
+        <item>@string/sgp_type</item>
+        <item>@string/sgp_type_sha_512</item>
+        <item>@string/pwc_type</item>
     </string-array>
 
     <string name="preferences">SuperGenPass Preferences</string>

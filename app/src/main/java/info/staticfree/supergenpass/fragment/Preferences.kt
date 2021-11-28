@@ -134,6 +134,10 @@ class Preferences : PreferenceFragmentCompat() {
         const val PREF_PIN_DIGITS = "pw_pin_digits"
         const val PREF_VISUAL_HASH = "visual_hash"
 
+        const val TYPE_SGP_MD5 = "sgp"
+        const val TYPE_SGP_SHA_512 = "sgp-sha-512"
+        const val TYPE_PWC = "pwc"
+
         @JvmStatic
         fun getStringAsInteger(prefs: SharedPreferences, key: String?, def: Int): Int {
             val defString = def.toString()

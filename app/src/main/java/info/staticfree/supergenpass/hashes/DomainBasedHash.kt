@@ -27,8 +27,10 @@ import kotlin.Throws
  *
  * @author Steve Pomeroy
  */
-abstract class DomainBasedHash(private val normalizer: DomainNormalizer) {
-    var checkDomain = false
+abstract class DomainBasedHash(
+    private val normalizer: DomainNormalizer,
+    private val checkDomain: Boolean
+) {
 
     /**
      * Generates a password based on the given domain and a master password. Each time the method is

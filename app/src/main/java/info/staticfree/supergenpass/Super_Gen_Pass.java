@@ -623,7 +623,7 @@ public class Super_Gen_Pass extends Activity
         mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
 
         // when adding items here, make sure default values are in sync with the xml file
-        String pwType = prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE_MD5);
+        String pwType = "";
         mPwLength = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10);
         mPwSalt = prefs.getString(Preferences.PREF_PW_SALT, "");
         mCopyToClipboard = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true);
@@ -645,50 +645,6 @@ public class Super_Gen_Pass extends Activity
         mPinDigitsSpinner.setSelection(mPinDigits - MIN_PIN_LENGTH);
         mShowPin = prefs.getBoolean(Preferences.PREF_SHOW_PIN, true);
 
-        try {
-            switch (pwType) {
-                case SuperGenPass.TYPE_MD5:
-                    mDomainBasedHash = new SuperGenPass(new DomainNormalizer(), HashAlgorithm.MD5);
-
-                    break;
-                case SuperGenPass.TYPE_SHA_512:
-                    mDomainBasedHash = new SuperGenPass(new DomainNormalizer(), HashAlgorithm.SHA512);
-
-                    break;
-                case PasswordComposer.TYPE:
-                    mDomainBasedHash = new PasswordComposer(new DomainNormalizer());
-
-                    break;
-                default:
-                    mDomainBasedHash = new SuperGenPass(new DomainNormalizer(), HashAlgorithm.MD5);
-                    Log.e(TAG, "password type was set to unknown algorithm: " + pwType);
-                    break;
-            }
-
-            mPinGen = new HotpPin(new DomainNormalizer());
-        } catch (@NonNull NoSuchAlgorithmException e) {
-            Log.e(TAG, "could not find MD5", e);
-            Toast.makeText(getApplicationContext(),
-                    String.format(getString(R.string.err_no_md5), e.getLocalizedMessage()),
-                    Toast.LENGTH_LONG).show();
-            finish();
-        } catch (@NonNull IOException e) {
-            Toast.makeText(this, getString(R.string.err_json_load, e.getLocalizedMessage()),
-                    Toast.LENGTH_LONG).show();
-            Log.e(TAG, getString(R.string.err_json_load), e);
-            finish();
-        }
-
-        mDomainBasedHash.setCheckDomain(mDomainCheck);
-        if (mPinGen != null) {
-            mPinGen.setCheckDomain(mDomainCheck);
-        }
-
-        if (mDomainCheck) {
-            mDomainEdit.setHint(R.string.domain_hint);
-        } else {
-            mDomainEdit.setHint(R.string.domain_hint_no_checking);
-        }
 
         mMasterPwEdit.setShowVisualHash(prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true));
 

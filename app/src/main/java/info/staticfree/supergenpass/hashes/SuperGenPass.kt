@@ -28,15 +28,10 @@ import java.util.regex.Pattern
  *
  * @see [supergenpass.com](http://supergenpass.com/)
  */
-
-enum class HashAlgorithm(val str: String) {
-    MD5("MD5"),
-    SHA1("SHA1"),
-    SHA512("SHA-512"),
-}
 class SuperGenPass
-constructor(normalizer: DomainNormalizer, hashAlgorithm: HashAlgorithm) : DomainBasedHash(normalizer) {
-    private val digest: MessageDigest = MessageDigest.getInstance(hashAlgorithm.str)
+constructor(normalizer: DomainNormalizer, hashAlgorithm: String, checkDomain: Boolean) :
+    DomainBasedHash(normalizer, checkDomain) {
+    private val digest: MessageDigest = MessageDigest.getInstance(hashAlgorithm)
 
     /**
      * Returns a base64-encoded string of the digest of the data. Caution: SuperGenPass-specific!
@@ -93,11 +88,8 @@ constructor(normalizer: DomainNormalizer, hashAlgorithm: HashAlgorithm) : Domain
     }
 
     companion object {
-        const val TYPE_MD5 = "sgp"
-        const val TYPE_SHA_512 = "sgp-sha-512"
-        const val HASH_ALGORITHM_MD5 = "MD5"
-        const val HASH_ALGORITHM_SHA512 = "SHA-512"
-
+        const val HASH_MD5 = "MD5"
+        const val HASH_SHA_512 = "SHA-512"
         /*
          * from http://supergenpass.com/about/#PasswordComplexity :
          *  Consist of alphanumerics (A-Z, a-z, 0-9)

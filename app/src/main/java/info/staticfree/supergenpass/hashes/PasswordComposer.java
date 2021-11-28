@@ -30,13 +30,11 @@ import java.security.NoSuchAlgorithmException;
  */
 @Deprecated
 public final class PasswordComposer extends DomainBasedHash {
-    public static final String TYPE = "pwc";
-
     private final MessageDigest md5;
 
-    public PasswordComposer(DomainNormalizer domainNormalizer)
+    public PasswordComposer(DomainNormalizer domainNormalizer, Boolean checkDomain)
             throws NoSuchAlgorithmException, IOException {
-        super(domainNormalizer);
+        super(domainNormalizer, checkDomain);
         md5 = MessageDigest.getInstance("MD5");
     }
 

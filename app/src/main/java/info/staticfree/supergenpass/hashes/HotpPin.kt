@@ -25,7 +25,8 @@ import java.security.NoSuchAlgorithmException
  * @author [Steve Pomeroy](mailto:steve@staticfree.info)
  * @see OneTimePasswordAlgorithm.generateOTPFromText
  */
-class HotpPin(domainNormalizer: DomainNormalizer) : DomainBasedHash(domainNormalizer) {
+class HotpPin(domainNormalizer: DomainNormalizer, checkDomain: Boolean) :
+    DomainBasedHash(domainNormalizer, checkDomain) {
     @Throws(PasswordGenerationException::class)
     override fun generateWithFilteredDomain(
         masterPass: String,

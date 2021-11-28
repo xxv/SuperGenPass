@@ -18,6 +18,7 @@ import info.staticfree.supergenpass.activity.SgpPreferencesActivity
 import info.staticfree.supergenpass.databinding.SgpFragmentBinding
 import info.staticfree.supergenpass.db.Domain
 import info.staticfree.supergenpass.db.DomainQueryProvider
+import info.staticfree.supergenpass.hashes.HashType
 import info.staticfree.supergenpass.viewmodel.PasswordViewModel
 
 class SGPFragment : Fragment() {
@@ -51,6 +52,7 @@ class SGPFragment : Fragment() {
         registerPasswordEdit()
         registerHidePassword()
         registerPinDigits()
+        registerHashType()
 
         val shareIntentDomain = getDomainFromShareIntent(requireActivity().intent)
 
@@ -112,6 +114,29 @@ class SGPFragment : Fragment() {
                 }
             )
         })
+    }
+
+    private val hashTypes by lazy { requireActivity().resources.getStringArray(R.array.hash_types_identifiers) }
+
+    private fun registerHashType() {
+        model.hashType.observe(viewLifecycleOwner, {
+            viewBinding.hashType.setSelection(hashTypes.indexOf(it.getPreferenceKey()))
+        })
+
+        viewBinding.hashType.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                model.setHashType(HashType.getHashTypeForKey(hashTypes[position]))
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // do nothing
+            }
+        }
     }
 
     private fun registerOutputs() {

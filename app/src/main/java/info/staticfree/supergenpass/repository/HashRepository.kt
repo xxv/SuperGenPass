@@ -8,18 +8,14 @@ import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
-import info.staticfree.supergenpass.hashes.DomainNormalizer
 import info.staticfree.supergenpass.fragment.Preferences
 import info.staticfree.supergenpass.db.RememberedDomainProvider
-import info.staticfree.supergenpass.hashes.DomainBasedHash
-import info.staticfree.supergenpass.hashes.HashAlgorithm
-import info.staticfree.supergenpass.hashes.HotpPin
-import info.staticfree.supergenpass.hashes.SuperGenPass
+import info.staticfree.supergenpass.hashes.*
 
-class HashRepository() {
+class HashRepository {
     private val normalizer = DomainNormalizer()
-    private var hash: DomainBasedHash = SuperGenPass(normalizer, HashAlgorithm.MD5)
-    private var pinHash = HotpPin(normalizer)
+    private var hash: DomainBasedHash = SuperGenPass(normalizer, SuperGenPass.HASH_MD5, true)
+    private var pinHash = HotpPin(normalizer, true)
     private var length = 10
     private var salt = ""
     private var rememberDomains = true
@@ -28,6 +24,7 @@ class HashRepository() {
     private val showOutput = MutableLiveData<Boolean>()
     private val copyToClipboard = MutableLiveData<Boolean>()
     private val checkDomain = MutableLiveData<Boolean>()
+    private val hashType = MutableLiveData<HashType>()
 
     private lateinit var prefs: SharedPreferences
 
@@ -71,14 +68,23 @@ class HashRepository() {
 
     fun getCopyToClipboard(): LiveData<Boolean> = copyToClipboard
 
+    fun setHashType(hashAlgorithm: HashType) {
+        prefs.edit {
+            putString(Preferences.PREF_PW_TYPE, hashAlgorithm.getPreferenceKey())
+        }
+        hashType.value = hashAlgorithm
+        initHash()
+    }
+
+    fun getHashType(): LiveData<HashType> = hashType
+
     private fun loadFromPreferences(prefs: SharedPreferences) {
         // when adding items here, make sure default values are in sync with the xml file
-        setAlgorithm(
-            when (prefs.getString(Preferences.PREF_PW_TYPE, SuperGenPass.TYPE_MD5)) {
-                SuperGenPass.TYPE_MD5 -> HashAlgorithm.MD5
-                SuperGenPass.TYPE_SHA_512 -> HashAlgorithm.SHA512
-                else -> HashAlgorithm.MD5
-            }
+        hashType.value = HashType.getHashTypeForKey(
+            prefs.getString(
+                Preferences.PREF_PW_TYPE,
+                Preferences.TYPE_SGP_MD5
+            ) ?: Preferences.TYPE_SGP_MD5
         )
         length = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10)
         salt = prefs.getString(Preferences.PREF_PW_SALT, "") ?: ""
@@ -86,19 +92,23 @@ class HashRepository() {
 
         val checkDomainPref = prefs.getBoolean(Preferences.PREF_DOMAIN_CHECK, true)
         checkDomain.value = checkDomainPref
-        hash.checkDomain = checkDomainPref
-        pinHash.checkDomain = checkDomainPref
 
         pinDigits.value = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4)
         showOutput.value = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false)
         copyToClipboard.value = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true)
+
+        initHash()
     }
 
     private val onSharedPrefsChange =
         SharedPreferences.OnSharedPreferenceChangeListener { prefs, _ -> loadFromPreferences(prefs) }
 
-    private fun setAlgorithm(algorithm: HashAlgorithm) {
-        hash = SuperGenPass(normalizer, algorithm)
+    private fun initHash() {
+        hashType.value?.let {
+            val checkDomain = checkDomain.value ?: true
+            hash = HashType.getHash(it, normalizer, checkDomain)
+            pinHash = HotpPin(normalizer, checkDomain)
+        }
     }
 
     fun setSalt(salt: String) {

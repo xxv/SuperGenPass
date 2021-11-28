@@ -10,4 +10,9 @@
         <item name="android:textSize">25sp</item>
     </style>
 
+    <style name="MainScreenSettingLabel">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginTop">8dp</item>
+
+    </style>
 </resources>
