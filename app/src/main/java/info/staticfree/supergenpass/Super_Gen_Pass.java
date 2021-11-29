@@ -35,7 +35,6 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,13 +67,9 @@ import info.staticfree.supergenpass.db.Domain;
 import info.staticfree.supergenpass.db.RememberedDomainProvider;
 import info.staticfree.supergenpass.fragment.Preferences;
 import info.staticfree.supergenpass.hashes.DomainBasedHash;
-import info.staticfree.supergenpass.hashes.DomainNormalizer;
-import info.staticfree.supergenpass.hashes.HashAlgorithm;
 import info.staticfree.supergenpass.hashes.HotpPin;
 import info.staticfree.supergenpass.hashes.IllegalDomainException;
-import info.staticfree.supergenpass.hashes.PasswordComposer;
 import info.staticfree.supergenpass.hashes.PasswordGenerationException;
-import info.staticfree.supergenpass.hashes.SuperGenPass;
 import info.staticfree.supergenpass.nfc.NfcFragment;
 import info.staticfree.supergenpass.nfc.NfcWriteFragment;
 import info.staticfree.supergenpass.view.GeneratedPasswordView;
@@ -216,7 +211,7 @@ public class Super_Gen_Pass extends Activity
 
         SimpleCursorAdapter adapter =
                 new SimpleCursorAdapter(this, android.R.layout.simple_dropdown_item_1line, null,
-                        new String[] { "domain" }, new int[] { android.R.id.text1 },
+                        new String[]{"domain"}, new int[]{android.R.id.text1},
                         CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         adapter.setFilterQueryProvider(this);
@@ -251,7 +246,7 @@ public class Super_Gen_Pass extends Activity
         mPinDigitsSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
-                    int position, long id) {
+                                       int position, long id) {
                 mPinDigits = position + MIN_PIN_LENGTH;
 
                 SharedPreferences prefs =
@@ -464,9 +459,9 @@ public class Super_Gen_Pass extends Activity
      */
     String extractDomain(@NonNull String maybeUrl) {
         //try {
-            Uri uri = Uri.parse(maybeUrl);
-            String host = uri.getHost();
-            return host;// XXX TODO mDomainBasedHash.getDomain(host != null ? host : "");
+        Uri uri = Uri.parse(maybeUrl);
+        String host = uri.getHost();
+        return host;// XXX TODO mDomainBasedHash.getDomain(host != null ? host : "");
         /*} catch (@NonNull PasswordGenerationException e) {
             return maybeUrl;
         }
@@ -589,10 +584,12 @@ public class Super_Gen_Pass extends Activity
         mDomainEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {
+            }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -608,10 +605,12 @@ public class Super_Gen_Pass extends Activity
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -661,7 +660,7 @@ public class Super_Gen_Pass extends Activity
         mShowGenPassword.setChecked(showPassword);
     }
 
-    private static final String[] PROJECTION = { Domain.DOMAIN, Domain._ID };
+    private static final String[] PROJECTION = {Domain.DOMAIN, Domain._ID};
     private static final int DOMAIN_COLUMN = 0;
 
     // a filter that searches for domains starting with the given constraint
@@ -675,7 +674,7 @@ public class Super_Gen_Pass extends Activity
         } else {
             c = getContentResolver()
                     .query(Domain.CONTENT_URI, PROJECTION, Domain.DOMAIN + " GLOB ?",
-                            new String[] { constraint + "*" }, Domain.SORT_ORDER);
+                            new String[]{constraint + "*"}, Domain.SORT_ORDER);
         }
 
         return c;

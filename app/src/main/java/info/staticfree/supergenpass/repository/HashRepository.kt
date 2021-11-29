@@ -81,10 +81,8 @@ class HashRepository {
     private fun loadFromPreferences(prefs: SharedPreferences) {
         // when adding items here, make sure default values are in sync with the xml file
         hashType.value = HashType.getHashTypeForKey(
-            prefs.getString(
-                Preferences.PREF_PW_TYPE,
-                Preferences.TYPE_SGP_MD5
-            ) ?: Preferences.TYPE_SGP_MD5
+            prefs.getString(Preferences.PREF_PW_TYPE, Preferences.TYPE_SGP_MD5)
+                ?: Preferences.TYPE_SGP_MD5
         )
         length = Preferences.getStringAsInteger(prefs, Preferences.PREF_PW_LENGTH, 10)
         salt = prefs.getString(Preferences.PREF_PW_SALT, "") ?: ""
