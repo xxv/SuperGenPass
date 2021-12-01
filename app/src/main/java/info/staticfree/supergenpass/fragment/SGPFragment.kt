@@ -51,7 +51,7 @@ class SGPFragment : Fragment() {
         registerDomainEdit()
         registerPasswordEdit()
         registerHidePassword()
-        registerPinDigits()
+        registerPinWidgets()
         registerHashType()
 
         val shareIntentDomain = getDomainFromShareIntent(requireActivity().intent)
@@ -82,6 +82,8 @@ class SGPFragment : Fragment() {
             addTextChangedListener { model.setMainPassword(it.toString()) }
 
             setOnEditorActionListener { _, _, _ -> go() }
+
+            model.showVisualHash.observe(viewLifecycleOwner, { setShowVisualHash(it) })
         }
     }
 
@@ -161,7 +163,7 @@ class SGPFragment : Fragment() {
         })
     }
 
-    private fun registerPinDigits() {
+    private fun registerPinWidgets() {
         model.pinDigits.observe(viewLifecycleOwner, {
             viewBinding.pinLength.apply {
                 val first = getItemAtPosition(0) as String
@@ -184,6 +186,9 @@ class SGPFragment : Fragment() {
                 // empty body
             }
         }
+        model.showPin.observe(viewLifecycleOwner, {
+            viewBinding.pinContainer.visibility = if (it) View.VISIBLE else View.GONE
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -3,6 +3,7 @@ package info.staticfree.supergenpass.repository
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.res.Resources
 import androidx.core.content.edit
 import androidx.lifecycle.LiveData
@@ -20,11 +21,14 @@ class HashRepository {
     private var salt = ""
     private var rememberDomains = true
 
-    private var pinDigits = MutableLiveData<Int>()
+    private val pinDigits = MutableLiveData<Int>()
     private val showOutput = MutableLiveData<Boolean>()
     private val copyToClipboard = MutableLiveData<Boolean>()
     private val checkDomain = MutableLiveData<Boolean>()
     private val hashType = MutableLiveData<HashType>()
+
+    val showVisualHash = MutableLiveData<Boolean>()
+    val showPin = MutableLiveData<Boolean>()
 
     private lateinit var prefs: SharedPreferences
 
@@ -92,14 +96,16 @@ class HashRepository {
         checkDomain.value = checkDomainPref
 
         pinDigits.value = prefs.getInt(Preferences.PREF_PIN_DIGITS, 4)
+        showPin.value = prefs.getBoolean(Preferences.PREF_SHOW_PIN, true)
         showOutput.value = prefs.getBoolean(Preferences.PREF_SHOW_GEN_PW, false)
+        showVisualHash.value = prefs.getBoolean(Preferences.PREF_VISUAL_HASH, true)
         copyToClipboard.value = prefs.getBoolean(Preferences.PREF_CLIPBOARD, true)
 
         initHash()
     }
 
     private val onSharedPrefsChange =
-        SharedPreferences.OnSharedPreferenceChangeListener { prefs, _ -> loadFromPreferences(prefs) }
+        OnSharedPreferenceChangeListener { prefs, _ -> loadFromPreferences(prefs) }
 
     private fun initHash() {
         hashType.value?.let {

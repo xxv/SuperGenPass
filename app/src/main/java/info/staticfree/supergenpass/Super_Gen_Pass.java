@@ -75,6 +75,7 @@ import info.staticfree.supergenpass.nfc.NfcWriteFragment;
 import info.staticfree.supergenpass.view.GeneratedPasswordView;
 import info.staticfree.supergenpass.view.VisualHashEditText;
 
+@Deprecated
 public class Super_Gen_Pass extends Activity
         implements OnClickListener, OnLongClickListener, OnCheckedChangeListener,
         OnEditorActionListener, FilterQueryProvider {

@@ -9,11 +9,9 @@ import info.staticfree.supergenpass.hashes.PasswordGenerationException
 import info.staticfree.supergenpass.repository.HashRepository
 import kotlinx.coroutines.launch
 
-class PasswordViewModel : ViewModel() {
+class PasswordViewModel(private val repository: HashRepository = HashRepository()) : ViewModel() {
     private var domain = ""
     private var mainPassword = ""
-
-    private val repository = HashRepository()
 
     val generatedPassword = MutableLiveData<String>()
     val generatedPin = MutableLiveData<String>()
@@ -22,6 +20,9 @@ class PasswordViewModel : ViewModel() {
     val copyToClipboard = repository.getCopyToClipboard()
     val checkDomain = repository.getCheckDomain()
     val hashType = repository.getHashType()
+
+    val showPin = repository.showPin
+    val showVisualHash = repository.showVisualHash
 
     fun load(context: Context) {
         viewModelScope.launch {
