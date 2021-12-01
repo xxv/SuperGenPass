@@ -6,8 +6,6 @@ import info.staticfree.supergenpass.R
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
-import java.lang.RuntimeException
-import java.security.NoSuchAlgorithmException
 
 class VisualHashEditText : AppCompatEditText {
     private var showVisualHash = false
@@ -18,29 +16,14 @@ class VisualHashEditText : AppCompatEditText {
         attrs,
         defStyle
     ) {
-        visualHash = try {
-            VisualHash()
-        } catch (e: NoSuchAlgorithmException) {
-            throw RuntimeException(e)
-        }
         init(context, attrs)
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        visualHash = try {
-            VisualHash()
-        } catch (e: NoSuchAlgorithmException) {
-            throw RuntimeException(e)
-        }
         init(context, attrs)
     }
 
     constructor(context: Context) : super(context) {
-        visualHash = try {
-            VisualHash()
-        } catch (e: NoSuchAlgorithmException) {
-            throw RuntimeException(e)
-        }
         init(context, null)
     }
 
@@ -51,13 +34,14 @@ class VisualHashEditText : AppCompatEditText {
             h = 45
             w = 45
         } else {
-            val ta = context.obtainStyledAttributes(attrs, R.styleable.VisualHashEditText)
-            showVisualHash = ta.getBoolean(R.styleable.VisualHashEditText_showVisualHash, true)
-            h = ta.getDimensionPixelSize(R.styleable.VisualHashEditText_visualHashHeight, 45)
-            w = ta.getDimensionPixelSize(R.styleable.VisualHashEditText_visualHashWidth, 45)
-            ta.recycle()
+            context.obtainStyledAttributes(attrs, R.styleable.VisualHashEditText).let {
+                showVisualHash = it.getBoolean(R.styleable.VisualHashEditText_showVisualHash, true)
+                h = it.getDimensionPixelSize(R.styleable.VisualHashEditText_visualHashHeight, 45)
+                w = it.getDimensionPixelSize(R.styleable.VisualHashEditText_visualHashWidth, 45)
+                it.recycle()
+            }
         }
-
+        visualHash = VisualHash()
         visualHash?.setBounds(0, 0, h, w)
 
         refreshVisualHash()
@@ -77,11 +61,13 @@ class VisualHashEditText : AppCompatEditText {
     }
 
     override fun onTextChanged(
-        text: CharSequence?, start: Int, lengthBefore: Int,
+        text: CharSequence?,
+        start: Int,
+        lengthBefore: Int,
         lengthAfter: Int
     ) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter)
-        text?.let{
+        text?.let {
             visualHash?.setData(it.toString().toByteArray())
         }
     }
