@@ -382,12 +382,10 @@ public class Super_Gen_Pass extends Activity
         String masterPw = getMasterPassword() + mPwSalt;
         String genPw = mDomainBasedHash.generate(masterPw, domain, mPwLength);
 
-        mGenPwView.setDomainName(domain);
         mGenPwView.setText(genPw);
 
         if (mPinGen != null && mShowPin) {
             String pin = mPinGen.generate(masterPw, domain, mPinDigits);
-            mGenPinView.setDomainName(domain);
             mGenPinView.setText(pin);
         }
         mShowingPassword = true;

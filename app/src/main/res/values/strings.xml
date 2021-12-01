@@ -17,7 +17,6 @@
 
     <!-- GeneratedPasswordView widget -->
     <string name="generated_password">Generated password</string>
-    <string name="toast_copied">Password for %s copied to clipboard.</string>
     <string name="toast_copied_no_domain">Password copied to clipboard.</string>
     <string name="pin_length">PIN length</string>
 

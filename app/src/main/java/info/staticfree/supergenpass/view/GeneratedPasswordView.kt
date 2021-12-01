@@ -14,36 +14,46 @@ import android.text.TextUtils
 import android.text.method.NumberKeyListener
 import android.text.InputType
 import android.util.AttributeSet
-import android.util.Log
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 
 class GeneratedPasswordView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
     defStyle: Int = R.attr.generatedPasswordViewStyle
-) : AppCompatTextView(context, attrs, defStyle), View.OnClickListener,
-    MenuItem.OnMenuItemClickListener {
-    private var mOnClickListener: OnClickListener? = null
-    private var domain: CharSequence? = null
-    override fun setOnClickListener(onClickListener: OnClickListener?) {
-        mOnClickListener = onClickListener
+) : AppCompatTextView(context, attrs, defStyle) {
+    private var onClickListener: OnClickListener? = null
+
+    private val viewOnClickListener = OnClickListener {
+        // propagate the click
+        onClickListener?.onClick(it)
     }
 
-    override fun onClick(v: View) {
-        Log.d("gpwv", "click!")
+    private val viewOnMenuClickListener = MenuItem.OnMenuItemClickListener {
+        onTextContextMenuItem(it.itemId)
+    }
 
-        // propagate the click
-        if (mOnClickListener != null) {
-            mOnClickListener!!.onClick(v)
+    init {
+        super.setOnClickListener(viewOnClickListener)
+        keyListener = object : NumberKeyListener() {
+            override fun getInputType(): Int {
+                return InputType.TYPE_NULL
+            }
+
+            override fun getAcceptedChars(): CharArray {
+                return charArrayOf()
+            }
         }
+    }
+
+    override fun setOnClickListener(onClickListener: OnClickListener?) {
+        this.onClickListener = onClickListener
     }
 
     override fun onCreateContextMenu(menu: ContextMenu) {
         menu.add(Menu.NONE, MENU_ID_COPY, Menu.NONE, android.R.string.copy)
-            .setOnMenuItemClickListener(this)
+            .setOnMenuItemClickListener(viewOnMenuClickListener)
         menu.setHeaderTitle(R.string.generated_password)
     }
 
@@ -57,15 +67,6 @@ class GeneratedPasswordView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Sets the domain name that will be displayed when copying to clipboard.
-     *
-     * @param domainName the domain to show in the Toast
-     */
-    fun setDomainName(domainName: CharSequence?) {
-        domain = domainName
-    }
-
     override fun setText(text: CharSequence?, type: BufferType) {
         super.setText(text, type)
         isEnabled = text?.isNotEmpty() ?: false
@@ -75,26 +76,14 @@ class GeneratedPasswordView @JvmOverloads constructor(
         val genPw = text ?: return
         val clipMan = context.getSystemService(Application.CLIPBOARD_SERVICE) as ClipboardManager
         clipMan.setPrimaryClip(
-            ClipData.newPlainText(
-                context.getText(
-                    R.string.generated_password
-                ), genPw
-            )
+            ClipData.newPlainText(context.getText(R.string.generated_password), genPw)
         )
         if (genPw.isNotEmpty()) {
-            if (domain != null) {
-                Toast.makeText(
-                    context,
-                    resources.getString(R.string.toast_copied, domain), Toast.LENGTH_SHORT
-                )
-                    .show()
-            } else {
-                Toast.makeText(
-                    context,
-                    resources.getString(R.string.toast_copied_no_domain),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            Toast.makeText(
+                context,
+                resources.getString(R.string.toast_copied_no_domain),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -107,10 +96,6 @@ class GeneratedPasswordView @JvmOverloads constructor(
                 null
             }
         }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        return onTextContextMenuItem(item.itemId)
-    }
 
     /* (for all the state-related code below)
      *
@@ -180,16 +165,4 @@ class GeneratedPasswordView @JvmOverloads constructor(
         const val MENU_ID_COPY = android.R.id.copy
     }
 
-    init {
-        super.setOnClickListener(this)
-        keyListener = object : NumberKeyListener() {
-            override fun getInputType(): Int {
-                return InputType.TYPE_NULL
-            }
-
-            override fun getAcceptedChars(): CharArray {
-                return charArrayOf()
-            }
-        }
-    }
 }
