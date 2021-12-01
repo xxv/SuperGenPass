@@ -21,7 +21,6 @@
         android:id="@+id/hide_master_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/password_edit"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/domain_edit" />
 
@@ -29,18 +28,17 @@
         android:id="@+id/password_edit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:hint="@string/password_hint"
         android:imeActionId="@integer/ime_go"
         android:imeActionLabel="@string/done"
         android:imeOptions="actionDone"
         android:inputType="textPassword"
         android:singleLine="true"
+        app:layout_constraintBottom_toBottomOf="@id/hide_master_password"
         app:layout_constraintEnd_toStartOf="@+id/hide_master_password"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/hide_master_password"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/domain_edit"
+        app:layout_constraintTop_toTopOf="@id/hide_master_password"
         app:showVisualHash="true"
         app:visualHashHeight="45dip"
         app:visualHashWidth="45dip" />
@@ -115,11 +113,11 @@
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/hash_type"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:entries="@array/hash_types"
         android:prompt="@string/pwgen_type_prompt"
         android:spinnerMode="dropdown"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/hash_type_label" />
 </androidx.constraintlayout.widget.ConstraintLayout>
