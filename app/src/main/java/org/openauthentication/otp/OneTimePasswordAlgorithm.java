@@ -31,7 +31,7 @@
 
 package org.openauthentication.otp;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

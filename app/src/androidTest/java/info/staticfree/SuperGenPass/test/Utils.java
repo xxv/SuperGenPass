@@ -1,11 +1,12 @@
 package info.staticfree.SuperGenPass.test;
 
-import android.support.annotation.NonNull;
-
-import junit.framework.TestCase;
+import androidx.annotation.NonNull;
 
 import info.staticfree.SuperGenPass.PasswordGenerationException;
 import info.staticfree.SuperGenPass.hashes.DomainBasedHash;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public final class Utils {
 
@@ -18,8 +19,8 @@ public final class Utils {
         for (int len = minlen; len < maxlen; len++) {
             for (int i = 0; i < 1000; i += 10) {
                 String generated = hash.generate(String.valueOf(i), "example.org", len);
-                TestCase.assertNotNull(generated);
-                TestCase.assertEquals(len, generated.length());
+                assertNotNull(generated);
+                assertEquals(len, generated.length());
             }
         }
     }

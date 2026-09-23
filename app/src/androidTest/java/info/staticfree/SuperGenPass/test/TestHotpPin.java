@@ -1,16 +1,36 @@
 package info.staticfree.SuperGenPass.test;
 
-import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.LargeTest;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
 import info.staticfree.SuperGenPass.PasswordGenerationException;
 import info.staticfree.SuperGenPass.hashes.HotpPin;
 
-public class TestHotpPin extends AndroidTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+@RunWith(AndroidJUnit4.class)
+public class TestHotpPin {
+
+    private Context mContext;
+
+    @Before
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+    }
+
+    @Test
     public void testHotpPin() throws PasswordGenerationException, IOException {
         HotpPin pinGen = new HotpPin(mContext);
 
@@ -31,6 +51,7 @@ public class TestHotpPin extends AndroidTestCase {
 
     }
 
+    @Test
     public void testDomainFiltering() throws IOException, PasswordGenerationException {
         HotpPin pinGen = new HotpPin(mContext);
         pinGen.setCheckDomain(true);
@@ -38,6 +59,7 @@ public class TestHotpPin extends AndroidTestCase {
                 pinGen.generate("foo", "example.org", 4));
     }
 
+    @Test
     public void testDomainFilteringOff() throws IOException, PasswordGenerationException {
         HotpPin pinGen = new HotpPin(mContext);
         pinGen.setCheckDomain(false);
@@ -45,6 +67,7 @@ public class TestHotpPin extends AndroidTestCase {
                 pinGen.generate("foo", "example.org", 4)));
     }
 
+    @Test
     public void testNumericRuns() throws IOException {
         HotpPin pinGen = new HotpPin(mContext);
 
@@ -64,6 +87,7 @@ public class TestHotpPin extends AndroidTestCase {
         assertFalse(pinGen.isNumericalRun("1235"));
     }
 
+    @Test
     public void testIncompleteNumericRuns() throws IOException {
         HotpPin pinGen = new HotpPin(mContext);
 
@@ -81,6 +105,7 @@ public class TestHotpPin extends AndroidTestCase {
 
     }
 
+    @Test
     public void testGeneratedLength() throws PasswordGenerationException, IOException {
         HotpPin pinGen = new HotpPin(mContext);
 
@@ -89,6 +114,7 @@ public class TestHotpPin extends AndroidTestCase {
         }
     }
 
+    @Test
     public void testInvalidLengths() throws IOException {
         HotpPin pinGen = new HotpPin(mContext);
         testInvalidLength(pinGen, -1);
@@ -109,6 +135,7 @@ public class TestHotpPin extends AndroidTestCase {
         assertTrue("exception not thrown for length " + len, thrown);
     }
 
+    @Test
     public void testBadPins() throws IOException {
         HotpPin pinGen = new HotpPin(mContext);
         String[] badPins = new String[] { "0000", "1111", "1234", "1984", "2001", "1122",
@@ -120,6 +147,7 @@ public class TestHotpPin extends AndroidTestCase {
         }
     }
 
+    @Test
     public void testGoodPins() throws IOException {
         HotpPin pinGen = new HotpPin(mContext);
         String[] goodPins = new String[] { "1837", "7498", "8347", "7426", "7172", "9012",
@@ -131,6 +159,7 @@ public class TestHotpPin extends AndroidTestCase {
     }
 
     @LargeTest
+    @Test
     public void testATonOfPasswords() throws PasswordGenerationException, IOException {
         HotpPin pinGen = new HotpPin(mContext);
         Utils.testATonOfPasswords(pinGen, 3, 8);

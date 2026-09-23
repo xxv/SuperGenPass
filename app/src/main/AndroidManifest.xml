@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="info.staticfree.SuperGenPass"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      From Android 11 onwards an app can only see other packages it declares an
+      interest in. The salt QR code feature hands off to an external barcode
+      scanner, so the scan intent has to be declared here for the handoff to
+      resolve.
+    -->
+    <queries>
+        <intent>
+            <action android:name="com.google.zxing.client.android.SCAN" />
+        </intent>
+    </queries>
 
     <supports-screens
         android:anyDensity="true"
@@ -31,6 +42,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Super_Gen_Pass"
+            android:exported="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateVisible">
             <intent-filter>
@@ -41,10 +53,10 @@
         </activity>
         <activity
             android:name=".SuperGenPassShare"
+            android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/ShareTheme"
-            android:windowSoftInputMode="stateVisible"
-            tools:ignore="ExportedActivity">
+            android:windowSoftInputMode="stateVisible">
 
             <!-- integrate in the browser so it can be shared to -->
             <intent-filter android:label="@string/app_name">
@@ -75,6 +87,7 @@
         <provider
             android:name=".RememberedDomainProvider"
             android:authorities="${applicationId}"
+            android:exported="false"
             android:readPermission="${applicationId}.permission.ACCESS_DOMAINS"
             android:writePermission="${applicationId}.permission.ACCESS_DOMAINS" />
 

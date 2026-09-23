@@ -3,6 +3,9 @@ build/
 .idea
 local.properties
 .gradle
-gradle/
-gradlew
-gradlew.bat
+.kotlin
+
+# Signing material must never be committed.
+keystore.properties
+*.jks
+*.keystore
