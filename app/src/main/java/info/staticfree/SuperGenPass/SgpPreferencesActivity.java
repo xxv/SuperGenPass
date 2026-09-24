@@ -11,6 +11,7 @@ public class SgpPreferencesActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.preference_activity);
+        SystemBarInsets.setUp(this, R.id.preferences_content);
     }
 
     @Override

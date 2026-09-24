@@ -139,6 +139,7 @@ public class Super_Gen_Pass extends Activity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
+        SystemBarInsets.setUp(this, R.id.main_content);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
         Intent intent = getIntent();

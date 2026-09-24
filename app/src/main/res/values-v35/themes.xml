@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      From Android 15 the status and navigation bars are transparent and sit
+      on top of the app's light toolbar and background, so their icons need
+      to be dark to stay readable.
+    -->
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

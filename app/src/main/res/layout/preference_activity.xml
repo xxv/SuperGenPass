@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <fragment
-        android:id="@+id/preferences"
-        android:name="info.staticfree.SuperGenPass.Preferences"
+    <include layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:id="@+id/preferences_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="info.staticfree.SuperGenPass.Preferences" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <fragment
+            android:id="@+id/preferences"
+            android:name="info.staticfree.SuperGenPass.Preferences"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="info.staticfree.SuperGenPass.Preferences" />
+
+    </FrameLayout>
+</LinearLayout>
