@@ -7,7 +7,7 @@
     <string name="password_hint">master password</string>
     <string name="genpw_shown">abc1</string>
     <string name="genpw_hidden">•••••</string>
-    <string name="sgp_type" translatable="false">SuperGenPass (MD5)</string>
+    <string name="sgp_type" translatable="false">MD5 SuperGenPass (deprecated)</string>
     <string name="sgp_type_sha_512" translatable="false">SuperGenPass (SHA-512)</string>
     <string name="pwc_type" translatable="false">Password Composer</string>
     <string name="app_description">Password hashing tool.</string>
