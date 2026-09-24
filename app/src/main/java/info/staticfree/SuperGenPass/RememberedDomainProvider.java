@@ -7,12 +7,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import edu.mit.mobile.android.utils.ProviderUtils;
 
 public class RememberedDomainProvider extends ContentProvider {
 
@@ -124,8 +123,8 @@ public class RememberedDomainProvider extends ContentProvider {
 
             case MATCHER_DOMAIN_ITEM:
                 cursor = db.query(RememberedDBHelper.DB_DOMAINS_TABLE, projection,
-                        ProviderUtils.addExtraWhere(selection, Domain._ID + "=?"),
-                        ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
+                        whereForItem(selection),
+                        argsForItem(uri, selectionArgs),
                         null, null, null);
                 break;
             default:
@@ -158,8 +157,8 @@ public class RememberedDomainProvider extends ContentProvider {
 
             case MATCHER_DOMAIN_ITEM:
                 changeCount = db.update(RememberedDBHelper.DB_DOMAINS_TABLE, values,
-                        ProviderUtils.addExtraWhere(selection, Domain._ID + "=?"),
-                        ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
+                        whereForItem(selection),
+                        argsForItem(uri, selectionArgs));
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -193,8 +192,8 @@ public class RememberedDomainProvider extends ContentProvider {
 
             case MATCHER_DOMAIN_ITEM:
                 changeCount = db.delete(RememberedDBHelper.DB_DOMAINS_TABLE,
-                        ProviderUtils.addExtraWhere(selection, Domain._ID + "=?"),
-                        ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()));
+                        whereForItem(selection),
+                        argsForItem(uri, selectionArgs));
                 break;
 
             default:
@@ -220,5 +219,23 @@ public class RememberedDomainProvider extends ContentProvider {
 
         mUriMatcher.addURI(AUTHORITY, Domain.PATH, MATCHER_DOMAIN_DIR);
         mUriMatcher.addURI(AUTHORITY, Domain.PATH + "/#", MATCHER_DOMAIN_ITEM);
+    }
+
+    /**
+     * Narrows a caller-supplied selection down to the single row named by an item URI.
+     */
+    @NonNull
+    private static String whereForItem(@Nullable String selection) {
+        return DatabaseUtils.concatenateWhere(selection, Domain._ID + "=?");
+    }
+
+    /**
+     * The selection arguments to go with {@link #whereForItem(String)}. The row id comes last
+     * because its placeholder is appended after any caller-supplied ones.
+     */
+    @NonNull
+    private static String[] argsForItem(@NonNull Uri uri, @Nullable String[] selectionArgs) {
+        return DatabaseUtils.appendSelectionArgs(selectionArgs,
+                new String[] { uri.getLastPathSegment() });
     }
 }

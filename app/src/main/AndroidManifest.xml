@@ -3,18 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--
-      From Android 11 onwards an app can only see other packages it declares an
-      interest in. The salt QR code feature hands off to an external barcode
-      scanner, so the scan intent has to be declared here for the handoff to
-      resolve.
-    -->
-    <queries>
-        <intent>
-            <action android:name="com.google.zxing.client.android.SCAN" />
-        </intent>
-    </queries>
-
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
@@ -76,8 +64,6 @@
             android:label="@string/preferences"
             android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="info.staticfree.android.supergenpass.action.SCAN_SALT" />
-                <action android:name="info.staticfree.android.supergenpass.action.GENERATE_SALT" />
                 <action android:name="info.staticfree.android.supergenpass.action.CLEAR_STORED_DOMAINS" />
 
                 <category android:name="android.intent.category.DEFAULT" />

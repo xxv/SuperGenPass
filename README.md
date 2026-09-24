@@ -30,8 +30,10 @@ The app collects nothing and has no network access whatsoever — it doesn't eve
 
 ### Recent Changes
 
-  * v3.2 - Maintenance release: modernised the build (Gradle 9 / AGP 9, AndroidX, targets Android 16),
-    and raised the minimum Android version to 5.0. No functional changes to password generation.
+  * v3.2 - Maintenance release: modernized the build (Gradle 9 / AGP 9, AndroidX, targets Android 16),
+    and raised the minimum Android version to 5.0. Removed scanning and generating salts via QR
+    code, which relied on a barcode scanner app that's no longer available; the salt can still be
+    typed or pasted in Settings. No functional changes to password generation.
   * v2.2.3 - Bugfix: Major bugfix on PIN generation. If you generated a PIN using this app for a domain that contains a sub-domain (e.g. foo.example.org), the sub-domain was not properly stripped. This is now fixed so it works like SGP. To generate PINs in the same way as they were before this fix, disable domain checking in the Settings.
   * v2.2.2 - Bugfixes: fixes hardware keyboard focus issue; fixes lockup when generating PIN; fixes editablity of the password output field.
   * v2.2.1 - Adds PIN generation; clears passwords on screen off; adds unit tests

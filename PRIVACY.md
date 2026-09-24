@@ -59,10 +59,8 @@ clipboard, which other apps on your device can read, and which on newer Android
 versions may sync to your other devices. That's Android's clipboard behaving
 normally, not something the app controls.
 
-**NFC tags and QR codes.** If you use the NFC feature, you are writing a password
-onto a physical tag that anyone holding the tag can read. If you scan a salt from a
-QR code, the app hands off to whatever barcode scanner app you have installed;
-that app is someone else's, with its own privacy policy.
+**NFC tags.** If you use the NFC feature, you are writing a password onto a
+physical tag that anyone holding the tag can read.
 
 ## Permissions
 

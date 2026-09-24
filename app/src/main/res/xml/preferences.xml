@@ -51,15 +51,6 @@
             android:password="true"
             android:summary="@string/pref_pw_salt_summary"
             android:title="@string/pref_pw_salt_title" />
-
-        <PreferenceScreen
-            android:key="scan_salt"
-            android:summary="@string/pref_scan_salt_summary"
-            android:title="@string/pref_scan_salt_from_qr_code_title" />
-        <PreferenceScreen
-            android:key="generate_salt"
-            android:summary="@string/pref_generate_salt_summary"
-            android:title="@string/pref_generate_salt_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advanced_preferences">
         <ListPreference

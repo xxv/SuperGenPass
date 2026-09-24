@@ -123,8 +123,9 @@ base {
 
 dependencies {
     implementation(libs.androidx.annotation)
-    implementation(libs.commons.codec)
-    implementation(libs.zxing.android.integration)
+    // WindowInsetsCompat, so SystemBarInsets reads insets the same way on every API level.
+    // 1.18+ needs compileSdk 37.
+    implementation(libs.androidx.core)
 
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.junit)
