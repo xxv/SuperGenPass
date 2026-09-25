@@ -1,3 +1,8 @@
+---
+title: Privacy Policy
+permalink: /privacy/
+---
+
 # Privacy Policy for Android SuperGenPass
 
 *Last updated: 23 September 2026*

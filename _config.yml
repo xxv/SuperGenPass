@@ -1,0 +1,17 @@
+# GitHub Pages (Settings -> Pages -> Deploy from a branch -> master, / (root)).
+#
+# This exists so PRIVACY.md renders as a real HTML page for the Google Play listing, without
+# keeping a second copy of the text: Jekyll converts any Markdown file that has YAML front
+# matter, and PRIVACY.md's front matter publishes it at /privacy/.
+title: SuperGenPass
+description: An Android implementation of the SuperGenPass password generator
+theme: jekyll-theme-primer
+
+# Source that isn't worth publishing as part of the site. extra/ stays, since the README's
+# screenshots live there.
+exclude:
+  - app/
+  - gradle/
+  - gradlew
+  - gradlew.bat
+  - signing/
