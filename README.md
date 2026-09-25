@@ -17,7 +17,7 @@ numerical counters) and is designed to never generate easily-guessable pins, suc
 ## Download Binary Release
 
   * [Android SuperGenPass on Google Play](https://play.google.com/store/apps/details?id=info.staticfree.SuperGenPass)
-  * [Android SuperGenPass apk](SuperGenPass.apk)
+  * [Android SuperGenPass apk](https://github.com/xxv/SuperGenPass/releases/latest)
 
 <img src="extra/screenshot02.png" width="120" height="200" />
 
@@ -31,7 +31,7 @@ The app collects nothing and has no network access whatsoever — it doesn't eve
 ### Recent Changes
 
   * v3.2 - Maintenance release: modernized the build (Gradle 9 / AGP 9, AndroidX, targets Android 16),
-    and raised the minimum Android version to 5.0. Removed scanning and generating salts via QR
+    and raised the minimum Android version to 9. Removed scanning and generating salts via QR
     code, which relied on a barcode scanner app that's no longer available; the salt can still be
     typed or pasted in Settings. No functional changes to password generation.
   * v2.2.3 - Bugfix: Major bugfix on PIN generation. If you generated a PIN using this app for a domain that contains a sub-domain (e.g. foo.example.org), the sub-domain was not properly stripped. This is now fixed so it works like SGP. To generate PINs in the same way as they were before this fix, disable domain checking in the Settings.
@@ -79,16 +79,8 @@ That runs on *every* attached device. To pin it to one, set `ANDROID_SERIAL` to 
 
 ### Making a release
 
-Release builds are shrunk with R8 and produce both an APK and an Android App Bundle for Google
-Play:
-
-    ./gradlew assembleRelease      # APK
-    ./gradlew bundleRelease        # AAB, this is what Play wants
-
-To have those signed, copy `keystore.properties.example` to `keystore.properties` and fill it in,
-or set `SGP_KEYSTORE_FILE`, `SGP_KEYSTORE_PASSWORD`, `SGP_KEY_ALIAS` and `SGP_KEY_PASSWORD` in the
-environment. `keystore.properties` and `*.jks` are git-ignored; don't commit your signing key.
-Without any of those the release build still assembles, just unsigned.
+Pushing a `v*` tag builds a signed APK and Play bundle and publishes them on a draft GitHub
+release. See [cicd_notes.md](cicd_notes.md) for signing.
 
 ### License
 

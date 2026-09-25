@@ -6,6 +6,6 @@ local.properties
 .kotlin
 
 # Signing material must never be committed.
-keystore.properties
 *.jks
 *.keystore
+*.p12

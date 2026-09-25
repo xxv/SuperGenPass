@@ -1,24 +1,10 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
 }
 
-// Release signing credentials are kept out of the repository. Either drop a
-// keystore.properties in the project root (see keystore.properties.example) or
-// set the matching SGP_* environment variables, which is what CI does. When
-// neither is present the release build still assembles, just unsigned.
-val keystoreProperties = Properties().apply {
-    val file = rootProject.file("keystore.properties")
-    if (file.exists()) {
-        file.inputStream().use(::load)
-    }
-}
-
-fun credential(key: String, environmentVariable: String): String? =
-    keystoreProperties.getProperty(key) ?: System.getenv(environmentVariable)
-
-val keystorePath = credential("storeFile", "SGP_KEYSTORE_FILE")
+// Release signing key, from KEYSTORE_FILE, KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD.
+// Without them the release build is left unsigned.
+val keystorePath: String? = System.getenv("KEYSTORE_FILE")
 
 android {
     namespace = "info.staticfree.SuperGenPass"
@@ -26,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "info.staticfree.SuperGenPass"
-        minSdk = 21
+        minSdk = 28
         targetSdk = 36
         versionCode = 25
         versionName = "3.2.0"
@@ -39,9 +25,9 @@ android {
         if (keystorePath != null) {
             create("release") {
                 storeFile = file(keystorePath)
-                storePassword = credential("storePassword", "SGP_KEYSTORE_PASSWORD")
-                keyAlias = credential("keyAlias", "SGP_KEY_ALIAS")
-                keyPassword = credential("keyPassword", "SGP_KEY_PASSWORD")
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
             }
         }
     }
