@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Used only as the IME action id passed to setImeActionLabel(). It was
+      previously declared inline as android:imeActionId="@+id/go" in the main
+      layout, which lint rejects because imeActionId must be a plain integer
+      rather than a resource id. Declaring it here keeps the same unique
+      constant without the invalid attribute.
+    -->
+    <item name="go" type="id" />
+</resources>

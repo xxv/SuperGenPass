@@ -18,9 +18,8 @@ package info.staticfree.SuperGenPass.hashes;
  */
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-
-import org.apache.commons.codec.binary.Base64;
+import android.util.Base64;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -68,7 +67,7 @@ public final class SuperGenPass extends DomainBasedHash {
     @NonNull
     private String hashBase64(@NonNull byte[] data) {
 
-        String b64 = new String(Base64.encodeBase64(mHasher.digest(data)));
+        String b64 = Base64.encodeToString(mHasher.digest(data), Base64.NO_WRAP);
         // SuperGenPass-specific quirk so that these don't end up in the password.
         b64 = b64.replace('=', 'A').replace('/', '8').replace('+', '9');
         b64 = b64.trim();

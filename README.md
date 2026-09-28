@@ -1,4 +1,4 @@
-# ![](res/drawable-mdpi/icon.png) Android SuperGenPass utility
+# ![](app/src/main/res/drawable-mdpi/icon.png) Android SuperGenPass utility
 
 <img src="extra/screenshot01.png" width="120" height="200" /> This is an Android implementation of
 [SuperGenPass](http://supergenpass.com/). SuperGenPass is a different kind of password manager:
@@ -17,14 +17,23 @@ numerical counters) and is designed to never generate easily-guessable pins, suc
 ## Download Binary Release
 
   * [Android SuperGenPass on Google Play](https://play.google.com/store/apps/details?id=info.staticfree.SuperGenPass)
-  * [Android SuperGenPass apk](SuperGenPass.apk)
+  * [Android SuperGenPass apk](https://github.com/xxv/SuperGenPass/releases/latest)
 
 <img src="extra/screenshot02.png" width="120" height="200" />
 
 <img src="extra/screenshot03.png" width="120" height="200" />
 
+## Privacy
+
+The app collects nothing and has no network access whatsoever — it doesn't even request the
+`INTERNET` permission. See [PRIVACY.md](PRIVACY.md) for the details.
+
 ### Recent Changes
 
+  * v3.2 - Maintenance release: modernized the build (Gradle 9 / AGP 9, AndroidX, targets Android 16),
+    and raised the minimum Android version to 9. Removed scanning and generating salts via QR
+    code, which relied on a barcode scanner app that's no longer available; the salt can still be
+    typed or pasted in Settings. No functional changes to password generation.
   * v2.2.3 - Bugfix: Major bugfix on PIN generation. If you generated a PIN using this app for a domain that contains a sub-domain (e.g. foo.example.org), the sub-domain was not properly stripped. This is now fixed so it works like SGP. To generate PINs in the same way as they were before this fix, disable domain checking in the Settings.
   * v2.2.2 - Bugfixes: fixes hardware keyboard focus issue; fixes lockup when generating PIN; fixes editablity of the password output field.
   * v2.2.1 - Adds PIN generation; clears passwords on screen off; adds unit tests
@@ -40,13 +49,42 @@ running:
 
     git clone https://github.com/xxv/SuperGenPass.git
 
+## Building
+
+You'll need JDK 17 or newer and the Android SDK. Everything else, including Gradle itself, is
+fetched by the wrapper.
+
+    ./gradlew assembleDebug        # debug APK
+    ./gradlew build                # everything, including lint
+
+### Testing
+
+The tests are all instrumentation tests, so they need a device. The easiest way is to let Gradle
+manage its own:
+
+    ./gradlew pixel6Api34DebugAndroidTest
+
+That creates, boots and tears down an emulator that belongs to this project alone, downloading the
+system image the first time. It won't touch any device or emulator you already have running, which
+matters if you're working on more than one project at once.
+
+If you'd rather use a device you already have attached:
+
+    ./gradlew connectedCheck
+
+That runs on *every* attached device. To pin it to one, set `ANDROID_SERIAL` to the serial shown by
+`adb devices`:
+
+    ANDROID_SERIAL=emulator-5554 ./gradlew connectedCheck
+
+### Making a release
+
+Pushing a `v*` tag builds a signed APK and Play bundle and publishes them on a draft GitHub
+release. See [cicd_notes.md](cicd_notes.md) for signing.
+
 ### License
 
 The code is made available under the GPL v3
-
-### Thanks!
-
-[ ![Flattr this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/633869/Android-SuperGenPass)
 
 ### Contributors
 
@@ -55,4 +93,3 @@ Thanks to [Ari Pollak](http://ebnj.net) for cleaning up the UI to work better on
 Thanks to Anthony Miceli for the password salt functionality.
 
 Thanks to [Mike Tsao](http://www.sowbug.com/) for URL parsing.
-

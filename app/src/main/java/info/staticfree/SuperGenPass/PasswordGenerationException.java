@@ -1,6 +1,6 @@
 package info.staticfree.SuperGenPass;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * An exception raised if there was a problem generating a password with the given criteria.

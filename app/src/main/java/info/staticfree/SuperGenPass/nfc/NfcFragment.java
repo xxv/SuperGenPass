@@ -8,8 +8,9 @@ import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * A non-layout fragment for handling NFC tag reading interactions. If NFC is disabled or not
@@ -48,9 +49,14 @@ public abstract class NfcFragment extends Fragment {
         final NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 
         if (nfcAdapter != null && nfcAdapter.isEnabled()) {
+            // From API 31 onwards a PendingIntent must declare its mutability. The
+            // foreground dispatch intent is only ever used to re-deliver to this
+            // activity, so it has no reason to be mutable.
             final PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0,
                     new Intent(getActivity(), getActivity().getClass())
-                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE
+                            : 0);
 
             nfcAdapter.enableForegroundDispatch(getActivity(), pendingIntent,
                     SGP_PASSWORD_INTENT_FILTER, null);

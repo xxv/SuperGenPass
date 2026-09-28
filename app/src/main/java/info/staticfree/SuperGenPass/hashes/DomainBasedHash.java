@@ -19,9 +19,7 @@ package info.staticfree.SuperGenPass.hashes;
  */
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-
-import junit.framework.Assert;
+import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,7 +87,9 @@ public abstract class DomainBasedHash {
             throw ioe;
         }
 
-        Assert.assertTrue("Domains did not seem to load", domains.size() > 100);
+        if (domains.size() <= 100) {
+            throw new IOException("Domains did not seem to load");
+        }
     }
 
     /**

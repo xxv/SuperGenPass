@@ -1,16 +1,35 @@
 package info.staticfree.SuperGenPass.test;
 
-import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.LargeTest;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import info.staticfree.SuperGenPass.PasswordGenerationException;
 import info.staticfree.SuperGenPass.hashes.PasswordComposer;
 
-public class PasswordComposerTest extends AndroidTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+@RunWith(AndroidJUnit4.class)
+public class PasswordComposerTest {
+
+    private Context mContext;
+
+    @Before
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+    }
+
+    @Test
     public void testKnownGood() throws Exception {
-        PasswordComposer pwc = new PasswordComposer(getContext());
+        PasswordComposer pwc = new PasswordComposer(mContext);
 
         String[][] knownGoods = {
 
@@ -37,8 +56,9 @@ public class PasswordComposerTest extends AndroidTestCase {
         }
     }
 
+    @Test
     public void testKnownBad() throws Exception {
-        PasswordComposer pwc = new PasswordComposer(getContext());
+        PasswordComposer pwc = new PasswordComposer(mContext);
 
         String[][] knownBads = {
                 { "", "", "8" }, // Empty strings
@@ -59,8 +79,9 @@ public class PasswordComposerTest extends AndroidTestCase {
         }
     }
 
+    @Test
     public void testLength() throws Exception {
-        PasswordComposer pwc = new PasswordComposer(getContext());
+        PasswordComposer pwc = new PasswordComposer(mContext);
 
         int i = 0;
         try {
@@ -88,8 +109,9 @@ public class PasswordComposerTest extends AndroidTestCase {
     }
 
     @LargeTest
+    @Test
     public void testATonOfPasswords() throws Exception {
-        PasswordComposer pwc = new PasswordComposer(getContext());
+        PasswordComposer pwc = new PasswordComposer(mContext);
         Utils.testATonOfPasswords(pwc, 3, 8);
     }
 }

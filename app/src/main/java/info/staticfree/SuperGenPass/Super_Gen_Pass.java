@@ -38,8 +38,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
@@ -139,6 +139,7 @@ public class Super_Gen_Pass extends Activity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
+        SystemBarInsets.setUp(this, R.id.main_content);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
         Intent intent = getIntent();
@@ -472,10 +473,8 @@ public class Super_Gen_Pass extends Activity
 
     @Override
     public void onClick(@NonNull View v) {
-        switch (v.getId()) {
-            case R.id.go:
-                go();
-                break;
+        if (v.getId() == R.id.go) {
+            go();
         }
     }
 
@@ -486,16 +485,12 @@ public class Super_Gen_Pass extends Activity
 
     @Override
     public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-        switch (buttonView.getId()) {
-            case R.id.show_gen_password: {
+        if (buttonView.getId() == R.id.show_gen_password) {
+            mGenPwView.setHidePassword(!isChecked);
+            mGenPinView.setHidePassword(!isChecked);
 
-                mGenPwView.setHidePassword(!isChecked);
-                mGenPinView.setHidePassword(!isChecked);
-
-                SharedPreferences prefs =
-                        PreferenceManager.getDefaultSharedPreferences(this);
-                prefs.edit().putBoolean(Preferences.PREF_SHOW_GEN_PW, isChecked).apply();
-            }
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            prefs.edit().putBoolean(Preferences.PREF_SHOW_GEN_PW, isChecked).apply();
         }
     }
 
@@ -528,38 +523,36 @@ public class Super_Gen_Pass extends Activity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings:
+        int itemId = item.getItemId();
 
-                Intent preferencesIntent =
-                        new Intent().setClass(this, SgpPreferencesActivity.class);
-                startActivityForResult(preferencesIntent, REQUEST_CODE_PREFERENCES);
+        if (itemId == R.id.settings) {
+            Intent preferencesIntent = new Intent().setClass(this, SgpPreferencesActivity.class);
+            startActivityForResult(preferencesIntent, REQUEST_CODE_PREFERENCES);
 
-                return true;
+            return true;
 
-            case R.id.about:
-                new AboutFragment().show(getFragmentManager(), "about");
-                return true;
+        } else if (itemId == R.id.about) {
+            new AboutFragment().show(getFragmentManager(), "about");
+            return true;
 
-            case R.id.verify:
-                VerifyFragment.showVerifyFragment(getFragmentManager(), getMasterPassword());
-                return true;
+        } else if (itemId == R.id.verify) {
+            VerifyFragment.showVerifyFragment(getFragmentManager(), getMasterPassword());
+            return true;
 
-            case R.id.go:
-                go();
-                return true;
+        } else if (itemId == R.id.go) {
+            go();
+            return true;
 
-            case R.id.copy:
-                postGenerate(true);
-                return true;
+        } else if (itemId == R.id.copy) {
+            postGenerate(true);
+            return true;
 
-            case R.id.write_nfc:
-                writeNfc();
-                return true;
-
-            default:
-                return false;
+        } else if (itemId == R.id.write_nfc) {
+            writeNfc();
+            return true;
         }
+
+        return false;
     }
 
     private void writeNfc() {

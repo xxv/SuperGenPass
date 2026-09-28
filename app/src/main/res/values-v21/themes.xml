@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Material.Light">
+    <!--
+      Activities lay out their own Toolbar (see layout/toolbar.xml) rather than
+      using the window's action bar, so that they can keep it clear of the
+      status bar once Android 15+ draws them edge-to-edge.
+    -->
+    <style name="AppTheme.Base" parent="android:Theme.Material.Light.NoActionBar">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>
     </style>
+
+    <style name="AppTheme" parent="AppTheme.Base" />
 
     <style name="ShareTheme" parent="android:Theme.Material.Light.Dialog">
         <item name="generatedPasswordViewStyle">@style/GeneratedPasswordView</item>

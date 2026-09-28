@@ -4,15 +4,15 @@
     <string-array name="pwgen_types_label">
 
         <!-- The order of these is significant. -->
-        <item>@string/sgp_type</item>
         <item>@string/sgp_type_sha_512</item>
+        <item>@string/sgp_type</item>
         <item>@string/pwc_type</item>
     </string-array>
     <string-array name="pwgen_types">
 
         <!-- The order of these is significant. -->
-        <item>sgp</item>
         <item>sgp-sha-512</item>
+        <item>sgp</item>
         <item>pwc</item>
     </string-array>
 
